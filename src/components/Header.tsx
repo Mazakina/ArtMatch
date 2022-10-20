@@ -1,9 +1,10 @@
 import {Box, Button, Flex, HStack, Icon, Select, Stack} from '@chakra-ui/react'
+import { memo } from 'react'
 import {BiSearchAlt} from 'react-icons/bi'
 import {BsQuestionOctagon} from 'react-icons/bs'
 import { Input } from './Form/Input'
 
-export default function Header(){
+function Header(){
   return( 
     <Flex w='100%' h='50px' pl='2rem' pr='2rem' bg='#2C2B2B' direction='row' justify='space-between' alignItems='center' >
       <Box color='gray.900'>Logo</Box>
@@ -124,3 +125,5 @@ export default function Header(){
     </Flex>
   )
 }
+
+export default memo(Header)
