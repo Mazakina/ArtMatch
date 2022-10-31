@@ -26,11 +26,28 @@ const Home  = () => {
       <Header/>
       <Box margin='50px 0'id='heroBox'>
         <HeroSlider slides={slides}/>
-        <HStack borderTop='10px solid #323232' margin='50px 0' padding='0 25px'>
-           <ActiveLink onClick={()=>{setCurrentActive('Trend')}} currentActive={currentActive} id='Trend' ><Text fontSize='24px'> Trend</Text></ActiveLink>
-           <ActiveLink onClick={()=>{setCurrentActive('Seguindo')}} currentActive={currentActive} id='Seguindo' ><Text fontSize='24px'> Seguindo</Text></ActiveLink>
-           <ActiveLink onClick={()=>{setCurrentActive('Recente')}} currentActive={currentActive} id='Recente' ><Text fontSize='24px'> Recente</Text></ActiveLink>
+
+        <HStack borderTop='10px solid #323232' margin='50px 0 16px' padding='0 25px'>
+          <ActiveLink
+            setCurrentActive={setCurrentActive}
+            currentActive={currentActive}
+            id='Trend'>
+                Trend
+          </ActiveLink>
+          <ActiveLink
+            setCurrentActive={setCurrentActive}
+            currentActive={currentActive}
+            id='Seguindo' >
+                Seguindo
+          </ActiveLink>
+          <ActiveLink
+            setCurrentActive={setCurrentActive}
+            currentActive={currentActive}
+            id='Recente'>
+                Recente
+          </ActiveLink>
         </HStack>
+
         <Box id='image-container' >
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
             { i.map((is)=>{

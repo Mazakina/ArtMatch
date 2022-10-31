@@ -6,7 +6,7 @@ import { Input } from './Form/Input'
 
 function Header(){
   return( 
-    <Flex w='100%' h='50px' pl='2rem' pr='2rem' bg='#2C2B2B' direction='row' justify='space-between' alignItems='center' >
+    <Flex w='100%' h='50px' pl='2rem' pr='2rem' bg='#272727' direction='row' justify='space-between' alignItems='center' >
       <Box color='gray.900'>Logo</Box>
 
       <Flex direction='row' align='center'>
