@@ -1,9 +1,13 @@
-import {Image , Avatar, Flex, Link, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure } from "@chakra-ui/react";
-import Header from "../../components/Header";
+
 import {AiFillFolderAdd, AiFillFolder, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/Ai'
 import {IoIosArrowForward, IoIosArrowDown} from 'react-icons/io'
 import {BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
+import {Image , Avatar, Flex, Link, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure } from "@chakra-ui/react";
+
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
+import Header from "../../components/Header";
 import {
   Modal,
   ModalOverlay,
@@ -13,10 +17,77 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
+import { useRef, useState } from "react";
+import { 
+  canvasPreview, 
+  base64StringtoFile, 
+  useDebounceEffect,
+  downloadBase64File, 
+} from '../../components/Crop/reusableUtils';
+
+
+
 
 export default function portfolio(){
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const imgRef = useRef()
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const imgInputRef = useRef<HTMLInputElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [newImage, setNewImage] = useState(null);
+  const [crop,setCrop] = useState<Crop>(null);
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+
+  function handleOnChange(changeEvent){
+    const reader = new FileReader()
+
+    reader.onload = function (onLoadEvent){
+      setNewImage(onLoadEvent.target.result)
+    }
+    reader.readAsDataURL(changeEvent.target.files[0]);
+  }
+
+ function handleDownloadClick(e){
+  e.preventDefault()
+  const canvasRef = previewCanvasRef.current
+  const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
+  const imageData64 = canvasRef.toDataURL()
+
+  console.log(imageData64)
+
+  const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
+  const download = downloadBase64File( imageData64,fileName)
+ }
+
+
+  async function handleOnSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const fileInput = Array.from(form.elements).find(({name})=>name==='img');
+  }
+
+
+
+
+  useDebounceEffect(
+    async () => {
+      if (
+        completedCrop?.width &&
+        completedCrop?.height &&
+        imgRef.current &&
+        previewCanvasRef.current
+      ) {
+        canvasPreview(
+          imgRef.current,
+          previewCanvasRef.current,
+          completedCrop,
+        )
+      }
+    },
+    100,
+    [completedCrop],
+  )
 
   return(
     <>
@@ -64,7 +135,20 @@ export default function portfolio(){
         <Box height='98%' m='auto 16px' w={'1px'} bg='#fff' />
 
         <Flex mt={'2rem'}>
-          <Flex as={Button} _hover={{bg:'none'}}bg={'none'} cursor='pointer' onClick={onOpen} flexDir='column' align='center' justify='center' w='190px' height='190px' borderRadius='5px' border='1px dashed #fff'>
+          <Flex
+            as={Button}
+            _hover={{bg:'none'}}bg={'none'}
+            cursor='pointer'
+            onClick={onOpen}
+            flexDir='column'
+            align='center'
+            justify='center'
+            w='190px'
+            height='190px'
+            borderRadius='5px'
+            border='1px
+            dashed
+            #fff'>
             <Icon fontSize='32px' as={BsPlusSquare}/>
             <Text fontSize='14px' mt='1rem'>Novo Projeto</Text>
           </Flex>
@@ -82,14 +166,86 @@ export default function portfolio(){
           </Flex>
         </Flex>
 
-        <Modal  isOpen={isOpen} onClose={onClose}>
+        <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay bg='#000000c0' />
-          <ModalContent bg='#373737' >
-          <ModalHeader>Nova publicação</ModalHeader>
-          <ModalCloseButton />
+          <ModalContent w='1200px !important' height='830px' bg='#373737' >
+            <ModalHeader  width='100%'>Nova publicação</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody position='relative' width='100%' >
+            <form action="/action_page.php" method='post'
+            onChange={handleOnChange}
+            >
+              <Flex>
+                <Flex
+                  // as={Button}
+                  position="relative"
+                  _hover={{bg:'none'}}bg={'none'}
+                  cursor='pointer'
+                  flexDir='column'
+                  align='center'
+                  justify='center'
+                  w='720px'
+                  height='720px'
+                  borderRadius='0px'
+                  border='1px dashed #fff'
+                  >
+                  <Box position="absolute">
+                    <input
+                    onChange={
+                      (event)=>{
+                        setNewImage(event.target.files[0])                      
+                      }
+
+                    }
+                    type="file"
+                    id="img"
+                    name="img"
+                    accept="image/*"
+                    ref={imgInputRef} />
+                  </Box>
+                  <Box position="absolute">
+                      <Image src={newImage}/>
+                     
+                  </Box>
+                </Flex>
+                
+                <Flex ml='32px'  flexDir='column'>
+                  <Text mt='18px' fontSize="18px">Thumbnail</Text>
+                  <Text color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
+                  <Box mt='10px' width='280px' height='280px'>
+                    <ReactCrop
+                        aspect={1}
+                        crop={crop}
+                        onComplete={(c) => setCompletedCrop(c)}
+                        onChange={(c)=>{setCrop(c)}}>
+                          <Image ref={imgRef} src={newImage}/>
+                    </ReactCrop>
+                    <Button onClick={(e)=>handleDownloadClick(e)} >aquiii</Button>
+                  </Box>
+                </Flex>
+
+              </Flex>
+              
+              <Box width='100%' h='1px' bg='#000'/>
+              {!!crop && 
+                <canvas
+                ref={previewCanvasRef}
+                style={{
+                  display:'none',
+                  width: crop.width,
+                  height: crop.height,
+                  objectFit: 'contain',
+                }}
+                />
+              }
+            </form>
+
+            </ModalBody>
+
           </ModalContent>
         </Modal>
       </Flex>
+      
     </>
   )
 }
