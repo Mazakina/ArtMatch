@@ -25,10 +25,7 @@ export function downloadBase64File (base64Data, filename) {
 }
 
 
-// Extract an Base64 Image's File Extension
-export function extractImageFileExtensionFromBase64 (base64Data) {
-  return base64Data.substring('data:image/'.length, base64Data.indexOf(';base64'))
-}
+
 
 
 import { PixelCrop } from 'react-image-crop'

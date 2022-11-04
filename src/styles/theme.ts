@@ -6,6 +6,11 @@ export const theme = extendTheme({
 
   styles:{
     global:{
+      Button:{
+        _hover:{
+          bg:'#000'
+        }
+      },
       body:{
         fontSize:'18px',
         bg: '#181818',

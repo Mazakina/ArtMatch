@@ -1,9 +1,9 @@
 
-import {AiFillFolderAdd, AiFillFolder, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/Ai'
-import {IoIosArrowForward, IoIosArrowDown} from 'react-icons/io'
-import {BiTrash} from 'react-icons/bi'
+import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/Ai'
+import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
+import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Avatar, Flex, Link, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure } from "@chakra-ui/react";
+import {Image , Flex, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
 
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -13,7 +13,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
@@ -22,8 +21,9 @@ import {
   canvasPreview, 
   base64StringtoFile, 
   useDebounceEffect,
-  downloadBase64File, 
 } from '../../components/Crop/reusableUtils';
+import { AvatarName } from '../../components/AvatarName';
+import Division from '../../components/Division';
 
 
 
@@ -31,14 +31,14 @@ import {
 export default function portfolio(){
   const imgRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const imgInputRef = useRef<HTMLInputElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-
   const [newImage, setNewImage] = useState(null);
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+  const [formPart,setFormPart] = useState<Boolean>(true) 
 
+  //fazer os States das variaveis do Form
   function handleOnChange(changeEvent){
     const reader = new FileReader()
 
@@ -48,7 +48,7 @@ export default function portfolio(){
     reader.readAsDataURL(changeEvent.target.files[0]);
   }
 
- function handleDownloadClick(e){
+ function handleUploadClick(e){
   e.preventDefault()
   const canvasRef = previewCanvasRef.current
   const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
@@ -57,14 +57,17 @@ export default function portfolio(){
   console.log(imageData64)
 
   const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
-  const download = downloadBase64File( imageData64,fileName)
+  // const download = downloadBase64File( imageData64,fileName)
+  setFormPart(!formPart)
  }
 
 
   async function handleOnSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const fileInput = Array.from(form.elements).find(({name})=>name==='img');
+    // const fileInput = Array.from(form.elements).find(({name})=>name==='img');
+    // Fazer o envio de todas as informaçoes //
+    console.log(event)
   }
 
 
@@ -95,15 +98,9 @@ export default function portfolio(){
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
 
         <Flex id='left-nav' flexDir='column'>
-          <Flex m='20px 20px 0 20px'>
-            <Avatar src=''/>
-            <Box ml='12px'>
-              <Text>Juras Rodionovas</Text>
-              <Link fontSize='12px' >jurasrodionovas@gmail.com</Link>
-            </Box>
-          </Flex>
+          <AvatarName />
 
-          <Box margin='1rem auto' width='100%' height='1px' bg='#323232'/>
+          <Division  width={'100%'}  bg={'#323232'}/>
           < Flex  ml='20px' flexDir='column'>
             <Flex width='100%' justify='space-between' align='center' >
               <Text>Projetos</Text>
@@ -111,7 +108,7 @@ export default function portfolio(){
               <Flex align='center'>
                 <Icon color='#D9D9D9' as={AiFillFolderAdd} />
                 <Icon color='#D9D9D9' as={AiFillFileAdd} />
-                <Icon color='#D9D9D9' as={AiOutlineReload} />
+                <Icon transition='all 1s ease-in-out' _hover={{transform:'rotate(360deg)'}} color='#D9D9D9' as={AiOutlineReload} />
               </Flex>
             </Flex>
             <VStack fontSize='16px' mt='1rem' alignItems='flex-start' spacing='6px'>
@@ -152,9 +149,41 @@ export default function portfolio(){
             <Icon fontSize='32px' as={BsPlusSquare}/>
             <Text fontSize='14px' mt='1rem'>Novo Projeto</Text>
           </Flex>
-          <Flex ml='20px' flexDir='column' align='center' justify='flex-start' w='190px' overflow='hidden'  height='215px' border='1px solid #FFEB80' bgColor='#3A3A3A' borderRadius='5px'>
+          {/* map de projetos */}
+          <Flex
+              ml='20px'
+              flexDir='column'
+              align='center'
+              justify='flex-start'
+              w='190px'
+              overflow='hidden'
+              height='215px'
+              bgColor='#3A3A3A'
+              border='1px
+              solid
+              #4d4d4d'
+              borderRadius='5px'
+              _hover={{
+                border:'1px solid #FFEB80'
+              }}>
             <AspectRatio  w='190px' ratio={1}>
-              <Image transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src='/images/001.jpg' />
+             <Box position='relative'>
+
+              <Image  position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src='/images/001.jpg' />
+              <Flex
+                height='100%'
+                position='absolute'
+                opacity='0.01'
+                w='100%'
+                align='center'
+                justify='center'
+                bgColor='#14141473'
+                _hover={{opacity:1}}
+                transition='all 0.3s ease-in-out'
+                >
+                <Button _hover={{bg:'#FFE767'}} color='#000' bg='#FFE767'>Editar</Button>
+              </Flex>
+             </Box>
             </AspectRatio>
             <Flex m='auto 10px ' width='100%' justify='space-between'>
               <Text ml='10px' fontSize='10px'>Titulo</Text>
@@ -164,16 +193,24 @@ export default function portfolio(){
               </HStack>
             </Flex>
           </Flex>
+
         </Flex>
 
         <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay bg='#000000c0' />
           <ModalContent w='1200px !important' height='830px' bg='#373737' >
-            <ModalHeader  width='100%'>Nova publicação</ModalHeader>
-            <ModalCloseButton />
+            <ModalHeader  width='100%'>
+             <Flex justify="space-between" align='center'>
+              <Icon onClick={()=>setFormPart(!formPart)} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
+              <Text>Nova publicação</Text>
+              <Box/>
+              <ModalCloseButton />
+             </Flex>
+            </ModalHeader>
             <ModalBody position='relative' width='100%' >
-            <form action="/action_page.php" method='post'
-            onChange={handleOnChange}
+            <form 
+              onSubmit={(e)=>handleOnSubmit(e)}
+              action="/action_page.php" method='post'
             >
               <Flex>
                 <Flex
@@ -193,9 +230,8 @@ export default function portfolio(){
                     <input
                     onChange={
                       (event)=>{
-                        setNewImage(event.target.files[0])                      
+                       handleOnChange(event)               
                       }
-
                     }
                     type="file"
                     id="img"
@@ -209,7 +245,8 @@ export default function portfolio(){
                   </Box>
                 </Flex>
                 
-                <Flex ml='32px'  flexDir='column'>
+               {formPart &&  
+               <Flex ml='16px' maxWidth='420px' width='100%' flexDir='column'>
                   <Text mt='18px' fontSize="18px">Thumbnail</Text>
                   <Text color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
                   <Box mt='10px' width='280px' height='280px'>
@@ -220,13 +257,77 @@ export default function portfolio(){
                         onChange={(c)=>{setCrop(c)}}>
                           <Image ref={imgRef} src={newImage}/>
                     </ReactCrop>
-                    <Button onClick={(e)=>handleDownloadClick(e)} >aquiii</Button>
+                    {/* <Button onClick={(e)=>handleUploadClick(e)} >aquiii</Button> */}
                   </Box>
-                </Flex>
-
+                  <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
+                    <></> 
+                    <Button
+                      width='35%'
+                      ml='auto !important'
+                      color='#000'
+                      bg='#FFE767'
+                      onClick={()=>setFormPart(!formPart)}
+                      >Continuar</Button>
+                  </Flex>
+                </Flex>}
+                {!formPart &&
+                
+                <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
+                  <Text>Titulo da Obra:</Text>
+                  <Input  h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
+                  <Text>Descrição:</Text>
+                  <Textarea mb='6px !important' height='30%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'   />
+                  <Select
+                    h='38px'
+                    overflow='hidden'
+                    focusBorderColor="#FFEB80"
+                    bg='#151515'
+                    borderRadius='2px'
+                    color='#BEBEBE'
+                    placeholder='Midia'
+                    cursor='pointer'
+                    border=' 1px solid #959595'  
+                    >
+                    <option style={{ color: 'black' }} value="pinturaDigital">Pintura digital</option>
+                    <option style={{ color: 'black' }} value="pinturaTradicional">Pintura tradicional</option>
+                    <option style={{ color: 'black' }} value="tatuagem">Tatuagem</option>
+                    <option style={{ color: 'black' }} value="graffite">Graffite</option>
+                  </Select>
+                
+                  <Text>Tags:</Text>
+                  <Flex 
+                    align='center'
+                    h='38px'
+                    w='100%'
+                    borderRadius='2px'
+                    bg='#151515'
+                    alignSelf='center'
+                    color='#BEBEBE'
+                    position='relative'
+                    as='label'>
+                    <Input
+                      h='38px'
+                      bg='transparent'
+                      borderRadius='2px'
+                      name={'search'}
+                      />
+                    <Icon
+                      position='absolute'
+                      right='2'
+                      zIndex='2'
+                      as={BiSearchAlt}
+                      _hover={{ 
+                        cursor:'pointer'
+                      }}
+                      fontSize='20' />
+                  </Flex>
+                  <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
+                    <Button width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquiva</Button>
+                    <Button type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
+                  </Flex>
+                </VStack>}
               </Flex>
               
-              <Box width='100%' h='1px' bg='#000'/>
               {!!crop && 
                 <canvas
                 ref={previewCanvasRef}
