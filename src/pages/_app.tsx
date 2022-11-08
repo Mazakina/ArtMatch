@@ -2,10 +2,16 @@ import type { AppProps } from 'next/app'
 import { ChakraProvider} from '@chakra-ui/react'
 import { theme } from '../styles/theme'
 import '../components/Slider/Slider.css'
-function MyApp({ Component, pageProps }: AppProps) {
+import { SessionProvider } from "next-auth/react"
+import { Session } from "next-auth";
+
+
+function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <SessionProvider session={pageProps.session}>
+        <Component {...pageProps} />
+      </SessionProvider>
     </ChakraProvider>
   )
 }

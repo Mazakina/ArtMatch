@@ -3,6 +3,7 @@ import { memo } from 'react'
 import {BiSearchAlt} from 'react-icons/bi'
 import {BsQuestionOctagon} from 'react-icons/bs'
 import { Input } from './Form/Input'
+import { SignInButton } from './SignInButton'
 
 function Header(){
   return( 
@@ -77,42 +78,8 @@ function Header(){
       </Flex>
 
       <Flex alignItems='center'>
-        <Flex
-          alignItems='center'
-          padding='5px'
-          border='1px
-          solid
-          #FFEB80'
-          borderRadius='3px'
-          direction='row'>
-          <Button
-            bg='tranparent'
-            h='21px'
-            fontSize='14px'
-            pr='22px'
-            borderRightWidth='1px'
-            borderRadius='0'
-            _hover={{
-              bg:'transparent',
-              color:'#FFEB80',
-
-            }}
-            borderRightColor='#BEBEBE'>
-            Entrar  
-          </Button>
-          <Button
-            bg='tranparent'
-            h='21px'
-            fontSize='14px'
-            _hover={{
-              bg:'transparent',
-              color:'#FFEB80'
-            }}
-            color='#dac761'>
-            Cadastrar-se
-          </Button>
-        </Flex>
-       <Button
+        <SignInButton/>
+        <Button
           bg='transparent'
           _hover={{
             bg:'transparent',
