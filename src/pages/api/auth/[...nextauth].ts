@@ -16,13 +16,13 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       
-      // authorization: {
-      //   params: {
-      //     prompt: "consent",
-      //     access_type: "offline",
-      //     response_type: "code"
-      //   }
-      // }
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     })
     // ...add more providers here
   ],
@@ -36,7 +36,6 @@ export const authOptions = {
   callbacks: {
     async signIn({ user, account, profile, }) {
       const {email} = user
-      console.log(email)
       try{
         await fauna.query(
           q.If(
@@ -64,9 +63,9 @@ export const authOptions = {
 
       }catch(e){
        return false
-       console.log(e)
       }
     }
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 }
 export default NextAuth(authOptions)
