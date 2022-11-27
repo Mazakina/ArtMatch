@@ -1,9 +1,7 @@
 import { Flex, Icon, VStack, Text, Box, Input, Avatar } from "@chakra-ui/react";
 import { AvatarName } from "../../components/AvatarName";
 import Division from "../../components/Division";
-import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/Ai'
-import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
-import { BiSearchAlt, BiSend } from "react-icons/bi";
+import { BiSearchAlt } from "react-icons/bi";
 import Header from "../../components/Header"
 import { MdSend } from "react-icons/Md";
 
