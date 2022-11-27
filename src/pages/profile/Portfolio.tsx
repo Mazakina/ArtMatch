@@ -1,9 +1,8 @@
 import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Select } from '@chakra-ui/react'
 
 
-export default function Portfolio({grid, b}){
+export default function Portfolio({grid, b=[]}){
   const i = b
-  console.log(i)
 
   return(
     <Box id='portfolio'>
