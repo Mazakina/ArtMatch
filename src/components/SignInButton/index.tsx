@@ -1,5 +1,6 @@
 import { Button, Flex } from "@chakra-ui/react";
 import {useSession, signIn, signOut} from 'next-auth/react'
+import { saveImageOnGallery } from "../../pages/api/_lib/manageGallery";
 
 
 export function SignInButton() {
@@ -24,7 +25,7 @@ export function SignInButton() {
           bg:'transparent',
           color:'#FFEB80',
         }}
-        onClick={()=>signIn('facebook')}
+        onClick={()=>signIn('google')}
         borderRightColor='#BEBEBE'>
         Entrar  
       </Button>
@@ -41,6 +42,8 @@ export function SignInButton() {
           {`${data?.user?.email}`}
         Cadastrar-se
       </Button>
+     
+
     </Flex>
   )
 }

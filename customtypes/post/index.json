@@ -1,0 +1,98 @@
+{
+  "id": "post",
+  "label": "Posts",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "title": {
+        "type": "Text",
+        "config": {
+          "label": "title",
+          "placeholder": ""
+        }
+      },
+      "description": {
+        "type": "Text",
+        "config": {
+          "label": "description",
+          "placeholder": ""
+        }
+      },
+      "mainimg": {
+        "type": "Image",
+        "config": {
+          "label": "mainImg",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "imagearray": {
+        "type": "Group",
+        "config": {
+          "label": "imageArray",
+          "fields": {
+            "fill01": {
+              "type": "Image",
+              "config": {
+                "label": "fill01",
+                "constraint": {},
+                "thumbnails": []
+              }
+            },
+            "fill02": {
+              "type": "Image",
+              "config": {
+                "label": "fill02",
+                "constraint": {},
+                "thumbnails": []
+              }
+            }
+          }
+        }
+      },
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "uid",
+          "placeholder": ""
+        }
+      },
+      "published": {
+        "type": "Boolean",
+        "config": {
+          "label": "published",
+          "default_value": false,
+          "placeholder_true": "true",
+          "placeholder_false": "false"
+        }
+      },
+      "midia": {
+        "type": "Select",
+        "config": {
+          "label": "midia",
+          "placeholder": "",
+          "options": [
+            "1",
+            "2"
+          ]
+        }
+      },
+      "tags": {
+        "type": "Text",
+        "config": {
+          "label": "tags",
+          "placeholder": ""
+        }
+      },
+      "thumbnail": {
+        "type": "Image",
+        "config": {
+          "label": "thumbnail",
+          "constraint": {},
+          "thumbnails": []
+        }
+      }
+    }
+  }
+}

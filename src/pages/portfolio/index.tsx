@@ -5,9 +5,9 @@ import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {Image , Flex, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
 
+import { useRef, useState } from "react";
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import Header from "../../components/Header";
 import {
   Modal,
   ModalOverlay,
@@ -16,19 +16,22 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
-import { useRef, useState } from "react";
 import { 
   canvasPreview, 
   base64StringtoFile, 
   useDebounceEffect,
 } from '../../components/Crop/reusableUtils';
+
+
 import { AvatarName } from '../../components/AvatarName';
 import Division from '../../components/Division';
+import Header from "../../components/Header";
+import { Api } from '../../services/api';
+import {useSession} from 'next-auth/react'
+import { saveImageOnGallery } from '../api/_lib/manageGallery';
 
 
-
-
-export default function portfolio(){
+export default function Portfolio(){
   const imgRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const imgInputRef = useRef<HTMLInputElement>(null);
@@ -37,8 +40,18 @@ export default function portfolio(){
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [formPart,setFormPart] = useState<Boolean>(true) 
+  
+  const {data} = useSession()
+  //form data
 
+  const [name,setName] = useState('')
+  const [description,setDescription] = useState('')
+  const [published,setPublished] = useState(true)
+  const [midia,setMidia] = useState('')
+
+  const tags =''
   //fazer os States das variaveis do Form
+  
   function handleOnChange(changeEvent){
     const reader = new FileReader()
 
@@ -48,29 +61,39 @@ export default function portfolio(){
     reader.readAsDataURL(changeEvent.target.files[0]);
   }
 
- function handleUploadClick(e){
-  e.preventDefault()
-  const canvasRef = previewCanvasRef.current
-  const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
-  const imageData64 = canvasRef.toDataURL()
+  function handleUploadClick(e){
+    e.preventDefault()
+    const canvasRef = previewCanvasRef.current
+    const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
+    const imageData64 = canvasRef.toDataURL()
+    console.log(imageData64)
 
-  console.log(imageData64)
-
-  const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
-  // const download = downloadBase64File( imageData64,fileName)
-  setFormPart(!formPart)
- }
-
-
-  async function handleOnSubmit(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    // const fileInput = Array.from(form.elements).find(({name})=>name==='img');
-    // Fazer o envio de todas as informaçoes //
-    console.log(event)
+    const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
+    // const download = downloadBase64File( imageData64,fileName)
+    setFormPart(!formPart)
   }
 
-
+  async function handleOnSubmit(event) {
+      const config ={
+        headers:{
+        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`
+      }}
+      const data =   {
+        image: newImage,
+        name:name,
+        title:name,
+        description:description,
+      }
+      event.preventDefault();
+      // const fileInput = Array.from(form.elements).find(({name})=>name==='img');
+      Api.post('https://api.imgur.com/3/upload',data,config)
+      .then((res)=>{
+        console.log(res)
+      }).catch((e)=>{
+        console.log(e)})
+      // Fazer o envio de todas as informaçoes //
+      // console.log(event)
+  }
 
 
   useDebounceEffect(
@@ -95,6 +118,8 @@ export default function portfolio(){
   return(
     <>
       <Header/>
+      <Button onClick={()=>{saveImageOnGallery(data.user.email)}} >'asd'</Button>
+
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
 
         <Flex id='left-nav' flexDir='column'>
@@ -230,7 +255,7 @@ export default function portfolio(){
                     <input
                     onChange={
                       (event)=>{
-                       handleOnChange(event)               
+                        handleOnChange(event)           
                       }
                     }
                     type="file"
@@ -274,10 +299,12 @@ export default function portfolio(){
                 
                 <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
                   <Text>Titulo da Obra:</Text>
-                  <Input  h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
+                  <Input onChange={(e)=>{setName(e.target.value)}} value={name} h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
                   <Text>Descrição:</Text>
-                  <Textarea mb='6px !important' height='30%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'   />
+                  <Textarea onChange={(e)=>{setDescription(e.target.value)}} value={description} mb='6px !important' height='30%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'   />
                   <Select
+                    onChange={(e)=>{setMidia(e.target.value)}} 
+                    value={midia}
                     h='38px'
                     overflow='hidden'
                     focusBorderColor="#FFEB80"

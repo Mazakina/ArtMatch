@@ -9,7 +9,7 @@ import Header from "../../components/Header";
 import { SettingsNavOptions } from "../../components/Setting/SettingsNavOption";
 import SocialOptions from "../../components/Setting/SocialOptions";
 
-export default function user(){
+export default function User(){
   return(
     <>
       <Header/>

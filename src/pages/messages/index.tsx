@@ -7,7 +7,7 @@ import { BiSearchAlt, BiSend } from "react-icons/bi";
 import Header from "../../components/Header"
 import { MdSend } from "react-icons/Md";
 
-export default function messages(){
+export default function Messages(){
   return(
   <>
     <Header/>

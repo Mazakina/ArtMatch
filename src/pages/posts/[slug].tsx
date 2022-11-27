@@ -5,7 +5,7 @@ import {AiOutlineHeart} from 'react-icons/Ai'
 import {BsBookmarkPlus} from 'react-icons/bs'
 import Header from "../../components/Header"
 
-export default function posts(){
+export default function Posts(){
   const i =[0,1,2,3,4,5,6,7,8]
   const comments=[
     {
@@ -62,7 +62,7 @@ export default function posts(){
               <Grid templateColumns={`repeat(3, 1fr)`} width='100%'>
               { i.map((is)=>{
                 return(
-                  <GridItem  colSpan={1} display='inline !important' > 
+                  <GridItem key={is}  colSpan={1} display='inline !important' > 
                     <AspectRatio borderRadius='5px' margin='0 !important' display='flex' bg='#969696'  ratio={1} >
                       <Box></Box>
                     </AspectRatio>

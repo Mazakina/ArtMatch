@@ -52,7 +52,7 @@ const Home  = () => {
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
             { i.map((is)=>{
               return(
-                <GridItem  colSpan={1} display='inline !important' > 
+                <GridItem key={is} colSpan={1} display='inline !important' > 
                   <AspectRatio margin='0 !important' display='flex' bg='#969696' border='1px solid black' ratio={1} >
                     <Box></Box>
                   </AspectRatio>
