@@ -1,5 +1,5 @@
 
-import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/Ai'
+import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/ai'
 import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
 import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'

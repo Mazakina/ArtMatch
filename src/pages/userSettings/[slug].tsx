@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Checkbox, Flex, Icon, Input, Text, Textarea } from "@chakra-ui/react";
-import { AiOutlineHome, AiOutlineInstagram } from "react-icons/Ai";
+import { AiOutlineHome, AiOutlineInstagram } from "react-icons/ai";
 import {IoShareSocialOutline} from 'react-icons/io5'
-import {MdOutlineSecurity} from 'react-icons/Md'
+import {MdOutlineSecurity} from 'react-icons/md'
 import {BiBlock, BiSearchAlt, BiTrash} from 'react-icons/bi'
 import { AvatarName } from "../../components/AvatarName";
 import Division from "../../components/Division";

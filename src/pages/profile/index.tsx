@@ -2,7 +2,7 @@ import {Image, Box, Text ,Flex, Avatar, Container, Button, Link, Grid, GridItem,
 import { useState } from "react";
 import Header from "../../components/Header";
 import Portfolio from "./Portfolio";
-import {AiFillStar, AiOutlineStar} from 'react-icons/Ai'
+import {AiFillStar, AiOutlineStar} from 'react-icons/ai'
 import Perfil from "./Perfil";
 export default function Profile(){
   const [grid,setGrid] = useState(7)

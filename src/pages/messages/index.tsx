@@ -3,7 +3,7 @@ import { AvatarName } from "../../components/AvatarName";
 import Division from "../../components/Division";
 import { BiSearchAlt } from "react-icons/bi";
 import Header from "../../components/Header"
-import { MdSend } from "react-icons/Md";
+import { MdSend } from "react-icons/md";
 
 export default function Messages(){
   return(

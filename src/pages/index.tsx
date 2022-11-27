@@ -1,8 +1,6 @@
-import {Box, Button, Flex, Text , AspectRatio, Grid, GridItem, List, ListItem, HStack } from '@chakra-ui/react'
+import {Box, AspectRatio, Grid, GridItem, HStack } from '@chakra-ui/react'
 import { HeroSlider } from '../components/Carousel/Carousel'
 import Header from "../components/Header"
-import {Slider , Slide, SliderProps} from '../components/Slider/index'
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
 

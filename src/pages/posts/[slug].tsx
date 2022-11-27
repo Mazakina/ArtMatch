@@ -1,7 +1,7 @@
 import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio } from '@chakra-ui/react'
 import { useRouter } from "next/router"
 import {HiDotsVertical} from 'react-icons/Hi'
-import {AiOutlineHeart} from 'react-icons/Ai'
+import {AiOutlineHeart} from 'react-icons/ai'
 import {BsBookmarkPlus} from 'react-icons/bs'
 import Header from "../../components/Header"
 

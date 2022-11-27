@@ -1,7 +1,5 @@
 import { fauna } from "../../../services/fauna";
 import {query as q} from 'faunadb'
-import { Api } from "../../../services/api";
-import { useSession } from "next-auth/react";
 interface PostInterfaces{
   title:string,
   url:string,
