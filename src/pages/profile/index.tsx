@@ -1,9 +1,6 @@
-import {Image, Box, Text ,Flex, Avatar, Container, Button, Link, Grid, GridItem, AspectRatio, Select, Icon } from "@chakra-ui/react";
+import {Image, Box, Text ,Flex, Avatar, Button, Link } from "@chakra-ui/react";
 import { useState } from "react";
 import Header from "../../components/Header";
-import Portfolio from "./Portfolio";
-import {AiFillStar, AiOutlineStar} from 'react-icons/ai'
-import Perfil from "./Perfil";
 export default function Profile(){
   const [grid,setGrid] = useState(7)
   const value=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
