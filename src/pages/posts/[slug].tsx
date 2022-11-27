@@ -25,7 +25,7 @@ export default function Posts(){
       <Box>
         <Flex p='50px 0 0' margin='-50px 0 0' h='100vh'>
           <Box id='post-image' bg='#0a0a0a' width='100%' >
-            <Image src='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930'/>
+            <Image alt='' src='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930'/>
           </Box>
 
           <Flex pl='18px' pr='18px'id='details-section' flexDir='column' bg='#272727' width='450px'>
