@@ -194,7 +194,7 @@ export default function Portfolio(){
             <AspectRatio  w='190px' ratio={1}>
              <Box position='relative'>
 
-              <Image  position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src='/images/001.jpg' />
+              <Image  alt='' position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src='/images/001.jpg' />
               <Flex
                 height='100%'
                 position='absolute'
@@ -265,7 +265,7 @@ export default function Portfolio(){
                     ref={imgInputRef} />
                   </Box>
                   <Box position="absolute">
-                      <Image src={newImage}/>
+                      <Image  alt='' src={newImage}/>
                      
                   </Box>
                 </Flex>
@@ -280,7 +280,7 @@ export default function Portfolio(){
                         crop={crop}
                         onComplete={(c) => setCompletedCrop(c)}
                         onChange={(c)=>{setCrop(c)}}>
-                          <Image ref={imgRef} src={newImage}/>
+                          <Image  alt='' ref={imgRef} src={newImage}/>
                     </ReactCrop>
                     {/* <Button onClick={(e)=>handleUploadClick(e)} >aquiii</Button> */}
                   </Box>
