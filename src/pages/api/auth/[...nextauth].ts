@@ -34,17 +34,10 @@ export const authOptions = {
     }
   },
   callbacks: {
-
     async signIn({ user, account, profile}) {
       const {email} = user
-        await fauna.query(
-            q.Create(
-                q.Collection('users'),
-                { data: { email}}
-            ),
-        )
-        return true
-      
+      console.log(email)
+      return true
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
