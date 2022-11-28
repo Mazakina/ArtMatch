@@ -24,7 +24,7 @@ export function SignInButton() {
           bg:'transparent',
           color:'#FFEB80',
         }}
-        onClick={()=>signIn('facebook')}
+        onClick={()=>signIn('google')}
         borderRightColor='#BEBEBE'>
         Entrar  
       </Button>
