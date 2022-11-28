@@ -60,10 +60,9 @@ export const authOptions = {
         ))
         
       return true
-
       }catch(e){
         console.log(e)
-        return true
+        return false
       }
     }
   },
