@@ -42,7 +42,7 @@ export const authOptions = {
             q.Not(
                 q.Exists(
                     q.Match(
-                        q.Index('users_by_email'),
+                        q.Index('user_by_email'),
                         q.Casefold(user.email)
                     )
                 )
@@ -53,7 +53,7 @@ export const authOptions = {
             ),
             q.Get(
                 q.Match(
-                    q.Index('users_by_email'),
+                    q.Index('user_by_email'),
                     q.Casefold(user.email)
                 )
             )
