@@ -63,10 +63,10 @@ export const authOptions = {
 
       }catch(e){
         console.log(e)
-        return false
+        return true
       }
     }
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: 'skldjaklsdhasdja',
 }
 export default NextAuth(authOptions)
