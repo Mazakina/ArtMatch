@@ -37,13 +37,12 @@ export const authOptions = {
 
     async signIn({ user, account, profile}) {
       const {email} = user
-
         await fauna.query(
-                q.Create(
-                    q.Collection('users'),
-                    { data: { email}}
-                )
-            )
+            q.Create(
+                q.Collection('users'),
+                { data: { email}}
+            ),
+        )
         return true
       
     },
