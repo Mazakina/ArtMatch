@@ -62,7 +62,8 @@ export const authOptions = {
       return true
 
       }catch(e){
-       return false
+        console.log(e)
+        return false
       }
     }
   },
