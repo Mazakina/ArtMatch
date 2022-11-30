@@ -7,6 +7,7 @@ import {query as q} from 'faunadb'
 
 export const authOptions = {
   // Configure one or more authentication providers
+  domain:'db.fauna.com',
   providers: [
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID,
@@ -16,14 +17,15 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       
-      // authorization: {
-      //   params: {
-      //     prompt: "consent",
-      //     access_type: "offline",
-      //     response_type: "code"
-      //   }
-      // }
-    })
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    }),
+    
     // ...add more providers here
   ],
   jwt: {
@@ -34,7 +36,7 @@ export const authOptions = {
     }
   },
   callbacks: {
-    async signIn({ user, account, profile, }) {
+    async signIn({ user, account, profile}) {
       const {email} = user
       try{
         await fauna.query(
@@ -42,18 +44,18 @@ export const authOptions = {
             q.Not(
                 q.Exists(
                     q.Match(
-                        q.Index('users_by_email'),
+                        q.Index('user_by_email'),
                         q.Casefold(user.email)
                     )
                 )
             ),
             q.Create(
                 q.Collection('users'),
-                { data: { email}}
+                { data: {email}}
             ),
             q.Get(
                 q.Match(
-                    q.Index('users_by_email'),
+                    q.Index('user_by_email'),
                     q.Casefold(user.email)
                 )
             )
@@ -63,10 +65,10 @@ export const authOptions = {
 
       }catch(e){
         console.log(e)
-        return true
+        return false
       }
     }
   },
-  secret: 'skldjaklsdhasdja',
+  // secret: 'skldjaklsdhasdja',
 }
 export default NextAuth(authOptions)
