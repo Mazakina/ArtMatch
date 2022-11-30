@@ -1,4 +1,4 @@
-
+import { unstable_getServerSession } from "next-auth/next"
 import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/ai'
 import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
 import {BiSearchAlt, BiTrash} from 'react-icons/bi'
@@ -26,12 +26,13 @@ import {
 import { AvatarName } from '../../components/AvatarName';
 import Division from '../../components/Division';
 import Header from "../../components/Header";
-import { Api } from '../../services/api';
+import { Api, saveImage } from '../../services/api';
 import {useSession} from 'next-auth/react'
-import { saveImageOnGallery } from '../api/_lib/manageGallery';
+import  {saveImageOnGallery}  from '../api/_lib/manageGallery';
+import { GetServerSideProps, GetStaticProps } from 'next';
 
 
-export default function Portfolio(){
+export default function Portfolio({post}){
   const imgRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const imgInputRef = useRef<HTMLInputElement>(null);
@@ -114,11 +115,13 @@ export default function Portfolio(){
     100,
     [completedCrop],
   )
+  // data?saveImageOnGallery(data.user.email):''
 
   return(
     <>
       <Header/>
-      <Button onClick={()=>{saveImageOnGallery(data.user.email)}} >asd</Button>
+      <Button onClick={()=>{saveImage({user: data.user})}
+      } >asd</Button>
 
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
 
@@ -377,3 +380,4 @@ export default function Portfolio(){
     </>
   )
 }
+
