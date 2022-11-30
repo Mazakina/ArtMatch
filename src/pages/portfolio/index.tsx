@@ -28,7 +28,7 @@ import Division from '../../components/Division';
 import Header from "../../components/Header";
 import { Api, saveImage } from '../../services/api';
 import {useSession} from 'next-auth/react'
-import  {saveImageOnGallery}  from '../api/_lib/manageGallery';
+import  saveImageOnGallery  from '../api/_lib/manageGallery';
 import { GetServerSideProps, GetStaticProps } from 'next';
 
 
