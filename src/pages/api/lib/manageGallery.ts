@@ -14,6 +14,7 @@ interface userProps{
 export default async (req:NextApiRequest,res:NextApiResponse
 )=>{
   if(req.method === 'POST'){
+    console.log('step2')
     const newData = [1]
     // req.body.newUrl
     const userEmail = req.body.user.email
