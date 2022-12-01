@@ -78,6 +78,7 @@ export default async (req:NextApiRequest,res:NextApiResponse
         )
       )
     res.status(200).json({ok:true})}catch(e){
+      console.log(e)
       res.status(401).end('unauthorized')
     }
     }else{
