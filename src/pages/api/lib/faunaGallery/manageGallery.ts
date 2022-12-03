@@ -1,4 +1,4 @@
-import {fauna} from "../../../services/fauna"
+import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 import { NextApiRequest, NextApiResponse } from "next"
 
@@ -14,8 +14,16 @@ interface userProps{
 export default async (req:NextApiRequest,res:NextApiResponse
 )=>{
   if(req.method === 'POST'){
-    console.log('step2')
-    const newData = [1]
+    const reqData =req.body.data
+    const newData = [{
+      title:reqData.title,
+      description:reqData.description,
+      deleteHash:reqData.deleteHash,
+      url:reqData.url,
+      // album:reqData.album,
+      // tags:[...reqData.tags],
+      // midia: reqData.midia,
+    }]
     // req.body.newUrl
     const userEmail = req.body.user.email
     const user:userProps = 
@@ -78,7 +86,7 @@ export default async (req:NextApiRequest,res:NextApiResponse
           )
         )
       )
-    res.status(200).json({ok:true})}catch(e){
+    }catch(e){
       console.log(e)
       res.status(401).end('unauthorized')
     }
