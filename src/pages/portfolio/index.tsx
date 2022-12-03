@@ -20,6 +20,7 @@ import {
   canvasPreview, 
   base64StringtoFile, 
   useDebounceEffect,
+  toBase64,
 } from '../../components/Crop/reusableUtils';
 
 
@@ -28,8 +29,9 @@ import Division from '../../components/Division';
 import Header from "../../components/Header";
 import { Api, saveImage } from '../../services/api';
 import {useSession} from 'next-auth/react'
-import  saveImageOnGallery  from '../api/lib/manageGallery';
+import  saveImageOnGallery  from '../api/lib/faunaGallery/manageGallery';
 import { GetServerSideProps, GetStaticProps } from 'next';
+import imgurPost from "../api/lib/imgurPost"
 
 
 export default function Portfolio({post}){
@@ -41,7 +43,7 @@ export default function Portfolio({post}){
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [formPart,setFormPart] = useState<Boolean>(true) 
-  
+  const [imgTest, setImgTest] = useState<any>()
   const {data} = useSession()
   //form data
 
@@ -53,7 +55,9 @@ export default function Portfolio({post}){
   const tags =''
   //fazer os States das variaveis do Form
   
-  function handleOnChange(changeEvent){
+ async function handleOnChange(changeEvent){
+    const test = await toBase64(changeEvent.target.files[0])
+    setImgTest(test)
     const reader = new FileReader()
 
     reader.onload = function (onLoadEvent){
@@ -75,26 +79,21 @@ export default function Portfolio({post}){
   }
 
   async function handleOnSubmit(event) {
-      const config ={
-        headers:{
-        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`
-      }}
-      const data =   {
-        image: newImage,
+      event.preventDefault();
+      const postData =   {
+        image:imgTest,
         name:name,
         title:name,
         description:description,
+        user: data.user.email
       }
-      event.preventDefault();
-      // const fileInput = Array.from(form.elements).find(({name})=>name==='img');
-      Api.post('https://api.imgur.com/3/upload',data,config)
-      .then((res)=>{
-        console.log(res)
-      }).catch((e)=>{
-        console.log(e)})
-      // Fazer o envio de todas as informaçoes //
-      // console.log(event)
+      console.log('0:',typeof postData.image)
+
+      Api.post('/lib/imgurPost',postData,{maxContentLength: 100000000,
+        maxBodyLength: 100000000})
+      // postData.image = fileToBase64(postData.image)
   }
+
 
 
   useDebounceEffect(
@@ -120,9 +119,6 @@ export default function Portfolio({post}){
   return(
     <>
       <Header/>
-      <Button onClick={()=>{saveImage({user: data.user})}
-      } >asd</Button>
-
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
 
         <Flex id='left-nav' flexDir='column'>

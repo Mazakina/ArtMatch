@@ -12,7 +12,12 @@ export function base64StringtoFile (base64String, filename) {
   return new File([u8arr], filename, {type: mime})
 }
 
-// Download a Base64-encoded file
+export const toBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = error => reject(error);
+})
 
 export function downloadBase64File (base64Data, filename) {
   var element = document.createElement('a')
