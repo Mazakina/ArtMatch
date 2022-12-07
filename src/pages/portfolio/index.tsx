@@ -45,14 +45,16 @@ export default function Portfolio({post}){
   const [formPart,setFormPart] = useState<Boolean>(true) 
   const [imgTest, setImgTest] = useState<any>()
   const {data} = useSession()
-  //form data
 
+  //form data
   const [name,setName] = useState('')
   const [description,setDescription] = useState('')
   const [published,setPublished] = useState(true)
   const [midia,setMidia] = useState('')
+  const [tags, setTags] = useState([])
+  const [deleteHash,setDeleteHash] = useState('')
 
-  const tags =''
+  // 
   //fazer os States das variaveis do Form
   
  async function handleOnChange(changeEvent){
@@ -85,7 +87,7 @@ export default function Portfolio({post}){
         name:name,
         title:name,
         description:description,
-        user: data.user.email
+        user: data.user
       }
       console.log('0:',typeof postData.image)
 
@@ -93,8 +95,6 @@ export default function Portfolio({post}){
         maxBodyLength: 100000000})
       // postData.image = fileToBase64(postData.image)
   }
-
-
 
   useDebounceEffect(
     async () => {
@@ -115,12 +115,18 @@ export default function Portfolio({post}){
     [completedCrop],
   )
   // data?saveImageOnGallery(data.user.email):''
-
+async function deleteRequest(){
+  Api.post('/lib/imgurDelete',{
+    deleteHash:deleteHash,
+    user:data.user.email
+  })
+}
   return(
     <>
       <Header/>
+      <Input onChange={(e)=>{setDeleteHash(e.target.value)}} value={deleteHash} type="text"></Input>
+      <Button onClick={()=>{deleteRequest()}} >asd</Button>
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
-
         <Flex id='left-nav' flexDir='column'>
           <AvatarName />
 

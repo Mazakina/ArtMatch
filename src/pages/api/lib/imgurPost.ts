@@ -1,7 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Api } from "../../../services/api";  
 import FormData from  'form-data'
-import axios from "axios";
+import {fauna} from "../../../services/fauna"
+import {query as q} from 'faunadb'
+
+interface userProps{
+  ref:string,
+  ts:number|string,
+  data:{
+    email:string
+  }
+}
 
 
 
@@ -12,41 +21,106 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   formData.append('image',
    imageData
    )
-  // const fileInput = Array.from(form.elements).find(({name})=>name==='img');
-  // Fazer o envio de todas as informaçoes //
-  // console.log(event)
+
+
 var config = {
   method: 'post',
   url: 'https://api.imgur.com/3/image',
   headers: { 
     Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
     Accept: 'application/json'
-    // 'enctype': 'multipart/form-data',
-    // 'Cache-Control': 'sno-cache',
-    // 'Pragma': 'no-cache'
   },
   data : formData,
   maxContentLength: 100000000,
   maxBodyLength: 100000000
 };
-Api(config)
-.then( (response)=> {
+Api(config).then( async (response)=> {
   res.status(200)
   console.log(JSON.stringify(response.data));
-  const reqData = {
+  const newData = {
+    id:response.data.data.id,
     title: req.body.title,
-    description: req.body.title,
+    description: req.body.description,
     deleteHash:response.data.data.deletehash,
     url:response.data.data.link,
+    posted: req.body.posted||true
     // album: req.body.title,
     // tags:[...req.body.tags],
     // midia: req.body.midia,
   }
-  console.log('Post Data:',reqData)
-  const reqUser={user:req.body.user}
+  console.log('Post Data:',newData)
+  const reqUser = req.body.user
+// ---------------------------
+  const userEmail = reqUser.email
+  console.log('user email:',userEmail)
+  const user:userProps = 
+  await fauna.query(
+    q.Get(
+        q.Match(
+            q.Index('user_by_email'),
+            userEmail
+        )
+      )
+    )
+  console.log('user:',user)
 
-
-  
+  try{
+    await fauna.query(
+      q.If(
+        q.Not(
+            q.Exists(
+                q.Match(
+                    q.Index('collections_by_user_id'),
+                    user.ref
+                )
+            )
+        ),
+        q.Create(
+          q.Collection('collections'),
+          {
+            data: {
+              userId:user.ref,
+              posts:[newData],
+              visible:'true'
+              }
+          }
+        ),
+        q.Update(
+          q.Select(
+            'ref',
+            q.Get(
+              q.Match(
+                q.Index('collections_by_user_id'),
+                user.ref
+              )
+            )
+          ),
+          {
+            data:{
+              posts:
+                q.Append(
+                  newData,
+                  q.Select(
+                    ["data",'posts'],
+                    q.Get(
+                      q.Match(
+                        q.Index('collections_by_user_id'),
+                        user.ref
+                      )
+                    )
+                  )
+                )
+            }
+          }
+        )
+      )
+    )
+    console.log('workeeed')
+    res.status(200).json({ok:true})
+  }catch(e){
+    console.log(e)
+    res.status(401).end('unauthorized')
+  }
 })
 .catch(function (error) {
   console.log(error);
