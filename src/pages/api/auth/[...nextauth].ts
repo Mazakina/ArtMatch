@@ -49,10 +49,49 @@ export const authOptions = {
                     )
                 )
             ),
-            q.Create(
+            [
+              q.Create(
                 q.Collection('users'),
                 { data: {email}}
-            ),
+              ),
+              q.Create(
+                q.Collection('settings'),
+                {data:{
+                  userId:
+                  q.Select(
+                    'ref',
+                    q.Get(
+                      q.Match(
+                          q.Index('user_by_email'),
+                          q.Casefold(user.email)
+                      )
+                    )
+                  )
+                  ,
+                  profile:{
+                    usuario:'',
+                    biografia:'',
+                    cidade:'',
+                    endereco:'',
+                    numero:'',
+                    banner:'',
+                    avatar:user.image
+                  },
+                  social:{
+                    instagram:'',
+                    artstation:'',
+                    behance:'',
+                    telefone:'',
+                  },
+                  seguranca:{
+                    email:{email},
+                    nsfwAllow:false,
+                    allowToBeFound:true,
+                  },
+                  bloqueados:[]
+                }}
+              )
+            ],
             q.Get(
                 q.Match(
                     q.Index('user_by_email'),

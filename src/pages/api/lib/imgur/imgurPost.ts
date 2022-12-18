@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Api } from "../../../services/api";  
+import { Api } from "../../../../services/api";  
 import FormData from  'form-data'
-import {fauna} from "../../../services/fauna"
+import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
 interface userProps{
@@ -16,7 +16,8 @@ interface userProps{
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const formData = new FormData()
-  const image = req.body.image
+  const reqData = req.body
+  const image = reqData.image
   const imageData = image.substring(image.indexOf(",") + 1);
   formData.append('image',
    imageData
@@ -36,22 +37,27 @@ var config = {
 };
 Api(config).then( async (response)=> {
   res.status(200)
+  const resData = response.data.data
+  const resDataId = response.data.data.id
   console.log(JSON.stringify(response.data));
-  const newData = {
-    id:response.data.data.id,
-    title: req.body.title,
-    description: req.body.description,
-    deleteHash:response.data.data.deletehash,
-    url:response.data.data.link,
-    posted: req.body.posted||true
-    // album: req.body.title,
-    // tags:[...req.body.tags],
-    // midia: req.body.midia,
-  }
+  const newData ={
+    [resDataId]:{
+    id:resData.id,
+    title: reqData.title,
+    description: reqData.description,
+    deleteHash:resData.deletehash,
+    url:resData.link,
+    posted: reqData.posted||true,
+    // album: reqData.title,
+    // tags:[...reqData.tags],
+    midia: reqData.midia,
+    }
+  };
+
   console.log('Post Data:',newData)
-  const reqUser = req.body.user
-// ---------------------------
-  const userEmail = reqUser.email
+  
+ // ---------------------------
+  const userEmail = reqData.user.email
   console.log('user email:',userEmail)
   const user:userProps = 
   await fauna.query(
@@ -80,7 +86,7 @@ Api(config).then( async (response)=> {
           {
             data: {
               userId:user.ref,
-              posts:[newData],
+              posts:newData,
               visible:'true'
               }
           }
@@ -98,8 +104,8 @@ Api(config).then( async (response)=> {
           {
             data:{
               posts:
-                q.Append(
-                  newData,
+              q.Merge(
+                newData,
                   q.Select(
                     ["data",'posts'],
                     q.Get(
@@ -108,15 +114,15 @@ Api(config).then( async (response)=> {
                         user.ref
                       )
                     )
-                  )
                 )
+              )
             }
           }
-        )
+        ),
       )
     )
     console.log('workeeed')
-    res.status(200).json({ok:true})
+    res.status(201).json({ok:true})
   }catch(e){
     console.log(e)
     res.status(401).end('unauthorized')
@@ -126,8 +132,3 @@ Api(config).then( async (response)=> {
   console.log(error);
 })
 }
-
-// {"data":{"id":"8G0y2Ii","title":null,"description":null,"datetime":1670089476,"type":"image/png","animated":false,"width":1912,
-// "height":480,"size":58017,"views":0,"bandwidth":0,"vote":null,"favorite":false,"nsfw":null,"section":null,"account_url":null,
-// "account_id":0,"is_ad":false,"in_most_viral":false,"has_sound":false,"tags":[],"ad_type":0,"ad_url":"","edited":"0","in_gallery":false,
-// "deletehash":"MTiK7sPY4FsZ8O7","name":"","link":"https://i.imgur.com/8G0y2Ii.png"},"success":true,"status":200}

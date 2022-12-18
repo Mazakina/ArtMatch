@@ -31,7 +31,7 @@ import { Api, saveImage } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import  saveImageOnGallery  from '../api/lib/faunaGallery/manageGallery';
 import { GetServerSideProps, GetStaticProps } from 'next';
-import imgurPost from "../api/lib/imgurPost"
+import imgurPost from "../api/lib/imgur/imgurPost"
 
 
 export default function Portfolio({post}){
@@ -61,6 +61,7 @@ export default function Portfolio({post}){
     const test = await toBase64(changeEvent.target.files[0])
     setImgTest(test)
     const reader = new FileReader()
+    const {data} = useSession()
 
     reader.onload = function (onLoadEvent){
       setNewImage(onLoadEvent.target.result)
@@ -118,17 +119,16 @@ export default function Portfolio({post}){
 async function deleteRequest(){
   Api.post('/lib/imgurDelete',{
     deleteHash:deleteHash,
-    user:data.user.email
+    user:data.user.email,
+    id:''
   })
 }
   return(
     <>
       <Header/>
-      <Input onChange={(e)=>{setDeleteHash(e.target.value)}} value={deleteHash} type="text"></Input>
-      <Button onClick={()=>{deleteRequest()}} >asd</Button>
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
         <Flex id='left-nav' flexDir='column'>
-          <AvatarName />
+          <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} />
 
           <Division  width={'100%'}  bg={'#323232'}/>
           < Flex  ml='20px' flexDir='column'>

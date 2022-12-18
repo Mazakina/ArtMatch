@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Api } from "../../../services/api";  
+import { Api } from "../../../../services/api";  
 import FormData from  'form-data'
-import {fauna} from "../../../services/fauna"
-import {query as q} from 'faunadb'
+import {fauna} from "../../../../services/fauna"
+import {IsNull, query as q} from 'faunadb'
 
 interface userProps{
   ref:string,
@@ -18,7 +18,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
     const reqData = req.body
     const deleteHash = reqData.deleteHash
     const userEmail = reqData.user
-    console.log(req)
     
     // ---------------------------
     var config = {
@@ -34,6 +33,9 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
     then(async (response)=>{
       res.status(200)
       console.log(JSON.stringify(response.data));
+      const newData = {
+        [reqData.id]:''
+      }
       const user:userProps = 
         await fauna.query(
           q.Get(
@@ -43,22 +45,22 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             )
           )
         )  
-      try{
-        await fauna.query(
-          q.Update(
-            q.Select(
-              'ref',
-              q.Get(
-                q.Match(
-                  q.Index('collections_by_user_id'),
-                  user.ref
+        try{
+          await fauna.query(
+            q.Update(
+              q.Select(
+                'ref',
+                q.Get(
+                  q.Match(
+                    q.Index('collections_by_user_id'),
+                    user.ref
+                  )
                 )
-              )
-            ),
-            {
-              data:{
-                posts:
-                  q.Filter(
+              ),
+              {
+                data:{
+                  posts:
+                  q.Merge(
                     q.Select(
                       ["data",'posts'],
                       q.Get(
@@ -68,27 +70,21 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
                         )
                       )
                     ),
-                    q.Lambda(
-                      'post',
-                      q.Not(
-                        q.Equals(deleteHash,
-                          q.Select('deleteHash',q.Var('post'))
-                        )
-                      )
-                    )
+                    newData
                   )
+                }
               }
-            }
+            )
           )
-        )
-        res.status(200).json({ok:true})
-      }catch(e){
+          console.log('request received')
+          res.status(200).json({ok:true})
+        }catch(e){
         console.log(e)
         res.status(401).end('unauthorized')
       }
     })
     .catch(function (error) {
-      console.log(error);
+      // console.log(error);
     })
   }
   else{

@@ -1,4 +1,4 @@
-import {Box, Button, Flex, HStack, Icon, Select, Stack} from '@chakra-ui/react'
+import {Box, Button, Flex, HStack, Icon, Link, Select, Stack} from '@chakra-ui/react'
 import { memo } from 'react'
 import {BiSearchAlt} from 'react-icons/bi'
 import {BsQuestionOctagon} from 'react-icons/bs'
@@ -8,7 +8,7 @@ import { SignInButton } from './SignInButton'
 function Header(){
   return( 
     <Flex w='100%' h='50px' pl='2rem' pr='2rem' bg='#272727' direction='row' justify='space-between' alignItems='center' >
-      <Box color='gray.900'>Logo</Box>
+      <Link href='/'><Box color='gray.900'>Logo</Box></Link>
 
       <Flex direction='row' align='center'>
         <Flex 
@@ -51,24 +51,6 @@ function Header(){
           color='#BEBEBE'
           placeholder='Midia'
           cursor='pointer'
-          >
-          <option style={{ color: 'black' }} value="pinturaDigital">Pintura digital</option>
-          <option style={{ color: 'black' }} value="pinturaTradicional">Pintura tradicional</option>
-          <option style={{ color: 'black' }} value="tatuagem">Tatuagem</option>
-          <option style={{ color: 'black' }} value="graffite">Graffite</option>
-        </Select>
-        <Select
-          h='29px'
-          overflow='hidden'
-          padding='2px'
-          bg='#0B0B0B'
-          border='none'
-          focusBorderColor="#FFEB80"
-          borderRadius='5px'
-          color='#BEBEBE'
-          placeholder='Midia'
-          cursor='pointer'
-
           >
           <option style={{ color: 'black' }} value="pinturaDigital">Pintura digital</option>
           <option style={{ color: 'black' }} value="pinturaTradicional">Pintura tradicional</option>
