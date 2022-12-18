@@ -1,39 +1,62 @@
 import { Avatar, Box, Button, Checkbox, Flex, Icon, Input, Text, Textarea } from "@chakra-ui/react";
-import { AiOutlineHome, AiOutlineInstagram } from "react-icons/ai";
-import {IoShareSocialOutline} from 'react-icons/io5'
-import {MdOutlineSecurity} from 'react-icons/md'
-import {BiBlock, BiSearchAlt, BiTrash} from 'react-icons/bi'
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import * as yup from 'yup'
+
 import { AvatarName } from "../../components/AvatarName";
 import Division from "../../components/Division";
 import Header from "../../components/Header";
 import { SettingsNavOptions } from "../../components/Setting/SettingsNavOption";
 import SocialOptions from "../../components/Setting/SocialOptions";
 
+import { AiOutlineHome, AiOutlineInstagram } from "react-icons/ai";
+import {IoShareSocialOutline} from 'react-icons/io5'
+import {MdOutlineSecurity} from 'react-icons/md'
+import {FaBehanceSquare, FaArtstation } from 'react-icons/fa'
+import {FiPhone } from 'react-icons/fi'
+import {BiBlock, BiSearchAlt, BiTrash} from 'react-icons/bi'
+
 export default function User(){
+  const perfilSchema = yup.object().shape({
+    biografia:yup.string(),
+    cidade:yup.string(),
+    endereço:yup.string(),
+    number:yup.number()
+  })
+  const socialSchema = yup.object().shape({
+    
+  })
+  const [settingOpt, setSettingOpt] = useState('perfil')
+  const [artstation, setArtstation] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [behance, setBehance] = useState('')
+  const {data} = useSession()
   return(
     <>
       <Header/>
       <Flex mt='60px' justify="center">
-        <Flex borderRadius='2px' maxWidth='290px' border='1px solid #959595' p='1rem 0' w='100%' flexDir='column' id='left-nav'>
-          <AvatarName />
+        <Flex h='500px' borderRadius='2px' maxWidth='290px' border='1px solid #959595' p='1rem 0' w='100%' flexDir='column' id='left-nav'>
+          <AvatarName avatar={data?.user.image||''} email={data?.user.email||''} name={data?.user.name||''} />
           <Division width='95%' bg='#323232' />
-          <SettingsNavOptions icon={AiOutlineHome} active={true} ml='2rem'>
+          <SettingsNavOptions  onClick={() =>setSettingOpt('perfil')} icon={AiOutlineHome} active={settingOpt=='perfil'} ml='2rem'>
             Perfil
           </SettingsNavOptions>
-          <SettingsNavOptions icon={IoShareSocialOutline} active={false} ml='2rem'>
+          <SettingsNavOptions  onClick={() =>setSettingOpt('social')} icon={IoShareSocialOutline} active={settingOpt=='social'} ml='2rem'>
             Social
           </SettingsNavOptions>
           <Division width='95%' bg='#323232' />
-          <SettingsNavOptions icon={MdOutlineSecurity} active={false} ml='2rem'>
+          <SettingsNavOptions onClick={() =>setSettingOpt('segurança')} icon={MdOutlineSecurity} active={settingOpt=='segurança'} ml='2rem'>
             Segurança
           </SettingsNavOptions>
-          <SettingsNavOptions icon={BiBlock} active={false} ml='2rem'>
+          <SettingsNavOptions onClick={() =>setSettingOpt('bloqueados')} icon={BiBlock} active={settingOpt=='bloqueados'} ml='2rem'>
             Bloqueados
           </SettingsNavOptions>
         </Flex>
 
-        
-        {/* <Flex flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        {settingOpt== 'perfil'?(
+
+        <Flex flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Text mb='10px' fontSize='26px'>
             Perfil
           </Text>
@@ -62,12 +85,12 @@ export default function User(){
                 </Flex>
                 <Flex maxWidth='480px' w='100%'  mt='1rem' align='center'>
                   <Text  width='130px'>Endereço</Text>
-                  <Input maxHeight='28px' borderRadius='2px'  maxWidth='250px'></Input>
+                  <Input maxHeight='28px' borderRadius='2px'  maxWidth='250px'></Input> 
                   <Text ml='1rem' >Nº</Text>
                   <Input ml='8px' h='28px'  borderRadius='2px'  maxWidth='46px'/>
                 </Flex>
               </Flex>
-              <Avatar mr='2rem !important' h='70px' width='70px' src='' />
+              <Avatar mr='2rem !important' h='70px' width='70px' src={data?.user.image} />
             </Flex>
           </Flex>
 
@@ -97,9 +120,13 @@ export default function User(){
             bg:'none',
           }}
           ml='auto' >Salvar</Button>
-        </Flex> */}
+        </Flex>
 
-        {/* <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        ):''}
+        
+        {settingOpt== 'social'?(
+
+        <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Flex
           bg='#121212'
             mt='1rem'
@@ -111,10 +138,10 @@ export default function User(){
             w='100%'
             align='center'
             justify='center'>
-              <SocialOptions icon={AiOutlineInstagram} text='instagram' value='n' />
-              <SocialOptions icon={AiOutlineInstagram} text='Artstation' value='n' />
-              <SocialOptions icon={AiOutlineInstagram} text='BeHance' value='n' />
-              <SocialOptions icon={AiOutlineInstagram} text='Telefone' value='n' />
+              <SocialOptions onChange={setInstagram} icon={AiOutlineInstagram} placeholder={'Ex: @Fabiano'} text='Instagram' value={instagram} />
+              <SocialOptions onChange={setArtstation} icon={FaArtstation} text='Artstation' placeholder='seu usuário do Artstation' value={artstation} />
+              <SocialOptions onChange={setBehance} icon={FaBehanceSquare} text='BeHance' placeholder='seu usuário do Behance' value={behance} />
+              <SocialOptions onChange={setTelefone} icon={FiPhone}   text='Telefone' placeholder='Ex: (11) 99999-9999' value={telefone} />
           </Flex>
           <Button 
           mt='2rem'
@@ -127,9 +154,11 @@ export default function User(){
             bg:'none',
           }}
           ml='auto' >Salvar</Button>
-        </Flex> */}
+        </Flex> ):""}
+        
+        {settingOpt== 'segurança'?(
 
-        {/* <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Text>Conta</Text>
           <Flex
               bg='#121212'
@@ -142,7 +171,7 @@ export default function User(){
               justify='center'>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>E-mail</Text>
-              <Input  fontSize='14px' w='70%' type='email' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input disabled={true} fontSize='14px' w='70%' type='email' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
 
             <Division width='100%' bg='#323232'/>
@@ -174,15 +203,15 @@ export default function User(){
             <Text>Trocar senha</Text>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>Senha atual</Text>
-              <Input  fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input disabled={true} fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>Nova senha</Text>
-              <Input  fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input  disabled={true} fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text fontSize='14px' w='20%' maxWidth='130px'>Confirmar nova senha</Text>
-              <Input  fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input  disabled={true} fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
             <Button 
               bg='none'
@@ -196,9 +225,11 @@ export default function User(){
               }}
               ml='auto' >Salvar</Button>
           </Flex>
-        </Flex> */}
+        </Flex>): ''}
 
-        <Flex flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        {settingOpt== 'bloqueados'?(
+        
+        <Flex flexDir='column' w='90%' ml='40px' maxWidth='690px' id='config-content'>
           <Text mb='1rem' fontSize='24px'>Lista de Bloqueados</Text>
           <Flex
             borderRadius='2px'
@@ -214,7 +245,7 @@ export default function User(){
               <Flex 
                 align='center'
                 h='29px'
-                w='400px'
+                w='90%'
                 borderRadius='2px'
                 bg='#0B0B0B'
                 color='#BEBEBE'
@@ -224,7 +255,7 @@ export default function User(){
                 <Input
                   h='29px'
                   bg='transparent'
-                  w='400px'
+                  w='100%'
                   name={'search'}
                   />
                 <Icon
@@ -237,22 +268,9 @@ export default function User(){
                   }}
                   fontSize='20' />
               </Flex>
-              <Button 
-                bg='none'
-                w='140px'
-                h='29px'
-                mr='auto'
-                border='1px solid #ffeb80'
-                color='#ffeb80'
-                borderRadius='2px'
-                _hover={{
-                  bg:'none',
-                }}
-                >Bloquear
-              </Button>
             </Flex>
           <Division width='100%' bg='#323232'/>
-{/* fazer Map dos usuarios bloqueados */}
+         //fazer Map dos usuarios bloqueados 
           <Flex mt='.5rem' p='2px' bg='#0B0B0B' transition='all 0.2s ease-in-out' _hover={{bg:'#202020'}}  borderRadius='3px' width='100% !important' justify='space-between' align='center'>
             <Checkbox >
               <Text>Random Name 1</Text>
@@ -269,8 +287,15 @@ export default function User(){
           <Division width='100%' bg='#323232'/>
             
           </Flex>
-        </Flex>
+        </Flex>): ""}
       </Flex>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+  
+  return {
+    props: {},
+  }
 }
