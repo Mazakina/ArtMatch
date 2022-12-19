@@ -1,6 +1,8 @@
 import { Avatar, Box, Button, Checkbox, Flex, Icon, Input, Text, Textarea } from "@chakra-ui/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { authOptions } from '../api/auth/[...nextauth]'
+import { unstable_getServerSession } from "next-auth/next"
 import * as yup from 'yup'
 
 import { AvatarName } from "../../components/AvatarName";
@@ -15,8 +17,11 @@ import {MdOutlineSecurity} from 'react-icons/md'
 import {FaBehanceSquare, FaArtstation } from 'react-icons/fa'
 import {FiPhone } from 'react-icons/fi'
 import {BiBlock, BiSearchAlt, BiTrash} from 'react-icons/bi'
+import {router} from 'react-router-dom'
+import { Api } from "../../services/api";
 
-export default function User(){
+export default function User({session}){
+  console.log(session)
   const perfilSchema = yup.object().shape({
     biografia:yup.string(),
     cidade:yup.string(),
@@ -293,9 +298,13 @@ export default function User(){
   )
 }
 
-export async function getServerSideProps(context) {
-  
+export async function getServerSideProps({ req, res }) {
+  const data = await unstable_getServerSession(req, res, authOptions)
+  // Api.post('/lib/userSttings/getUserSettings',data)
+  console.log()
   return {
-    props: {},
+    props: {
+      session:data,
+    },
   }
 }
