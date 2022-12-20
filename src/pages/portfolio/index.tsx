@@ -61,7 +61,6 @@ export default function Portfolio({post}){
     const test = await toBase64(changeEvent.target.files[0])
     setImgTest(test)
     const reader = new FileReader()
-    const {data} = useSession()
 
     reader.onload = function (onLoadEvent){
       setNewImage(onLoadEvent.target.result)
