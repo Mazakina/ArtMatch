@@ -371,7 +371,6 @@ export default function User(){
               </Flex>
             </Flex>
           <Division width='100%' bg='#323232'/>
-         //fazer Map dos usuarios bloqueados 
           <Flex mt='.5rem' p='2px' bg='#0B0B0B' transition='all 0.2s ease-in-out' _hover={{bg:'#202020'}}  borderRadius='3px' width='100% !important' justify='space-between' align='center'>
             <Checkbox >
               <Text>Random Name 1</Text>
