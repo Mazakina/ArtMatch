@@ -4,15 +4,17 @@ import Division from "../../components/Division";
 import { BiSearchAlt } from "react-icons/bi";
 import Header from "../../components/Header"
 import { MdSend } from "react-icons/md";
+import { useSession } from "next-auth/react";
 
 export default function Messages(){
+  const {data} = useSession()
   return(
   <>
     <Header/>
         
     <Flex  h='100vh' mt='-50px' pt='50px' justify="flex-start">
       <Flex id='left-nav' flexDir='column'>
-        <AvatarName />
+        <AvatarName avatar={data.user.image} email={data.user.email} name={data.user.name}  />
         <Division  width={'100%'}  bg={'#323232'}/>
         <Flex width='100%' justify='space-between' align='center' >
           <Text ml='20px'>Mensagens</Text>
