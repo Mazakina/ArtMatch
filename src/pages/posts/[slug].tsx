@@ -78,5 +78,3 @@ export default function Posts(){
   )
 }
 
-
-export 
