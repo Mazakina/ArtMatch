@@ -398,14 +398,7 @@ export default function User({user}){
 
 export async function getServerSideProps({ req, res }) {
   const data = await unstable_getServerSession(req, res, authOptions)
-  // if(!data){
-  //   return{
-  //     redirect:{
-  //       destination:'/',
-  //       permanent:false,
-  //     }
-  //   }
-  // }
+
   return {
     props: {
       user:1
