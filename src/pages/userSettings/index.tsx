@@ -116,7 +116,7 @@ export default function User(){
       setBehance(social.behance)
       setTelefone(social.telefone)
     }
-  },[])
+  },[data])
   const saveSettingsProfile = (event:FormEvent)=>{
     event.preventDefault()
     const requestData = {
