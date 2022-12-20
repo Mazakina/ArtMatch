@@ -1,5 +1,5 @@
-import { Avatar, Box, Button, Checkbox, Flex, Icon, Input, Text, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { Avatar, Box, Button, Checkbox, Flex, FormControl, Icon, Input, Text, Textarea } from "@chakra-ui/react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { authOptions } from '../api/auth/[...nextauth]'
 import { unstable_getServerSession } from "next-auth/next"
@@ -17,11 +17,37 @@ import {MdOutlineSecurity} from 'react-icons/md'
 import {FaBehanceSquare, FaArtstation } from 'react-icons/fa'
 import {FiPhone } from 'react-icons/fi'
 import {BiBlock, BiSearchAlt, BiTrash} from 'react-icons/bi'
-import {router} from 'react-router-dom'
 import { Api } from "../../services/api";
 
-export default function User({session}){
-  console.log(session)
+interface importedDataProps{
+  data:{
+    profile:{
+      usuario:string,
+      biografia:string,
+      cidade:string,
+      endereco:string,
+      numero:number| null,
+      banner:any,
+      avatar:string
+    },
+    social:{
+      instagram:string,
+      artstation:string,
+      behance:string,
+      telefone:string,
+    },
+    seguranca:{
+      email:{
+        email:string
+      },
+      nsfwAllow:boolean,
+      allowToBeFound:boolean,
+    },
+    bloqueados:[]
+  }
+}
+
+export default function User({user}){
   const perfilSchema = yup.object().shape({
     biografia:yup.string(),
     cidade:yup.string(),
@@ -37,6 +63,76 @@ export default function User({session}){
   const [instagram, setInstagram] = useState('')
   const [behance, setBehance] = useState('')
   const {data} = useSession()
+  const [importedData,setImportedData] = useState<importedDataProps>(
+  {  data:{
+      profile:{
+        usuario:'',
+        biografia:'',
+        cidade:'',
+        endereco:'',
+        numero:null,
+        banner:'',
+        avatar:''
+      },
+      social:{
+        instagram:'',
+        artstation:'',
+        behance:'',
+        telefone:'',
+      },
+      seguranca:{
+        email:{
+          email:data?.user.email
+        },
+        nsfwAllow:false,
+        allowToBeFound:true,
+      },
+      bloqueados:[]
+    }}
+  )
+
+
+  const [usuario,setUsuario] = useState('')
+  const [biografia,setBiografia] = useState('')
+  const [cidade,setCidade] =  useState('')
+  const [endereco,setEndereco] = useState('')
+  const [numero,setNumero] = useState(0)
+  const [email,setEmail] = useState('')
+  const [nsfwAllow,setNsfwAllow] = useState(true)
+  const [allowToBeFound,setAllowToBeFound] = useState(true)
+  useEffect(()=>{
+    console.log('useEffect inicial')
+    if(data){
+      console.log('after validation')
+      Api.post('/lib/userSettings/getUserSettings',data).then(response => setImportedData(response.data))
+      const {profile,seguranca,social,bloqueados} = importedData.data
+      setUsuario(profile.usuario)
+      setBiografia(profile.biografia)
+      setCidade(profile.cidade)
+      setEndereco(profile.endereco)
+      setNumero(profile.numero)
+      setNsfwAllow(seguranca.nsfwAllow)
+      setAllowToBeFound(seguranca.allowToBeFound)
+      setInstagram(social.instagram)
+      setArtstation(social.artstation)
+      setBehance(social.behance)
+      setTelefone(social.telefone)
+    }
+  },[])
+  const saveSettingsProfile = (event:FormEvent)=>{
+    event.preventDefault()
+    const requestData = {
+      section:'profile',
+      usuario:usuario,
+      biografia:biografia,
+      cidade:cidade,
+      endereco:endereco,
+      numero:numero,
+      user:data.user
+    }
+    console.log(requestData)
+    Api.post('/lib/userSettings/saveUserSettings',requestData)
+  }
   return(
     <>
       <Header/>
@@ -61,7 +157,7 @@ export default function User({session}){
 
         {settingOpt== 'perfil'?(
 
-        <Flex flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        <FormControl as={Flex} flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Text mb='10px' fontSize='26px'>
             Perfil
           </Text>
@@ -76,23 +172,23 @@ export default function User({session}){
             id='left-nav'>   
             <Flex  align='center'>
               <Text w='20%' maxWidth='130px'>Usuário</Text>
-              <Input h='28px' borderRadius='2px'  maxWidth='490px'></Input>
+              <Input h='28px' borderRadius='2px'  maxWidth='490px' onChange={(e)=>{e.target.value}}  value={usuario}></Input>
             </Flex>
             <Flex mt='1rem' align=''>
               <Text w='20%' maxWidth='130px'>Biografia</Text>
-              <Textarea h='28px' borderRadius='2px'  maxWidth='490px'></Textarea>
+              <Textarea h='28px' borderRadius='2px'  maxWidth='490px' onChange={(e)=>{e.target.value}}  value={biografia}></Textarea>
             </Flex>
             <Flex  mt='1rem' w='100%' align='center'>
               <Flex w='80%' justify='center' flexDir='column'>
                 <Flex align='center'>
                   <Text width='130px'>Cidade</Text>
-                  <Input h='28px' borderRadius='2px'  maxWidth='340px'></Input>
+                  <Input h='28px' borderRadius='2px'  maxWidth='340px' onChange={(e)=>{e.target.value}}  value={cidade}></Input>
                 </Flex>
                 <Flex maxWidth='480px' w='100%'  mt='1rem' align='center'>
                   <Text  width='130px'>Endereço</Text>
-                  <Input maxHeight='28px' borderRadius='2px'  maxWidth='250px'></Input> 
+                  <Input maxHeight='28px' borderRadius='2px'  maxWidth='250px' onChange={(e)=>{e.target.value}}  value={endereco}></Input> 
                   <Text ml='1rem' >Nº</Text>
-                  <Input ml='8px' h='28px'  borderRadius='2px'  maxWidth='46px'/>
+                  <Input ml='8px' h='28px'  borderRadius='2px'  maxWidth='46px'onChange={(e)=>{e.target.value}}  value={numero}/>
                 </Flex>
               </Flex>
               <Avatar mr='2rem !important' h='70px' width='70px' src={data?.user.image} />
@@ -115,6 +211,8 @@ export default function User({session}){
           </Flex>
 
           <Button 
+          onClick={(event)=>{saveSettingsProfile(event)}}
+          type='submit'
           mt='2rem'
           bg='none'
           w='140px'
@@ -125,13 +223,13 @@ export default function User({session}){
             bg:'none',
           }}
           ml='auto' >Salvar</Button>
-        </Flex>
+        </FormControl>
 
         ):''}
         
         {settingOpt== 'social'?(
 
-        <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        <FormControl as={Flex}  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Flex
           bg='#121212'
             mt='1rem'
@@ -143,10 +241,10 @@ export default function User({session}){
             w='100%'
             align='center'
             justify='center'>
-              <SocialOptions onChange={setInstagram} icon={AiOutlineInstagram} placeholder={'Ex: @Fabiano'} text='Instagram' value={instagram} />
-              <SocialOptions onChange={setArtstation} icon={FaArtstation} text='Artstation' placeholder='seu usuário do Artstation' value={artstation} />
-              <SocialOptions onChange={setBehance} icon={FaBehanceSquare} text='BeHance' placeholder='seu usuário do Behance' value={behance} />
-              <SocialOptions onChange={setTelefone} icon={FiPhone}   text='Telefone' placeholder='Ex: (11) 99999-9999' value={telefone} />
+              <SocialOptions onChange={(e)=>setInstagram(e.target.value)}  icon={AiOutlineInstagram} placeholder={'Ex: @Fabiano'} text='Instagram' value={instagram} />
+              <SocialOptions onChange={(e)=>setArtstation(e.target.value)}  icon={FaArtstation} text='Artstation' placeholder='seu usuário do Artstation' value={artstation} />
+              <SocialOptions onChange={(e)=>setBehance(e.target.value)} icon={FaBehanceSquare} text='BeHance' placeholder='seu usuário do Behance' value={behance} />
+              <SocialOptions onChange={(e)=>setTelefone(e.target.value)} icon={FiPhone} text='Telefone' placeholder='Ex: (11) 99999-9999' value={telefone} />
           </Flex>
           <Button 
           mt='2rem'
@@ -159,11 +257,11 @@ export default function User({session}){
             bg:'none',
           }}
           ml='auto' >Salvar</Button>
-        </Flex> ):""}
+        </FormControl> ):""}
         
         {settingOpt== 'segurança'?(
 
-        <Flex  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        <FormControl as={Flex}  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Text>Conta</Text>
           <Flex
               bg='#121212'
@@ -176,12 +274,12 @@ export default function User({session}){
               justify='center'>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>E-mail</Text>
-              <Input disabled={true} fontSize='14px' w='70%' type='email' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input disabled={true}  onChange={(e)=>{setEmail(e.target.value)}} value={email} fontSize='14px' w='70%' type='email' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
 
             <Division width='100%' bg='#323232'/>
-            <Checkbox  fontSize='14px' >Mostrar conteúdo adulto</Checkbox>
-            <Checkbox  fontSize='14px' mt='10px'>Permitir ser visto na secção de busca</Checkbox>
+            <Checkbox  fontSize='14px' onChange={(e)=>{setNsfwAllow(e.target.checked)}} checked={nsfwAllow} >Mostrar conteúdo adulto</Checkbox>
+            <Checkbox  fontSize='14px'  onChange={(e)=>{setAllowToBeFound(e.target.checked)}} checked={allowToBeFound} mt='10px'>Permitir ser visto na secção de busca</Checkbox>
 
             <Division width='100%' bg='#323232'/>
             <Button 
@@ -208,7 +306,7 @@ export default function User({session}){
             <Text>Trocar senha</Text>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>Senha atual</Text>
-              <Input disabled={true} fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
+              <Input placeholder="*********" disabled={true} fontSize='14px' w='70%' type='password' h='28px' borderRadius='2px'  maxWidth='490px'/>
             </Flex>
             <Flex  mt='21px' w='100% !important'  align='center'>
               <Text  fontSize='14px' w='20%' maxWidth='130px'>Nova senha</Text>
@@ -230,11 +328,11 @@ export default function User({session}){
               }}
               ml='auto' >Salvar</Button>
           </Flex>
-        </Flex>): ''}
+        </FormControl>): ''}
 
         {settingOpt== 'bloqueados'?(
         
-        <Flex flexDir='column' w='90%' ml='40px' maxWidth='690px' id='config-content'>
+        <FormControl as={Flex} flexDir='column' w='90%' ml='40px' maxWidth='690px' id='config-content'>
           <Text mb='1rem' fontSize='24px'>Lista de Bloqueados</Text>
           <Flex
             borderRadius='2px'
@@ -292,7 +390,7 @@ export default function User({session}){
           <Division width='100%' bg='#323232'/>
             
           </Flex>
-        </Flex>): ""}
+        </FormControl>): ""}
       </Flex>
     </>
   )
@@ -300,11 +398,17 @@ export default function User({session}){
 
 export async function getServerSideProps({ req, res }) {
   const data = await unstable_getServerSession(req, res, authOptions)
-  // Api.post('/lib/userSttings/getUserSettings',data)
-  console.log()
+  // if(!data){
+  //   return{
+  //     redirect:{
+  //       destination:'/',
+  //       permanent:false,
+  //     }
+  //   }
+  // }
   return {
     props: {
-      session:data,
+      user:1
     },
   }
 }

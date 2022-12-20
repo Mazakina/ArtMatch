@@ -12,33 +12,44 @@ interface userProps{
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body 
   const section = req.body.section
-  let newData;
-
+  let newData = {
+    usuario: reqData.usuario,
+    biografia: reqData.biografia,
+    cidade: reqData.cidade,
+    endereco: reqData.endereco,
+    numero: reqData.numero,
+  };
 
   const user:userProps = await fauna.query(
     q.Get(
       q.Match(
         q.Index('user_by_email'),
-        req.body.user
+        req.body.user.email
       )
     )
   )
 
   try{ 
-    q.Update(
-      q.Get(
-        q.Match(
-          q.Index('settings_by_user_id'),
-          user.ref
-        )
-      ),
-      {'data':{
-        [section]:{
-          newData
-        }
-      }}
-    )
+    console.log(user.ref)
+    await fauna.query(
+      q.Update(
+        q.Select(
+          'ref',
+          q.Get(
+            q.Match(
+              q.Index('settings_by_user_id'),
+              user.ref
+            )
+          )
+        ),
+        {'data':{
+          [section]:{
+            ...newData
+          }
+        }}
+      )
+    ).then(response => {console.log(response)})
   }catch(e){
-
+    console.log(e)
   }
 }

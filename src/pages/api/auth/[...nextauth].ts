@@ -28,16 +28,15 @@ export const authOptions = {
     
     // ...add more providers here
   ],
+
   jwt: {
-    maxAge: 60 * 60 * 24 * 30,
-    signingKey: process.env.NEXT_AUTH_JWT_KEY,
-    verificationOptions: {
-      algorithms: ["HS256"]
-    }
+    secret:process.env.NEXT_AUTH_JWT_KEY,
+    maxAge: 60 * 60 * 24 ,
   },
   callbacks: {
     async signIn({ user, account, profile}) {
       const {email} = user
+      console.log('account:',account)
       try{
         await fauna.query(
           q.If(
@@ -106,6 +105,14 @@ export const authOptions = {
         console.log(e)
         return false
       }
+    },
+    async jwt({ token, account, profile }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      if (account) {
+        token.accessToken = account.access_token
+        token.id = profile.id
+      }
+      return token
     }
   },
   // secret: 'skldjaklsdhasdja',

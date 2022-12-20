@@ -2007,6 +2007,11 @@
     hey-listen "^1.0.8"
     tslib "^2.3.1"
 
+"@next-auth/fauna-adapter@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@next-auth/fauna-adapter/-/fauna-adapter-1.0.4.tgz#e0cba16b0027b5c80b6a65f19bb5b81843f64935"
+  integrity sha512-pqZSirkZTwMlTalXn1lvqW0nKB9c3ozIelfgiLXhy1EK3EsgdXAPLfMSFuOnAj2otRXSChmgHuhNrqGiSv/dSg==
+
 "@next/env@12.3.1":
   version "12.3.1"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-12.3.1.tgz#18266bd92de3b4aa4037b1927aa59e6f11879260"
