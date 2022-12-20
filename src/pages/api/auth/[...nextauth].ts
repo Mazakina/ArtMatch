@@ -31,6 +31,7 @@ export const authOptions = {
 
   jwt: {
     secret:process.env.NEXT_AUTH_JWT_KEY,
+    refetchInterval:60*60 ,
     maxAge: 60 * 60 * 24 ,
   },
   callbacks: {
