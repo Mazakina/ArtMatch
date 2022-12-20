@@ -14,7 +14,7 @@ export default function Messages(){
         
     <Flex  h='100vh' mt='-50px' pt='50px' justify="flex-start">
       <Flex id='left-nav' flexDir='column'>
-        <AvatarName avatar={data.user.image} email={data.user.email} name={data.user.name}  />
+        <AvatarName avatar={data?.user.image} email={data?.user.email} name={data?.user.name}  />
         <Division  width={'100%'}  bg={'#323232'}/>
         <Flex width='100%' justify='space-between' align='center' >
           <Text ml='20px'>Mensagens</Text>
