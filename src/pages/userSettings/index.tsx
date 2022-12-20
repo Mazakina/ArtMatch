@@ -47,7 +47,7 @@ interface importedDataProps{
   }
 }
 
-export default function User({user}){
+export default function User(){
   const perfilSchema = yup.object().shape({
     biografia:yup.string(),
     cidade:yup.string(),
@@ -101,9 +101,7 @@ export default function User({user}){
   const [nsfwAllow,setNsfwAllow] = useState(true)
   const [allowToBeFound,setAllowToBeFound] = useState(true)
   useEffect(()=>{
-    console.log('useEffect inicial')
     if(data){
-      console.log('after validation')
       Api.post('/lib/userSettings/getUserSettings',data).then(response => setImportedData(response.data))
       const {profile,seguranca,social,bloqueados} = importedData.data
       setUsuario(profile.usuario)
@@ -394,14 +392,4 @@ export default function User({user}){
       </Flex>
     </>
   )
-}
-
-export async function getServerSideProps({ req, res }) {
-  const data = await unstable_getServerSession(req, res, authOptions)
-
-  return {
-    props: {
-      user:1
-    },
-  }
 }
