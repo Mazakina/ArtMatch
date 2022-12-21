@@ -4,12 +4,13 @@ import {BiSearchAlt} from 'react-icons/bi'
 import {BsQuestionOctagon} from 'react-icons/bs'
 import { Input } from './Form/Input'
 import { SignInButton } from './SignInButton'
-
+import NextLink from 'next/link'
 function Header(){
   return( 
     <Flex w='100%' h='50px' pl='2rem' pr='2rem' bg='#272727' direction='row' justify='space-between' alignItems='center' >
-      <Link href='/'><Box color='gray.900'>Logo</Box></Link>
-
+      <NextLink passHref href='/'>
+      <Link ><Box color='gray.900'>Logo</Box></Link>
+      </NextLink>
       <Flex direction='row' align='center'>
         <Flex 
           align='center'

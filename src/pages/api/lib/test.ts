@@ -2,6 +2,9 @@ import {fauna} from "../../../services/fauna"
 import {query as q} from 'faunadb'
 import { NextApiRequest, NextApiResponse } from "next"
 import { Api } from "../../../services/api"
+import { authOptions } from '../../api/auth/[...nextauth]'
+import { unstable_getServerSession } from "next-auth";
+import { getSession } from "next-auth/react"
 import FormData from  'form-data'
 interface userProps{
   ref:string,
@@ -10,65 +13,11 @@ interface userProps{
     email:string
   }
 }
+import { getToken } from "next-auth/jwt"
+
 
 export default async(req:NextApiRequest,res:NextApiResponse)=>{
-  const newData = {
-    "testing": {
-      "id": "lq6Aa3S",
-      "title": "as",
-      "description": "asd",
-      "deleteHash": "wPT16TF2w62M3Yk",
-      "url": "https://i.imgur.com/lq6Aa3S.png",
-      "posted": true
-    }
-  }
-
-  let newArray = {
-  "posts": 
-    {
-      "lq6Aa3S": {
-        "id": "lq6Aa3S",
-        "title": "as",
-        "description": "asd",
-        "deleteHash": "wPT16TF2w62M3Yk",
-        "url": "https://i.imgur.com/lq6Aa3S.png",
-        "posted": true
-      },
-      "lq6Aa3": {
-        "id": "lq6Aa3S",
-        "title": "as",
-        "description": "asd",
-        "deleteHash": "wPT16TF2w62M3Yk",
-        "url": "https://i.imgur.com/lq6Aa3S.png",
-        "posted": true
-      }
-    },
-  }
-    let test = 
-    await fauna.query(
-      q.Update(
-        newArray,
-        {posts: 
-        q.ToArray(
-          q.Select('posts',newArray)
-        )
-        }
-      )
-    )
-    // await fauna.query(
-    //   q.Update(
-    //    newArray,
-    //   {
-    //     posts:
-    //       q.Append(
-    //         newData,
-    //           q.Select(
-    //           'posts',
-    //           newArray
-    //         )
-    //       )
-    //     }
-    //   )
-    // )
-  console.log(test)
+  const token = await getSession({req})
+  console.log(token)
+  res.status(200).json({ok:true})
 }

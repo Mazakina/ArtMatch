@@ -28,7 +28,7 @@ export const authOptions = {
     
     // ...add more providers here
   ],
-
+  secret:'iAmHandsome',
   jwt: {
     secret:process.env.NEXT_AUTH_JWT_KEY,
     refetchInterval:60*60 ,
@@ -114,6 +114,13 @@ export const authOptions = {
         token.id = profile.id
       }
       return token
+    },
+    async session({ session, token, user }) {
+      // Send properties to the client, like an access_token and user id from a provider.
+      session.accessToken = token.accessToken
+      session.user.id = token.id
+      
+      return session
     }
   },
   // secret: 'skldjaklsdhasdja',
