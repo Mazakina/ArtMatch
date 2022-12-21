@@ -1,9 +1,12 @@
 import { Button, Flex, Link, Text, Avatar, HStack, Icon, Box, Image } from "@chakra-ui/react";
 import {useSession, signIn, signOut} from 'next-auth/react'
 import {IoMdArrowDropdown } from 'react-icons/io'
+import NextLink from 'next/link'
 import {BsFacebook} from 'react-icons/bs'
 import { useState } from "react";
 import Division from "../Division";
+
+
 export function SignInButton() {
   const {data} = useSession()
   const [modal,setModal] = useState(false)
@@ -39,13 +42,27 @@ export function SignInButton() {
 
             {modal?(
               <Flex box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
-                <Link href='/' _hover={{ color:'#FFEB80'}} fontSize='16px' >Meus favoritos</Link>
+                <NextLink href={'/'} passHref>
+                  <Link _hover={{ color:'#FFEB80'}} fontSize='16px' >Meus favoritos</Link>
+                </NextLink>
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
-                <Link href='/portfolio' _hover={{ color:'#FFEB80'}}  fontSize='16px'>Minhas coleções</Link>
-                <Link href='/userSettings' _hover={{ color:'#FFEB80'}}  fontSize='16px'>Editar perfil</Link>
-                <Link href='/userSettings' _hover={{ color:'#FFEB80'}}  fontSize='16px'>Bloqueados</Link>
+                
+                <NextLink href='/portfolio' passHref>
+                 <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Minhas coleções</Link>
+                </NextLink>
+
+                <NextLink href='/userSettings' passHref>
+                  <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Editar perfil</Link>
+                </NextLink>
+                
+                <NextLink href='/userSettings' passHref>
+                  <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Bloqueados</Link>
+                </NextLink>
+                
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
+                
                 <Link onClick={()=>signOut()} _hover={{ color:'#FFEB80'}}  fontSize='16px'>Sair</Link>
+
               </Flex>
             ):''}
 

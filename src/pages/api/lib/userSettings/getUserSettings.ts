@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {fauna} from '../../../../services/fauna'
 import {query as q} from 'faunadb'
+import { getSession } from "next-auth/react"
 
 interface userProps{
   ref:string,
@@ -15,15 +16,15 @@ interface userSettingsProps{
   ts:number
 }
 export default async(req:NextApiRequest,res:NextApiResponse)=>{
-  console.log(req.body.user);
-  const reqData = req.body
-
+  console.log('infinito essa merda?')
+  const token = await getSession({req})
+  // const session = await unstable_getServerSession(req,res, authOptions)
  try{
   const user:userProps = await fauna.query(
     q.Get(
       q.Match(
         q.Index('user_by_email'),
-        req.body.user?.email
+        token.user?.email
       )
     )
   )
@@ -37,7 +38,8 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
     )
   )
   const {data} = userSettings
-  res.status(200).json({
+  res.status(200)
+  res.json({
     data
   })
  }catch(e){

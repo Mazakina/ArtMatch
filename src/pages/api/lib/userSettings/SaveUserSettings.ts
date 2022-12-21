@@ -48,8 +48,9 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           }
         }}
       )
-    ).then(response => {console.log(response)})
+    ).then(response =>res.status(200))
   }catch(e){
     console.log(e)
+    res.status(401)
   }
 }
