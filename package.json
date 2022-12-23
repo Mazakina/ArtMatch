@@ -27,6 +27,7 @@
     "next-auth": "^4.18.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-icons": "^4.6.0",
     "react-image-crop": "^10.0.8",
     "react-router-dom": "^6.5.0",

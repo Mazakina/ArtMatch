@@ -15,6 +15,7 @@ interface userProps{
 
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
+  console.log('here')
   const formData = new FormData()
   const reqData = req.body
   const image = reqData.image
@@ -131,4 +132,13 @@ Api(config).then( async (response)=> {
 .catch(function (error) {
   console.log(error);
 })
+}
+
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '100mb',
+    },
+  },
 }
