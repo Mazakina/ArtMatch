@@ -1,10 +1,10 @@
-import { Avatar, Box, Button, Checkbox, Flex, FormControl, Icon, Input, Text, Textarea } from "@chakra-ui/react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { Avatar,Image, Box, Button, Checkbox, Flex, FormControl, Icon, Input, Text, Textarea } from "@chakra-ui/react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { authOptions } from '../api/auth/[...nextauth]'
 import { unstable_getServerSession } from "next-auth/next"
 import * as yup from 'yup'
-
+import {useDropzone} from "react-dropzone";
 import { AvatarName } from "../../components/AvatarName";
 import Division from "../../components/Division";
 import Header from "../../components/Header";
@@ -67,10 +67,16 @@ export default function User({userSettings,user}){
   const [email,setEmail] = useState( userSettings.data.seguranca?.email.email)
   const [nsfwAllow,setNsfwAllow] = useState( userSettings.data.seguranca?.nsfwAllow)
   const [allowToBeFound,setAllowToBeFound] = useState( userSettings.data.seguranca?.allowToBeFound)
-  const [artstation, setArtstation] = useState('')
-  const [telefone, setTelefone] = useState('')
-  const [instagram, setInstagram] = useState('')
-  const [behance, setBehance] = useState('')
+  const [artstation, setArtstation] = useState(userSettings.data.social?.artstation)
+  const [telefone, setTelefone] = useState(userSettings.data.social?.telefone)
+  const [instagram, setInstagram] = useState(userSettings.data.social?.instagram)
+  const [behance, setBehance] = useState(userSettings.data.social?.behance)
+  
+  const onDrop = useCallback(acceptedFiles => {
+    // Do something with the files
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
   const saveSettingsProfile = (event:FormEvent)=>{
     event.preventDefault()
     const requestData = {
@@ -84,6 +90,33 @@ export default function User({userSettings,user}){
     }
     Api.post('/lib/userSettings/saveUserSettings',requestData)
   }
+
+  const saveSettingsSocial = (event:FormEvent)=>{
+    event.preventDefault()
+    const requestData = {
+      section:'social',
+      instagram:instagram,
+      artstation:artstation,
+      behance:behance,
+      telefone:telefone,
+      user:user
+    }
+    Api.post('/lib/userSettings/saveUserSettings',requestData)
+  }
+  const saveSettingsSeguranca = (event:FormEvent)=>{
+    event.preventDefault()
+    const requestData = {
+      section:'seguranca',
+      email:{
+        email:user.email
+      },
+      nsfwAllow:nsfwAllow,
+      allowToBeFound:allowToBeFound,
+      user:user
+    }
+    Api.post('/lib/userSettings/saveUserSettings',requestData)
+  }
+  
   return(
     <>
       <Header/>
@@ -146,18 +179,34 @@ export default function User({userSettings,user}){
           </Flex>
 
         <Flex
+          {...getRootProps()}
           mt='1rem'
           border='1px
           solid
           #959595'
           flexDir='column'
           w='100%'
+          h='200px'
           align='center'
-          justify='center'>
-            <Text>Escolha uma imagem para seu Banner</Text>
-            <Box>
-              Fazer o Dropzone
-            </Box>
+          justify='center'
+          position={'relative'}
+          overflow='hidden'
+          cursor={'pointer'}
+          > 
+            <Image 
+            src ='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930' 
+            backgroundSize={'cover'}
+            backgroundPosition='center'
+            backgroundRepeat={'no-repeat'}
+            position={'absolute'}
+            filter='blur(2px) brightness(0.8)'
+            />
+            <input {...getInputProps()} />
+            {
+              isDragActive ?
+              <Text zIndex={2}>Escolha uma imagem para seu Banner</Text> :
+              <Text zIndex={2} >Arraste uma Imagem para seu Banner ou clique aqui para escolher</Text>
+            }
           </Flex>
 
           <Button 
@@ -205,7 +254,9 @@ export default function User({userSettings,user}){
           _hover={{
             bg:'none',
           }}
-          ml='auto' >Salvar</Button>
+          ml='auto'
+          onClick={(event)=>{saveSettingsSocial(event)}}
+          >Salvar</Button>
         </FormControl> 
 
         <FormControl display={settingOpt=='segurança'? 'initial':'none'} as={Flex}  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
@@ -227,8 +278,8 @@ export default function User({userSettings,user}){
             </Flex>
 
             <Division width='100%' bg='#323232'/>
-            <Checkbox  fontSize='14px' onChange={(e)=>{setNsfwAllow(e.target.checked)}} checked={nsfwAllow} >Mostrar conteúdo adulto</Checkbox>
-            <Checkbox  fontSize='14px'  onChange={(e)=>{setAllowToBeFound(e.target.checked)}} checked={allowToBeFound} mt='10px'>Permitir ser visto na secção de busca</Checkbox>
+            <Checkbox  fontSize='14px' onChange={(e)=>{setNsfwAllow(e.target.checked)}} isChecked={nsfwAllow} >Mostrar conteúdo adulto</Checkbox>
+            <Checkbox  fontSize='14px'  onChange={(e)=>{setAllowToBeFound(e.target.checked)}} isChecked={allowToBeFound} mt='10px'>Permitir ser visto na secção de busca</Checkbox>
 
             <Division width='100%' bg='#323232'/>
             <Button 
@@ -240,7 +291,9 @@ export default function User({userSettings,user}){
               _hover={{
                 bg:'none',
               }}
-              ml='auto' >Salvar</Button>
+              ml='auto' 
+              onClick={(event)=>{saveSettingsSeguranca(event)}}
+              >Salvar</Button>
           </Flex>
 
           <Flex
@@ -275,7 +328,9 @@ export default function User({userSettings,user}){
               _hover={{
                 bg:'none',
               }}
-              ml='auto' >Salvar</Button>
+              ml='auto'
+              onClick={(event)=>{saveSettingsSeguranca(event)}}
+              >Salvar</Button>
           </Flex>
         </FormControl>
         

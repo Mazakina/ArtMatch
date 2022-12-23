@@ -12,14 +12,34 @@ interface userProps{
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body 
   const section = req.body.section
-  let newData = {
-    usuario: reqData.usuario,
-    biografia: reqData.biografia,
-    cidade: reqData.cidade,
-    endereco: reqData.endereco,
-    numero: reqData.numero,
-  };
-
+  let newData;
+  switch(section){
+    case'profile':
+      newData = {
+        usuario: reqData.usuario,
+        biografia: reqData.biografia,
+        cidade: reqData.cidade,
+        endereco: reqData.endereco,
+        numero: reqData.numero,
+      }
+    break;
+    case'social':
+      newData = {
+        instagram:reqData.instagram,
+        artstation:reqData.artstation,
+        behance:reqData.behance,
+        telefone:reqData.telefone,
+      }
+    break;
+    case'seguranca':
+      newData = {
+        email:{
+          email:reqData.user.email
+        },
+        nsfwAllow:reqData.nsfwAllow,
+        allowToBeFound:reqData.allowToBeFound,
+      }
+  }
   const user:userProps = await fauna.query(
     q.Get(
       q.Match(
@@ -30,7 +50,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   )
 
   try{ 
-    console.log(user.ref)
+    console.log(newData)
     await fauna.query(
       q.Update(
         q.Select(
@@ -48,7 +68,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           }
         }}
       )
-    ).then(response =>res.status(200))
+    )
+    res.status(200)
   }catch(e){
     console.log(e)
     res.status(401)

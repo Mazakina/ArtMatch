@@ -5,7 +5,8 @@ import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {Image , Flex, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
 
-import { useRef, useState } from "react";
+import {useDropzone} from "react-dropzone";
+import { useCallback, useRef, useState } from "react";
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import {
@@ -32,9 +33,10 @@ import {useSession} from 'next-auth/react'
 import  saveImageOnGallery  from '../api/lib/faunaGallery/manageGallery';
 import { GetServerSideProps, GetStaticProps } from 'next';
 import imgurPost from "../api/lib/imgur/imgurPost"
+import { authOptions } from "../api/auth/[...nextauth]"
 
 
-export default function Portfolio({post}){
+export default function Portfolio({posts}){
   const imgRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const imgInputRef = useRef<HTMLInputElement>(null);
@@ -54,19 +56,32 @@ export default function Portfolio({post}){
   const [tags, setTags] = useState([])
   const [deleteHash,setDeleteHash] = useState('')
 
-  // 
+
+  const onDrop = useCallback( async acceptedFiles => {
+      const test = await toBase64(acceptedFiles[0])
+      console.log(test)
+      setImgTest(test)
+      const reader = new FileReader()
+
+      reader.onload = function (onLoadEvent){
+        setNewImage(onLoadEvent.target.result)
+      }
+      reader.readAsDataURL(acceptedFiles[0]);
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
   //fazer os States das variaveis do Form
   
- async function handleOnChange(changeEvent){
-    const test = await toBase64(changeEvent.target.files[0])
-    setImgTest(test)
-    const reader = new FileReader()
+//  async function handleOnChange(changeEvent){
+//     const test = await toBase64(changeEvent.target.files[0])
+//     setImgTest(test)
+//     const reader = new FileReader()
 
-    reader.onload = function (onLoadEvent){
-      setNewImage(onLoadEvent.target.result)
-    }
-    reader.readAsDataURL(changeEvent.target.files[0]);
-  }
+//     reader.onload = function (onLoadEvent){
+//       setNewImage(onLoadEvent.target.result)
+//     }
+//     reader.readAsDataURL(changeEvent.target.files[0]);
+//   }
 
   function handleUploadClick(e){
     e.preventDefault()
@@ -91,8 +106,15 @@ export default function Portfolio({post}){
       }
       console.log('0:',typeof postData.image)
 
-      Api.post('/lib/imgurPost',postData,{maxContentLength: 100000000,
-        maxBodyLength: 100000000})
+      Api({
+        method: 'post',
+        url: '/lib/imgur/imgurPost',
+        data: postData,
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        maxContentLength: 100000000,
+        maxBodyLength: 1000000000,
+
+})
       // postData.image = fileToBase64(postData.image)
   }
 
@@ -178,50 +200,56 @@ async function deleteRequest(){
             <Icon fontSize='32px' as={BsPlusSquare}/>
             <Text fontSize='14px' mt='1rem'>Novo Projeto</Text>
           </Flex>
-          {/* map de projetos */}
-          <Flex
-              ml='20px'
-              flexDir='column'
-              align='center'
-              justify='flex-start'
-              w='190px'
-              overflow='hidden'
-              height='215px'
-              bgColor='#3A3A3A'
-              border='1px
-              solid
-              #4d4d4d'
-              borderRadius='5px'
-              _hover={{
-                border:'1px solid #FFEB80'
-              }}>
-            <AspectRatio  w='190px' ratio={1}>
-             <Box position='relative'>
 
-              <Image  alt='' position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src='/images/001.jpg' />
-              <Flex
-                height='100%'
-                position='absolute'
-                opacity='0.01'
-                w='100%'
+          {
+            posts.map((post)=>{
+              console.log(post)
+              return(
+                <Flex
+                ml='20px'
+                flexDir='column'
                 align='center'
-                justify='center'
-                bgColor='#14141473'
-                _hover={{opacity:1}}
-                transition='all 0.3s ease-in-out'
-                >
-                <Button _hover={{bg:'#FFE767'}} color='#000' bg='#FFE767'>Editar</Button>
-              </Flex>
-             </Box>
-            </AspectRatio>
-            <Flex m='auto 10px ' width='100%' justify='space-between'>
-              <Text ml='10px' fontSize='10px'>Titulo</Text>
-              <HStack mr='10px'>
-                <Text fontSize='10px'>Publicado</Text>
-                <Box width='30px' border='1px solid gray' borderRadius='10px' ><Box h='12px' w='12px' borderRadius='50%' bg='#FFEB80' /></Box>
-              </HStack>
-            </Flex>
-          </Flex>
+                justify='flex-start'
+                w='190px'
+                overflow='hidden'
+                height='215px'
+                bgColor='#3A3A3A'
+                border='1px
+                solid
+                #4d4d4d'
+                borderRadius='5px'
+                _hover={{
+                  border:'1px solid #FFEB80'
+                }}>
+                  <AspectRatio  w='190px' ratio={1}>
+                  <Box position='relative'>
+                    <Image align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src={post.url} />
+                    <Flex
+                      height='100%'
+                      position='absolute'
+                      opacity='0.01'
+                      w='100%'
+                      align='center'
+                      justify='center'
+                      bgColor='#14141473'
+                      _hover={{opacity:1}}
+                      transition='all 0.3s ease-in-out'
+                      >
+                      <Button _hover={{bg:'#FFE767'}} color='#000' bg='#FFE767'>Editar</Button>
+                    </Flex>
+                  </Box>
+                  </AspectRatio>
+                  <Flex m='auto 10px ' width='100%' justify='space-between'>
+                    <Text ml='10px' fontSize='10px'>Titulo</Text>
+                    <HStack mr='10px'>
+                      <Text fontSize='10px'>Publicado</Text>
+                      <Box width='30px' border='1px solid gray' borderRadius='10px' ><Box ml={'auto'} h='12px' w='12px' borderRadius='50%' bg='#FFEB80' /></Box>
+                    </HStack>
+                  </Flex>
+                </Flex>
+              )
+            })
+          }
 
         </Flex>
 
@@ -244,9 +272,12 @@ async function deleteRequest(){
               <Flex>
                 <Flex
                   // as={Button}
+                  transition={'background 0.3s ease-in-out'}
+                  {...getRootProps()}
                   position="relative"
-                  _hover={{bg:'none'}}bg={'none'}
+                  _hover={{bg:'#1a1a1a'}}
                   cursor='pointer'
+                  bg='#1f1f1f'
                   flexDir='column'
                   align='center'
                   justify='center'
@@ -257,16 +288,14 @@ async function deleteRequest(){
                   >
                   <Box position="absolute">
                     <input
-                    onChange={
-                      (event)=>{
-                        handleOnChange(event)           
-                      }
-                    }
+                     {...getInputProps()}
+              
                     type="file"
                     id="img"
                     name="img"
                     accept="image/*"
                     ref={imgInputRef} />
+                    <Text zIndex={2} >Arraste uma Imagem clique aqui para escolher</Text>
                   </Box>
                   <Box position="absolute">
                       <Image  alt='' src={newImage}/>
@@ -382,3 +411,30 @@ async function deleteRequest(){
   )
 }
 
+
+export async function getServerSideProps(context) {
+  const session = await unstable_getServerSession(context.req, context.res, authOptions)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+  const response = await fetch('http://localhost:3000/api/lib/imgur/imgurGetAllFromUser',{
+    method:'post',
+    headers: {
+      cookie: context.req.headers.cookie || "",
+    },
+    body:
+    session.user.email
+  })
+  const posts = await response.json()
+  return {
+    props: {
+      posts,
+    },
+  }
+}

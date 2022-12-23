@@ -29,12 +29,11 @@ interface ResponseData{
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   if(req.method ==='POST'){
-    console.log('received')
     const user:userProps = await fauna.query(
       q.Get(
         q.Match(
           q.Index('user_by_email'),
-          req.body.user
+          req.body
         )
       )
     )
@@ -50,8 +49,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           )
         )
       )
-      console.log(responseData)
-      res.json({responseData})
+      const responseToArray = Object.values(responseData)
+      res.json(responseToArray)
     }catch(e){
       res.status(403).end('invalid post')
     }
