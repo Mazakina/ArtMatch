@@ -1,7 +1,7 @@
 import { AspectRatio, Box, Button, Flex, HStack, Text, Image } from "@chakra-ui/react"
 import { useState } from "react"
 
-export default function({post,onOpen,setImage,setTitle,setDescription,setMidia,setTags,setPublished}){
+export default function Posts({post,onOpen,setImage,setTitle,setDescription,setMidia,setTags,setPublished}){
   const [posted,setPosted] = useState(()=>{post.posted})
   const [modal,setModal] = useState()
   const setModalProperties = (post) => {
