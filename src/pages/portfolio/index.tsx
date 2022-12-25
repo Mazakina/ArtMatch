@@ -3,7 +3,7 @@ import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolde
 import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
 import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Flex, Box, Text, Icon, VStack, Button, AspectRatio, HStack, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
+import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
 
 import {useDropzone} from "react-dropzone";
 import { useCallback, useRef, useState } from "react";
@@ -28,12 +28,11 @@ import {
 import { AvatarName } from '../../components/AvatarName';
 import Division from '../../components/Division';
 import Header from "../../components/Header";
-import { Api, saveImage } from '../../services/api';
+import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
-import  saveImageOnGallery  from '../api/lib/faunaGallery/manageGallery';
-import { GetServerSideProps, GetStaticProps } from 'next';
-import imgurPost from "../api/lib/imgur/imgurPost"
 import { authOptions } from "../api/auth/[...nextauth]"
+import { GetServerSideProps } from "next"
+import Posts from "../../components/posts"
 
 
 export default function Portfolio({posts}){
@@ -49,7 +48,8 @@ export default function Portfolio({posts}){
   const {data} = useSession()
 
   //form data
-  const [name,setName] = useState('')
+  const [isNewFile, setIsNewFile] = useState(false)
+  const [title,setTitle] = useState('')
   const [description,setDescription] = useState('')
   const [published,setPublished] = useState(true)
   const [midia,setMidia] = useState('')
@@ -59,7 +59,7 @@ export default function Portfolio({posts}){
 
   const onDrop = useCallback( async acceptedFiles => {
       const test = await toBase64(acceptedFiles[0])
-      console.log(test)
+      // console.log(test)
       setImgTest(test)
       const reader = new FileReader()
 
@@ -68,7 +68,7 @@ export default function Portfolio({posts}){
       }
       reader.readAsDataURL(acceptedFiles[0]);
   }, [])
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
 
   //fazer os States das variaveis do Form
   
@@ -88,7 +88,7 @@ export default function Portfolio({posts}){
     const canvasRef = previewCanvasRef.current
     const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
     const imageData64 = canvasRef.toDataURL()
-    console.log(imageData64)
+    // console.log(imageData64)
 
     const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
     // const download = downloadBase64File( imageData64,fileName)
@@ -99,22 +99,33 @@ export default function Portfolio({posts}){
       event.preventDefault();
       const postData =   {
         image:imgTest,
-        name:name,
-        title:name,
+        name:title,
+        title:title,
         description:description,
-        user: data.user
+        user: data.user,
+        midia: midia,
+        tags:tags
       }
-      console.log('0:',typeof postData.image)
-
-      Api({
-        method: 'post',
-        url: '/lib/imgur/imgurPost',
-        data: postData,
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        maxContentLength: 100000000,
-        maxBodyLength: 1000000000,
-
-})
+      // console.log('0:',typeof postData.image)
+      if(isNewFile ===true){
+        Api({
+          method: 'post',
+          url: '/lib/imgur/imgurPost',
+          data: postData,
+          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          maxContentLength: 100000000,
+          maxBodyLength: 1000000000,
+        })
+      }else{
+        Api({
+          method: 'post',
+          url: '/lib/imgur/imgurUpdate',
+          data: postData,
+          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          maxContentLength: 100000000,
+          maxBodyLength: 1000000000,
+        })
+      }
       // postData.image = fileToBase64(postData.image)
   }
 
@@ -187,7 +198,7 @@ async function deleteRequest(){
             as={Button}
             _hover={{bg:'none'}}bg={'none'}
             cursor='pointer'
-            onClick={onOpen}
+            onClick={()=>{onOpen();setIsNewFile(true)}}
             flexDir='column'
             align='center'
             justify='center'
@@ -203,50 +214,10 @@ async function deleteRequest(){
 
           {
             posts.map((post)=>{
-              console.log(post)
               return(
-                <Flex
-                ml='20px'
-                flexDir='column'
-                align='center'
-                justify='flex-start'
-                w='190px'
-                overflow='hidden'
-                height='215px'
-                bgColor='#3A3A3A'
-                border='1px
-                solid
-                #4d4d4d'
-                borderRadius='5px'
-                _hover={{
-                  border:'1px solid #FFEB80'
-                }}>
-                  <AspectRatio  w='190px' ratio={1}>
-                  <Box position='relative'>
-                    <Image align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src={post.url} />
-                    <Flex
-                      height='100%'
-                      position='absolute'
-                      opacity='0.01'
-                      w='100%'
-                      align='center'
-                      justify='center'
-                      bgColor='#14141473'
-                      _hover={{opacity:1}}
-                      transition='all 0.3s ease-in-out'
-                      >
-                      <Button _hover={{bg:'#FFE767'}} color='#000' bg='#FFE767'>Editar</Button>
-                    </Flex>
-                  </Box>
-                  </AspectRatio>
-                  <Flex m='auto 10px ' width='100%' justify='space-between'>
-                    <Text ml='10px' fontSize='10px'>Titulo</Text>
-                    <HStack mr='10px'>
-                      <Text fontSize='10px'>Publicado</Text>
-                      <Box width='30px' border='1px solid gray' borderRadius='10px' ><Box ml={'auto'} h='12px' w='12px' borderRadius='50%' bg='#FFEB80' /></Box>
-                    </HStack>
-                  </Flex>
-                </Flex>
+               <>
+               <Posts post={post} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+               </>
               )
             })
           }
@@ -258,8 +229,8 @@ async function deleteRequest(){
           <ModalContent w='1200px !important' height='830px' bg='#373737' >
             <ModalHeader  width='100%'>
              <Flex justify="space-between" align='center'>
-              <Icon onClick={()=>setFormPart(!formPart)} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
-              <Text>Nova publicação</Text>
+              <Icon onClick={()=>{setFormPart(!formPart)}} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
+              <Text>{isNewFile? 'Nova':'Editar'} publicação</Text>
               <Box/>
               <ModalCloseButton />
              </Flex>
@@ -274,6 +245,7 @@ async function deleteRequest(){
                   // as={Button}
                   transition={'background 0.3s ease-in-out'}
                   {...getRootProps()}
+                  
                   position="relative"
                   _hover={{bg:'#1a1a1a'}}
                   cursor='pointer'
@@ -332,7 +304,7 @@ async function deleteRequest(){
                 
                 <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
                   <Text>Titulo da Obra:</Text>
-                  <Input onChange={(e)=>{setName(e.target.value)}} value={name} h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
+                  <Input onChange={(e)=>{setTitle(e.target.value)}} value={title} h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
                   <Text>Descrição:</Text>
                   <Textarea onChange={(e)=>{setDescription(e.target.value)}} value={description} mb='6px !important' height='30%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'   />
                   <Select
@@ -382,8 +354,8 @@ async function deleteRequest(){
                       fontSize='20' />
                   </Flex>
                   <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                    <Button width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquiva</Button>
-                    <Button type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
+                    <Button onClick={()=>setPublished(false)} type='submit' width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquivar</Button>
+                    <Button onClick={()=>setPublished(true)} type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
                   </Flex>
                 </VStack>}
               </Flex>
