@@ -395,7 +395,7 @@ export async function getServerSideProps(context) {
       },
     }
   }
-  const response = await fetch('http://localhost:3000/api/lib/imgur/imgurGetAllFromUser',{
+  const response = await fetch(`${process.env.BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
     method:'post',
     headers: {
       cookie: context.req.headers.cookie || "",
