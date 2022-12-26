@@ -37,6 +37,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         )
       )
     )
+
     try{
       const responseData = await fauna.query(
         q.Select(
@@ -52,7 +53,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       const responseToArray = Object.values(responseData)
       res.json(responseToArray)
     }catch(e){
-      res.status(403).end('invalid post')
+      res.status(401)
     }
   }else{
     res.setHeader('allow','POST')

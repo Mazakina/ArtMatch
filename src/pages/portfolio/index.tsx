@@ -403,7 +403,10 @@ export async function getServerSideProps(context) {
     body:
     session.user.email
   })
-  const posts = await response.json()
+
+  let posts;
+    posts = await response.json()
+
   return {
     props: {
       posts,
