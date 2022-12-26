@@ -73,6 +73,25 @@ Api(config).then( async (response)=> {
 
   try{
     await fauna.query(
+      q.If(
+        q.Not(
+            q.Exists(
+                q.Match(
+                    q.Index('collections_by_user_id'),
+                    user.ref
+                )
+            )
+        ),
+        q.Create(
+          q.Collection('collections'),
+          {
+            data: {
+              userId:user.ref,
+              posts:newData,
+              visible:'true'
+              }
+          }
+        ),
         q.Update(
           q.Select(
             'ref',
@@ -101,6 +120,7 @@ Api(config).then( async (response)=> {
             }
           }
         ),
+      )
     )
     console.log('workeeed')
     res.status(201).json({ok:true})
