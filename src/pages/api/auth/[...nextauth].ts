@@ -90,6 +90,16 @@ export const authOptions = {
                   },
                   bloqueados:[]
                 }}
+              ),
+              q.Create(
+                q.Collection('collections'),
+                {
+                  data: {
+                    userId:user.ref,
+                    posts:[],
+                    visible:'true'
+                    }
+                }
               )
             ],
             q.Get(
