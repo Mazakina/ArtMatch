@@ -37,7 +37,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         )
       )
     )
-    console.log('part 1')
     try{
       const responseData = await fauna.query(
         q.Select(
@@ -50,7 +49,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           )
         )
       )
-      console.log('part 2')
       const responseToArray = Object.values(responseData)
       res.json(responseToArray)
     }catch(e){

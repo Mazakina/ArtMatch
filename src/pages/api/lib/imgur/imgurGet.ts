@@ -49,6 +49,7 @@ interface ResponseDataProps{
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   if(req.method ==='POST'){
+    let otherPosts 
     const hash = req.body.id
     let responseData:ResponseDataProps={
       id:'',
@@ -72,8 +73,9 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         )
       )
       let post = allPost.data.map((posts:mapPostProps)=>{
-        if(posts.data.posts[hash].posted===true){
+        if(posts.data.posts[hash]?.posted===true){
           responseData.user = (posts.data.userId)
+          otherPosts = posts.data.posts.filter(post=>post!= posts.data.posts[hash])
           return posts.data.posts[hash]
         }
         return
@@ -89,7 +91,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         responseData.deleteHash = post[0].deleteHash
         responseData.posted = post[0].posted
         responseData.album = post[0].album
-        
         var config = {
           method: 'get',
           url: `https://api.imgur.com/3/image/${hash}`,
@@ -97,6 +98,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             'Authorization':`Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
           },
         };
+        console.log(responseData.user)
         
         Api(config)
         .then(function (response) {

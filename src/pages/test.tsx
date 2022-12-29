@@ -8,7 +8,7 @@ export default  function Test(){
   const[value,setValue] = useState<any>()
   async function testing(){ 
     await Api.post('/lib/imgur/imgurGet',{
-      id:'aZizQUA'
+      id:'rlOTErh'
     }).then(response =>console.log(response))
   }
   return(

@@ -3,10 +3,11 @@ import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolde
 import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
 import {BiSearchAlt, BiTrash} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select } from "@chakra-ui/react";
+import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Tooltip, chakra, shouldForwardProp } from "@chakra-ui/react";
 
+import { AnimatePresence, isValidMotionProp, motion} from "framer-motion"
 import {useDropzone} from "react-dropzone";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo  } from "react";
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import {
@@ -32,21 +33,47 @@ import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
-import Posts from "../../components/posts"
+import Posts from "../../components/Posts"
 
+interface idsProps{
+  id?:string,
+  deleteHash?:string
+}
 
 export default function Portfolio({posts}){
+
+  // let memoPosts = useMemo(()=>{},[posts])
+  //Motion and Chakra props
+  useEffect(()=>{
+    setPostsCollection(posts.filter(post => post.id))
+  },[posts])
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.5
+      }
+    }
+  }
+  
+  const item = {
+    hidden: { opacity: 0,scale:0 },
+    show: { opacity: 1,scale:1 }
+  }
+  
+  const [postsCollection,setPostsCollection] = useState(()=>posts.filter(post => post.id))
   const imgRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const imgInputRef = useRef<HTMLInputElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [newImage, setNewImage] = useState(null);
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [formPart,setFormPart] = useState<Boolean>(true) 
   const [imgTest, setImgTest] = useState<any>()
   const {data} = useSession()
-
+  
   //form data
   const [isNewFile, setIsNewFile] = useState(false)
   const [title,setTitle] = useState('')
@@ -55,7 +82,9 @@ export default function Portfolio({posts}){
   const [midia,setMidia] = useState('')
   const [tags, setTags] = useState([])
   const [deleteHash,setDeleteHash] = useState('')
+  const [newImage, setNewImage] = useState(null);
 
+  const [ids,setIds] = useState<idsProps>({})
 
   const onDrop = useCallback( async acceptedFiles => {
       const test = await toBase64(acceptedFiles[0])
@@ -68,20 +97,28 @@ export default function Portfolio({posts}){
       }
       reader.readAsDataURL(acceptedFiles[0]);
   }, [])
+
+  const onDropDelete = useCallback(async acceptedFiles =>{
+    console.log(acceptedFiles)
+  },[])
+  const onDragOver = (event) =>{
+    event.preventDefault()
+    console.log('draggin Over')
+  }
+  const OnDragDrop = async (event)=>{
+    await Api.post('/lib/imgur/imgurDelete',{
+      ...ids,
+      user:data.user
+    }).then(res=> {if(res.status ===200){
+      console.log('worked')
+      const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
+      setPostsCollection([...newPostsArray])
+    }})
+    console.log('end')
+  }
+
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
-
-  //fazer os States das variaveis do Form
-  
-//  async function handleOnChange(changeEvent){
-//     const test = await toBase64(changeEvent.target.files[0])
-//     setImgTest(test)
-//     const reader = new FileReader()
-
-//     reader.onload = function (onLoadEvent){
-//       setNewImage(onLoadEvent.target.result)
-//     }
-//     reader.readAsDataURL(changeEvent.target.files[0]);
-//   }
+  // const {getRootProps:getRootDeleteProps, getInputProps:getInputDeleteProps, isDragActive:isDragDeleteActive} = useDropzone({onDropDelete})
 
   function handleUploadClick(e){
     e.preventDefault()
@@ -115,7 +152,9 @@ export default function Portfolio({posts}){
           headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
           maxContentLength: 100000000,
           maxBodyLength: 1000000000,
-        })
+        }).then(
+          res=> setPostsCollection([...postsCollection,res.data])
+          )
       }else{
         Api({
           method: 'post',
@@ -147,6 +186,8 @@ export default function Portfolio({posts}){
     100,
     [completedCrop],
   )
+  console.log(1)
+
   // data?saveImageOnGallery(data.user.email):''
 async function deleteRequest(){
   Api.post('/lib/imgurDelete',{
@@ -159,11 +200,11 @@ async function deleteRequest(){
     <>
       <Header/>
       <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
-        <Flex id='left-nav' flexDir='column'>
-          <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} />
+        <Flex zIndex={11} position={'fixed'}  height='98%' id='left-nav' flexDir='column'>
+          {/* <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} /> */}
 
           <Division  width={'100%'}  bg={'#323232'}/>
-          < Flex  ml='20px' flexDir='column'>
+          < Flex zIndex={2} ml='20px' flexDir='column'>
             <Flex width='100%' justify='space-between' align='center' >
               <Text>Projetos</Text>
               
@@ -173,10 +214,10 @@ async function deleteRequest(){
                 <Icon transition='all 1s ease-in-out' _hover={{transform:'rotate(360deg)'}} color='#D9D9D9' as={AiOutlineReload} />
               </Flex>
             </Flex>
-            <VStack fontSize='16px' mt='1rem' alignItems='flex-start' spacing='6px'>
-              <Flex ml={0} flexDir='column' align="center">
-                <Flex flexDir='column'  > 
-                  <Flex bg='#20343D' p='0 24px 0 0' borderRadius='5px' align="center"> <Icon as={IoIosArrowDown} /> <Icon color='#FCD635' as={AiOutlineFolderOpen} /> <Text>Lorem</Text></Flex>
+            <VStack fontSize='16px' mt='1rem' justify={'flex-start'} alignItems='flex-start' spacing='6px'>
+              <Flex ml={0} w='100%' mr='auto' flexDir='column' align="center">
+                <Flex flexDir='column' w='100%'  > 
+                  <Flex bg='#20343D' w='100%' p='0 24px 0 0' borderRadius='5px' align="center"> <Icon as={IoIosArrowDown} /> <Icon mr='.5rem' color='#FCD635' as={AiOutlineFolderOpen} /> <Text>Lorem</Text></Flex>
                   <Flex p='0 24px 0 0' ml='24px !important'  align="center"> <Icon color='#FCD635' as={AiOutlineFileText} /> <Text>Lorem</Text></Flex>
                   <Flex ml='24px !important'  align="center"> <Icon color='#959595' as={AiOutlineFileText} /> <Text>Lorem</Text></Flex>
                 </Flex>
@@ -185,15 +226,16 @@ async function deleteRequest(){
               <Flex align="center"><Icon as={IoIosArrowForward} /> <Icon color='#959595' as={AiOutlineFolder} /> <Text>Lorem</Text></Flex>
             </VStack>
           </Flex>
-
-          <Flex as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
-          <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
-          </Flex>
+          <Tooltip bg='#4e4e4e' label='Arraste aqui para deletar'>
+            <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseUp={(e)=>OnDragDrop(e)} zIndex={11} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
+              <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
+            </Flex>
+          </Tooltip>
         </Flex>
 
-        <Box height='98%' m='auto 16px' w={'1px'} bg='#fff' />
+        <Box position={'fixed'} height='98%' m='auto 0 auto 18rem' w={'1px'} bg='#fff' />
 
-        <Flex mt={'2rem'}>
+        <Flex listStyleType={'none'} as={motion.ul} variants={container} initial="hidden" animate="show" marginBottom={'auto'} flexWrap={'wrap'} justify-content='flex-start' maxW="calc(100vw - 22rem)" ml='19rem' mt={'1rem'} mr='1rem'>
           <Flex
             as={Button}
             _hover={{bg:'none'}}bg={'none'}
@@ -205,26 +247,34 @@ async function deleteRequest(){
             w='190px'
             height='190px'
             borderRadius='5px'
+            mt='1rem'
+            ml='20px'
             border='1px
             dashed
             #fff'>
             <Icon fontSize='32px' as={BsPlusSquare}/>
             <Text fontSize='14px' mt='1rem'>Novo Projeto</Text>
           </Flex>
+          <AnimatePresence >
+            {
+              postsCollection.map((post)=>{
+                if(!post.id){
+                  return
+                }else{
+                  return(
+                    <Posts variant={item} key={post.id} setIds={setIds} post={post} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+                  )
+                }
+              })
+            }
 
-          {
-            posts.map((post)=>{
-              return(
-               <>
-               <Posts post={post} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
-               </>
-              )
-            })
-          }
+          </AnimatePresence>
 
         </Flex>
 
-        <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
+      
+      </Flex>
+      <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay bg='#000000c0' />
           <ModalContent w='1200px !important' height='830px' bg='#373737' >
             <ModalHeader  width='100%'>
@@ -376,15 +426,13 @@ async function deleteRequest(){
             </ModalBody>
 
           </ModalContent>
-        </Modal>
-      </Flex>
-      
+      </Modal>
     </>
   )
 }
 
 
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) =>  {
   const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
   if (!session) {
@@ -405,8 +453,8 @@ export async function getServerSideProps(context) {
   })
 
   let posts;
-    posts = await response.json()
-
+  posts = await response.json()
+  console.log('reload')
   return {
     props: {
       posts,
