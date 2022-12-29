@@ -122,8 +122,7 @@ Api(config).then( async (response)=> {
         ),
       )
     )
-    console.log('workeeed')
-    res.status(201).json({ok:true})
+    res.status(201).json({...newData[resDataId]})
   }catch(e){
     console.log(e)
     res.status(401).end('unauthorized')

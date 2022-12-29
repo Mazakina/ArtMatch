@@ -17,7 +17,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
     const formData = new FormData()
     const reqData = req.body
     const deleteHash = reqData.deleteHash
-    const userEmail = reqData.user
+    const userEmail = reqData.user.email
     
     // ---------------------------
     var config = {
@@ -32,9 +32,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
     Api(config).
     then(async (response)=>{
       res.status(200)
-      console.log(JSON.stringify(response.data));
       const newData = {
-        [reqData.id]:''
+        [reqData.id]:null
       }
       const user:userProps = 
         await fauna.query(
@@ -47,7 +46,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         )  
         try{
           await fauna.query(
-            q.Update(
+            q.Replace(
               q.Select(
                 'ref',
                 q.Get(
@@ -59,6 +58,16 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
               ),
               {
                 data:{
+                  userId:
+                    q.Select(
+                      ["data",'userId'],
+                      q.Get(
+                        q.Match(
+                          q.Index('collections_by_user_id'),
+                          user.ref
+                        )
+                      )
+                    ),
                   posts:
                   q.Merge(
                     q.Select(
@@ -84,7 +93,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       }
     })
     .catch(function (error) {
-      // console.log(error);
+      res.status(401).end('upload unauthorized')
     })
   }
   else{

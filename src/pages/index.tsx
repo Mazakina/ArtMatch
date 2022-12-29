@@ -11,7 +11,7 @@ const Home  = () => {
     setGrid(Math.floor(window.screen.width/200))
     console.log(grid)
   },[])
-
+  console.log('re')
   const slides=[
     {img:'https://i.pinimg.com/originals/b3/45/e4/b345e46becdaeaaa9dcf6ea6144c91a9.jpg'},
     {img:'https://i.pinimg.com/originals/7d/98/84/7d98840fdff1b2e7cd508cc7f3a17403.jpg'},
