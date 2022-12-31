@@ -1,11 +1,12 @@
+
 import { unstable_getServerSession } from "next-auth/next"
 import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/ai'
 import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
 import {BiSearchAlt, BiTrash} from 'react-icons/bi'
-import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Tooltip, chakra, shouldForwardProp } from "@chakra-ui/react";
+import {BsPlusSquare,BsFillArrowLeftCircleFill} from 'react-icons/bs'
+import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Tooltip, chakra, shouldForwardProp, Grid, GridItem, SimpleGrid, useDimensions } from "@chakra-ui/react";
 
-import { AnimatePresence, isValidMotionProp, motion} from "framer-motion"
+import { AnimatePresence, isValidMotionProp, LayoutGroup, motion} from "framer-motion"
 import {useDropzone} from "react-dropzone";
 import { useCallback, useEffect, useRef, useState, useMemo  } from "react";
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
@@ -34,6 +35,7 @@ import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import Posts from "../../components/Posts"
+import { Console } from "console"
 
 interface idsProps{
   id?:string,
@@ -41,7 +43,6 @@ interface idsProps{
 }
 
 export default function Portfolio({posts}){
-
   // let memoPosts = useMemo(()=>{},[posts])
   //Motion and Chakra props
   useEffect(()=>{
@@ -49,31 +50,39 @@ export default function Portfolio({posts}){
   },[posts])
 
   const container = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale:0 },
     show: {
+      scale:1,
       opacity: 1,
       transition: {
-        staggerChildren: 0.5
+        delay:0.2,
+        when:'beforeChildren',
+        staggerChildren: 0.3,
+        type:'spring',
+        bounce: 0.2
       }
     }
   }
   
   const item = {
     hidden: { opacity: 0,scale:0 },
-    show: { opacity: 1,scale:1 }
+    show: {opacity: 1,scale:1 }
   }
-  
+  // if (typeof window !== "undefined") {
+  // let gridComputedStyle = window.getComputedStyle(gridRef.current.style);
+  // window.addEventListener("resize", (event) => {console.log(gridComputedStyle)});}
+
   const [postsCollection,setPostsCollection] = useState(()=>posts.filter(post => post.id))
   const imgRef = useRef()
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const imgInputRef = useRef<HTMLInputElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [formPart,setFormPart] = useState<Boolean>(true) 
   const [imgTest, setImgTest] = useState<any>()
   const {data} = useSession()
-  
+
   //form data
   const [isNewFile, setIsNewFile] = useState(false)
   const [title,setTitle] = useState('')
@@ -85,53 +94,83 @@ export default function Portfolio({posts}){
   const [newImage, setNewImage] = useState(null);
 
   const [ids,setIds] = useState<idsProps>({})
+  const [onDragSnap,setOnDragSnap] = useState(ids.id)
+
+  //Grid Layout variables
+  const [initialSlice,setInitialSlice] = useState(0)
+  const [deltaCount,setDeltaCount] = useState(0)
+  const [gridChildrensLenght,setGridChildrensLenght] = useState(8)
+  const [rows,setRows] = useState(1)
+  const gridRef = useRef<any>();
+  // const calcRef = useRef<any>()
+
+  useEffect(()=>{
+    // const childrenHeight = gridRef.current.childNodes[1].clientHeight
+    // const gapValue = 16
+    // const rowCalc = Math.floor(gridDimensions?.contentBox.height/(gapValue+childrenHeight))
+    // setRows(rowCalc)
+    window.addEventListener("wheel",(event)=>{
+      if(event.deltaY>0){
+        setDeltaCount(1)
+        setTimeout(()=>{setDeltaCount(0)},500)
+      }
+      if(event.deltaY<0){
+        setDeltaCount(-1)
+        setTimeout(()=>{setDeltaCount(0)},500)
+      }
+    })
+  },[])
+
+  useEffect(()=>{
+    if(deltaCount==0){return}
+    console.log(initialSlice,' + ',gridChildrensLenght,' < ',  postsCollection.length)
+    if(initialSlice+deltaCount>= 0 &&
+       (initialSlice+gridChildrensLenght< postsCollection.length || initialSlice+gridChildrensLenght< postsCollection.length-deltaCount)
+      ){
+      setInitialSlice(initialSlice+deltaCount)
+    }
+  },[deltaCount])
 
   const onDrop = useCallback( async acceptedFiles => {
-      const test = await toBase64(acceptedFiles[0])
-      // console.log(test)
-      setImgTest(test)
-      const reader = new FileReader()
+    const test = await toBase64(acceptedFiles[0])
+    // console.log(test)
+    setImgTest(test)
+    const reader = new FileReader()
 
-      reader.onload = function (onLoadEvent){
-        setNewImage(onLoadEvent.target.result)
-      }
-      reader.readAsDataURL(acceptedFiles[0]);
+    reader.onload = function (onLoadEvent){
+      setNewImage(onLoadEvent.target.result)
+    }
+    reader.readAsDataURL(acceptedFiles[0]);
   }, [])
+  
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
 
-  const onDropDelete = useCallback(async acceptedFiles =>{
-    console.log(acceptedFiles)
-  },[])
-  const onDragOver = (event) =>{
-    event.preventDefault()
-    console.log('draggin Over')
+  const onMouseEnter = (event) =>{
+    setOnDragSnap(ids.id)
+  }
+  const onMouseLeave = (event) =>{
+    setOnDragSnap('')
   }
   const OnDragDrop = async (event)=>{
+    const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
+    setPostsCollection([...newPostsArray])
     await Api.post('/lib/imgur/imgurDelete',{
       ...ids,
       user:data.user
-    }).then(res=> {if(res.status ===200){
-      console.log('worked')
-      const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
-      setPostsCollection([...newPostsArray])
-    }})
-    console.log('end')
+    }).then(response=>setOnDragSnap(''))
   }
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
-  // const {getRootProps:getRootDeleteProps, getInputProps:getInputDeleteProps, isDragActive:isDragDeleteActive} = useDropzone({onDropDelete})
+
 
   function handleUploadClick(e){
     e.preventDefault()
     const canvasRef = previewCanvasRef.current
     const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
     const imageData64 = canvasRef.toDataURL()
-    // console.log(imageData64)
-
     const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
     // const download = downloadBase64File( imageData64,fileName)
     setFormPart(!formPart)
   }
-
   async function handleOnSubmit(event) {
       event.preventDefault();
       const postData =   {
@@ -143,7 +182,6 @@ export default function Portfolio({posts}){
         midia: midia,
         tags:tags
       }
-      // console.log('0:',typeof postData.image)
       if(isNewFile ===true){
         Api({
           method: 'post',
@@ -167,7 +205,13 @@ export default function Portfolio({posts}){
       }
       // postData.image = fileToBase64(postData.image)
   }
-
+  async function deleteRequest(){
+    Api.post('/lib/imgurDelete',{
+      deleteHash:deleteHash,
+      user:data.user.email,
+      id:''
+    })
+  }
   useDebounceEffect(
     async () => {
       if (
@@ -186,22 +230,14 @@ export default function Portfolio({posts}){
     100,
     [completedCrop],
   )
-  console.log(1)
 
-  // data?saveImageOnGallery(data.user.email):''
-async function deleteRequest(){
-  Api.post('/lib/imgurDelete',{
-    deleteHash:deleteHash,
-    user:data.user.email,
-    id:''
-  })
-}
+
   return(
     <>
       <Header/>
-      <Flex h='100vh' mt='-50px' pt='50px' justify="flex-start">
-        <Flex zIndex={11} position={'fixed'}  height='98%' id='left-nav' flexDir='column'>
-          {/* <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} /> */}
+      <Flex  h='98vh' mt='-50px' pt='50px' justify="flex-start">
+        <Flex  minWidth='240px'zIndex={11}   height='98%' id='left-nav' flexDir='column'>
+          <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} />
 
           <Division  width={'100%'}  bg={'#323232'}/>
           < Flex zIndex={2} ml='20px' flexDir='column'>
@@ -227,51 +263,48 @@ async function deleteRequest(){
             </VStack>
           </Flex>
           <Tooltip bg='#4e4e4e' label='Arraste aqui para deletar'>
-            <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseUp={(e)=>OnDragDrop(e)} zIndex={11} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
+            <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseEnter={event=>onMouseEnter(event)} onMouseLeave={event=>onMouseLeave(event)} onMouseUp={(e)=>OnDragDrop(e)} zIndex={11} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
               <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
             </Flex>
           </Tooltip>
         </Flex>
 
-        <Box position={'fixed'} height='98%' m='auto 0 auto 18rem' w={'1px'} bg='#fff' />
+        <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+        <Box   w='100%' height='95%'>
+        <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} maxHeight='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},200px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+            <GridItem
+              gridArea={'1fr,1fr'}
+              as={Button}
+              _hover={{bg:'none'}}bg={'none'}
+              cursor='pointer'
+              onClick={()=>{onOpen();setIsNewFile(true)}}
+              flexDir='column'
+              align='center'
+              justify='center'
+              w='190px'
+              height='190px'
+              borderRadius='5px'
+              border='1px
+              dashed
+              #fff'>
+              <Icon fontSize='32px' as={initialSlice>0?BsFillArrowLeftCircleFill:BsPlusSquare}/>
+              <Text fontSize='14px' mt='1rem'>{initialSlice>0?'Scroll for More':'Novo Projeto'}</Text>
+            </GridItem>
+            <AnimatePresence >
+              <LayoutGroup>
 
-        <Flex listStyleType={'none'} as={motion.ul} variants={container} initial="hidden" animate="show" marginBottom={'auto'} flexWrap={'wrap'} justify-content='flex-start' maxW="calc(100vw - 22rem)" ml='19rem' mt={'1rem'} mr='1rem'>
-          <Flex
-            as={Button}
-            _hover={{bg:'none'}}bg={'none'}
-            cursor='pointer'
-            onClick={()=>{onOpen();setIsNewFile(true)}}
-            flexDir='column'
-            align='center'
-            justify='center'
-            w='190px'
-            height='190px'
-            borderRadius='5px'
-            mt='1rem'
-            ml='20px'
-            border='1px
-            dashed
-            #fff'>
-            <Icon fontSize='32px' as={BsPlusSquare}/>
-            <Text fontSize='14px' mt='1rem'>Novo Projeto</Text>
-          </Flex>
-          <AnimatePresence >
-            {
-              postsCollection.map((post)=>{
-                if(!post.id){
-                  return
-                }else{
-                  return(
-                    <Posts variant={item} key={post.id} setIds={setIds} post={post} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
-                  )
+                {
+                  postsCollection.map((post,index)=>{
+                    return(
+                      <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice} last={gridChildrensLenght} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+                    )
+                  })
                 }
-              })
-            }
+              </LayoutGroup>
+            </AnimatePresence>
+          </Grid>
 
-          </AnimatePresence>
-
-        </Flex>
-
+        </Box>
       
       </Flex>
       <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>

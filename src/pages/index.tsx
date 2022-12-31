@@ -1,5 +1,5 @@
 import {Box, AspectRatio, Grid, GridItem, HStack } from '@chakra-ui/react'
-import { HeroSlider } from '../components/Carousel/Carousel'
+import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
 import { useEffect, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
