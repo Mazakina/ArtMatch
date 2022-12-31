@@ -30,7 +30,7 @@ export function HeroSlider({slides}:Slides){
       {slides.map((slide) => {
         return(
           <Slide key={slide.img}>
-            <Image  objectFit='cover' w='100%' src={slide.img} alt="" />
+            <Image  objectFit='cover' w='100%' src={slide.url} alt="" />
           </Slide>
         )
       })}

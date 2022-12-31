@@ -30,7 +30,7 @@ export function SignInButton() {
             align="center" flexDir='row'
             as={Flex}
             >
-              {/* <Avatar  height='20px' width='20px' ml='5px' mr='10px'  src={data.user.image} /> */}
+              <Avatar  height='20px' width='20px' ml='5px' mr='10px'  src={data.user.image} />
               <Text 
               fontSize='16px'
               mr='5px' 
