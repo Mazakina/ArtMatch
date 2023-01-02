@@ -2,10 +2,12 @@ import { AspectRatio, Box, Button, Flex, HStack, Text, Image,Container, chakra, 
 import { useState } from "react"
 import {motion, isValidMotionProp } from "framer-motion"
 
-export default function Posts({post,onOpen,setImage,setTitle,setDescription,setMidia,setTags,setPublished,setIds, variant,dragSnap,index,first,last}){
-  
+export default function Posts({
+  post,onOpen,setImage,setTitle,
+  setDescription,setMidia,setTags,
+  setPublished,setIds, variant,
+  dragSnap,index,first,last}){
   const [posted,setPosted] = useState(post.posted)
-  const [modal,setModal] = useState()
   const setModalProperties = (post) => {
     setImage(post.url)
     setTitle(post.title);
@@ -22,7 +24,7 @@ export default function Posts({post,onOpen,setImage,setTitle,setDescription,setM
     })
     // e.dataTransfer.setData('todoId',id)
   }
-  let display = (index>=first && index<first+last)
+  let display = (index>=first && index<first+last )
   if(display){
   return(
   <motion.div
@@ -34,9 +36,6 @@ export default function Posts({post,onOpen,setImage,setTitle,setDescription,setM
     exit={{
       opacity:0,scale:0}}
     variants={variant}
-    // initial={{opacity:0,
-    //           scale:0}}
-    // animate={{opacity:1,scale:1}}
     transition={{type: 'spring', bounce:0.20}}
     whileTap={{ scale: 0.98 }}
     whileDrag={{scale:0.85,zIndex:10}}
@@ -55,14 +54,13 @@ export default function Posts({post,onOpen,setImage,setTitle,setDescription,setM
       border='1px
       solid
       #4d4d4d'
-      borderRadius='5px'
+      borderRadius='2px'
       _hover={{
         border:'1px solid #FFEB80'
       }}>
         <AspectRatio  w='100%' maxWidth={'200px'} ratio={1}>
           <Box position='relative'>
-            {/* <Text>{index}</Text> */}
-            <Image transition={'.2s all ease-in-out'} align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='4px' w='101%' h='101%' objectFit='cover' src={post.url} />
+            <Image transition={'.2s all ease-in-out'} align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='2px' w='101%' h='101%' objectFit='cover' src={post.url} />
             <Flex
               height='100%'
               position='absolute'
@@ -74,7 +72,7 @@ export default function Posts({post,onOpen,setImage,setTitle,setDescription,setM
               _hover={{opacity:1}}
               transition='all 0.3s ease-in-out'
               >
-              <Button onClick={()=>setModalProperties(post)} _hover={{bg:'#FFE767'}} color='#000' bg='#FFE767'>Editar</Button>
+              <Button onClick={()=>setModalProperties(post)} _hover={{bg:'#FFE767'}} color='#000' borderRadius={'2px'} transform={'scale(0.9)'} bg='#FFE767'>Editar</Button>
             </Flex>
           </Box>
         </AspectRatio>
