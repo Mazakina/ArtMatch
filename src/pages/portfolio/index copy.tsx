@@ -1,25 +1,29 @@
 
 import { unstable_getServerSession } from "next-auth/next"
-import {IoIosArrowBack} from 'react-icons/io'
-import {BiSearchAlt, BiChevronLeft, BiChevronRight} from 'react-icons/bi'
-import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Grid, GridItem } from "@chakra-ui/react";
+import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineFileText , AiOutlineFolder , AiFillFileAdd, AiOutlineReload} from 'react-icons/ai'
+import {IoIosArrowForward, IoIosArrowDown,IoIosArrowBack} from 'react-icons/io'
+import {BiSearchAlt, BiTrash} from 'react-icons/bi'
+import {BsPlusSquare,BsFillArrowLeftCircleFill} from 'react-icons/bs'
+import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Tooltip, chakra, shouldForwardProp, Grid, GridItem, SimpleGrid, useDimensions } from "@chakra-ui/react";
 
-import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
+import dynamic from 'next/dynamic'
+import { AnimatePresence, isValidMotionProp, LayoutGroup, motion} from "framer-motion"
 import {useDropzone} from "react-dropzone";
-import { useCallback, useEffect, useRef, useState  } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo  } from "react";
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import {Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,ModalCloseButton,} from '@chakra-ui/react'
 import { canvasPreview,  base64StringtoFile, useDebounceEffect, toBase64} from '../../components/Crop/reusableUtils';
 
+import { AvatarName } from '../../components/AvatarName';
+import Division from '../../components/Division';
 import Header from "../../components/Header";
 import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import Posts from "../../components/Posts"
-import Sidebar from "../../components/Portfolio/sidebar"
+import { Console } from "console"
 
 interface idsProps{
   id?:string,
@@ -49,7 +53,7 @@ export default function Portfolio({posts}){
   const {data} = useSession()
 
   //image refs and states
-  const [postsCollection,setPostsCollection] = useState(posts)
+  const [postsCollection,setPostsCollection] = useState([])
   useEffect(()=>{
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
@@ -80,51 +84,48 @@ export default function Portfolio({posts}){
   const gridRef = useRef<any>();
   const gridContainerRef = useRef<HTMLDivElement>()
   const [initialSlice,setInitialSlice] = useState<number>(0)
-  const [gridLength,setGridLength] = useState<number>(30)
+  const [gridLength,setGridLength] = useState<number>(2)
   const [rows,setRows] = useState<number>(1)
   const [deltaCount,setDeltaCount] = useState<number>(0)
   const [gridCount,setGridCount] = useState<Date>(new Date)
-  let gridLastPostOnDisplay = initialSlice+gridLength
 
+  
   function updateGrid(){
-    const gridHeight = gridRef.current.clientHeight
-    const gridWidth = gridRef.current?.clientWidth
-    const gridChildrenWidth = 190
-    const gapValue = 16
-    const gridRows= Math.floor(gridHeight/230)
-    setGridLength((Math.floor(gridWidth/(gridChildrenWidth+gapValue))*gridRows))
+    // const gridHeight = gridRef.current.clientHeight
+    let gridWidth = gridRef.current?.clientWidth
+    let gridChildrenWidth = 200
+    let gapValue = 16
+    setGridLength(Math.floor(gridWidth/(gridChildrenWidth+gapValue)))
+    setPostsCollection(posts)
   }
-
-
-  function deltaCountCallback(delta){
-    if(delta>0){
-      setDeltaCount(1)
-      setTimeout(()=>{setDeltaCount(0)},500)
-    }
-    if(delta<0){
-      setDeltaCount(-1)
-      setTimeout(()=>{setDeltaCount(0)},500)
-    }
-  }
-
-
-  useEffect(()=>{updateGrid()},[gridCount])
+  useEffect(()=>{
+    updateGrid()
+  },[gridCount])
   // adding eventListeners after window mount
   useEffect(()=>{
-    window.addEventListener('resize',()=>{
-      setGridCount(new Date)
-    })
-    setGridCount(new Date)
+
+    // window.addEventListener('resize',()=>{
+    //   setGridCount(new Date)
+    // })
+    // setGridCount(new Date)
     gridContainerRef.current.addEventListener("wheel",(event)=>{
-      deltaCountCallback(event.deltaY)
+      if(event.deltaY>0){
+        setDeltaCount(1)
+        setTimeout(()=>{setDeltaCount(0)},500)
+      }
+      if(event.deltaY<0){
+        setDeltaCount(-1)
+        setTimeout(()=>{setDeltaCount(0)},500)
+      }
     })
   },[])
 
   useEffect(()=>{
     if(deltaCount==0){return}
+    console.log(initialSlice,' + ',gridLength,' < ',  postsCollection.length)
     if(initialSlice+deltaCount>= 0 &&
-      (gridLastPostOnDisplay< postsCollection.length 
-      || gridLastPostOnDisplay< postsCollection.length-deltaCount)){
+       (initialSlice+gridLength< postsCollection.length || initialSlice+gridLength< postsCollection.length-deltaCount)
+      ){
       setInitialSlice(initialSlice+deltaCount)
     }
   },[deltaCount])
@@ -133,6 +134,7 @@ export default function Portfolio({posts}){
 
   const onDrop = useCallback( async acceptedFiles => {
     const test = await toBase64(acceptedFiles[0])
+    // console.log(test)
     setImgTest(test)
     const reader = new FileReader()
 
@@ -150,7 +152,7 @@ export default function Portfolio({posts}){
   const onMouseLeave = (event) =>{
     setOnDragSnap('')
   }
-  const onDragDrop = async (event)=>{
+  const OnDragDrop = async (event)=>{
     const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
     if(initialSlice !==0){setInitialSlice(initialSlice-1)}
     setPostsCollection([...newPostsArray])
@@ -159,6 +161,7 @@ export default function Portfolio({posts}){
       user:data.user
     }).then(response=>setOnDragSnap(''))
   }
+
 
  // submit events
   function handleUploadClick(e){
@@ -234,62 +237,91 @@ export default function Portfolio({posts}){
   return(
     <>
       <Header/>
-      <Flex overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
-        <Sidebar data={data} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} />
+      <Flex  h='98vh' mt='-50px' pt='50px' justify="flex-start">
+        <Flex  minWidth='240px'zIndex={11}   height='98%' id='left-nav' flexDir='column'>
+          <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} />
 
-        <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
-        <Flex ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
-          <Box    w='100%' height='99%'>
-              <AnimatePresence >   
-                <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} maxHeight='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
-                  <GridItem
-                    transition={'all .3s ease-in-out'}
-                    gridArea={'1fr,1fr'}
-                    as={Button}
-                    _hover={{bg:'none'}}
-                    cursor='pointer'
-                    onClick={()=>{onOpen();setIsNewFile(true)}}
-                    flexDir='column'
-                    align='center'
-                    justify='center'
-                    w='190px'
-                    height='190px'
-                    borderRadius={'5px'}
-                    border='1px
-                    dashed
-                    #fff'
-                    bg={'none'}
-                    
-                    color={'#eeeeee'}
-                    >
-                    <Flex  gap={'.7rem'}>
-                      <Icon  fontSize='42px' as={BsPlusSquare}/>
-
-                    </Flex>
-                    <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
-                  </GridItem>
-                    <LayoutGroup>
-                    {
-                      postsCollection.map((post,index)=>{
-                        return(
-                          <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
-                        )
-                      })
-                    }
-                    </LayoutGroup>
-                </Grid>
-              </AnimatePresence>
-          </Box>
-          <Flex   align='center' justify='center'>
-            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(-1)}} transition={'all .3s ease-in-out'} fontSize='2rem' opacity={initialSlice>0?'initial':'0'}   as={BiChevronLeft}/>
-            <Box cursor={'row-resize'} bg={'white'} width={'1rem'} height={'1rem'} borderRadius={'50%'}/>
-            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(1)}} fontSize='2rem' opacity={(gridLastPostOnDisplay<posts.length)?'initial':'0'}  as={BiChevronRight}/>
+          <Division  width={'100%'}  bg={'#323232'}/>
+          < Flex zIndex={2} ml='20px' flexDir='column'>
+            <Flex width='100%' justify='space-between' align='center' >
+              <Text>Projetos</Text>
+              
+              <Flex align='center'>
+                <Icon color='#D9D9D9' as={AiFillFolderAdd} />
+                <Icon color='#D9D9D9' as={AiFillFileAdd} />
+                <Icon transition='all 1s ease-in-out' _hover={{transform:'rotate(360deg)'}} color='#D9D9D9' as={AiOutlineReload} />
+              </Flex>
+            </Flex>
+            <VStack fontSize='16px' mt='1rem' justify={'flex-start'} alignItems='flex-start' spacing='6px'>
+              <Flex ml={0} w='100%' mr='auto' flexDir='column' align="center">
+                <Flex flexDir='column' w='100%'  > 
+                  <Flex bg='#20343D' w='100%' p='0 24px 0 0' borderRadius='5px' align="center"> <Icon as={IoIosArrowDown} /> <Icon mr='.5rem' color='#FCD635' as={AiOutlineFolderOpen} /> <Text>Lorem</Text></Flex>
+                  <Flex p='0 24px 0 0' ml='24px !important'  align="center"> <Icon color='#FCD635' as={AiOutlineFileText} /> <Text>Lorem</Text></Flex>
+                  <Flex ml='24px !important'  align="center"> <Icon color='#959595' as={AiOutlineFileText} /> <Text>Lorem</Text></Flex>
+                </Flex>
+              </Flex>
+              <Flex  align="center"><Icon as={IoIosArrowForward} /> <Icon color='#959595' as={AiOutlineFolder} /> <Text>Lorem</Text></Flex>
+              <Flex align="center"><Icon as={IoIosArrowForward} /> <Icon color='#959595' as={AiOutlineFolder} /> <Text>Lorem</Text></Flex>
+            </VStack>
           </Flex>
+          <Tooltip bg='#4e4e4e' label='Arraste aqui para deletar'>
+            <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseEnter={event=>onMouseEnter(event)} onMouseLeave={event=>onMouseLeave(event)} onMouseUp={(e)=>OnDragDrop(e)} zIndex={11} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
+              <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
+            </Flex>
+          </Tooltip>
         </Flex>
 
+        <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+        <AnimatePresence mode={'wait'} >
+          <Box  ref={gridContainerRef}  w='100%' height='100%'>
+            <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} maxHeight='32%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},200px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+              <GridItem
+                transition={'all .3s ease-in-out'}
+                gridArea={'1fr,1fr'}
+                as={Button}
+                _hover={{bg:initialSlice>0?'#ffffff':'none'}}
+                cursor='pointer'
+                onClick={()=>{onOpen();setIsNewFile(true)}}
+                flexDir='column'
+                align='center'
+                justify='center'
+                w='190px'
+                height='190px'
+                borderRadius={initialSlice>0?'30%':'5px'}
+                border='1px
+                dashed
+                #fff'
+                color={initialSlice>0?'#000':'#eeeeee'}
+                bg={initialSlice>0?'#eeeeee':'none'}
+                >
+                <Icon fontSize='32px' as={initialSlice>0?BsFillArrowLeftCircleFill:BsPlusSquare}/>
+                <Text fontSize='14px' mt='1rem'>{initialSlice>0?'Scroll for More':'Novo Projeto'}</Text>
+              </GridItem>
+                <LayoutGroup>
+                {
+                  postsCollection.map((post,index)=>{
+                    return(
+                      <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+                    )
+                  })
+                }
+                </LayoutGroup>
+            </Grid>
+            <Grid  autoFlow={'unset'}  as={motion.div} maxHeight='32%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},200px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+              <LayoutGroup>
+                {
+                  postsCollection.slice(gridLength).map((post,index)=>{
+                    return(
+                      <Posts  dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice} last={gridLength} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+                    )
+                  })
+                }
+              </LayoutGroup>
+            </Grid>
+          </Box>
+        </AnimatePresence>
+        
       </Flex>
-
-      
       <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay bg='#000000c0' />
           <ModalContent w='1200px !important' height='830px' bg='#373737' >
@@ -470,6 +502,7 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
 
   let posts;
   posts = await response.json()
+  console.log('reload')
   return {
     props: {
       posts,
