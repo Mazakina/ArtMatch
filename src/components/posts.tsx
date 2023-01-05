@@ -1,6 +1,6 @@
 import { AspectRatio, Box, Button, Flex, HStack, Text, Image,Container, chakra, shouldForwardProp  } from "@chakra-ui/react"
 import { useState } from "react"
-import {motion, isValidMotionProp } from "framer-motion"
+import {motion, useDragControls } from "framer-motion"
 
 export default function Posts({
   post,onOpen,setImage,setTitle,
@@ -16,14 +16,19 @@ export default function Posts({
     setTags(post.tags);
     onOpen()
   }
+  const controls = useDragControls()
+  const [control,setControl] = useState('')
+
   const dragStarted= (e,id)=>{
     e.preventDefault();
     setIds({
       id:post.id,
       deleteHash:post.deleteHash
     })
-    // e.dataTransfer.setData('todoId',id)
+    console.log(id)
   }
+
+
   let display = (index>=first && index<first+last )
   if(display){
   return(
@@ -37,10 +42,15 @@ export default function Posts({
       opacity:0,scale:0}}
     variants={variant}
     transition={{type: 'spring', bounce:0.20}}
-    whileTap={{ scale: 0.98 }}
-    whileDrag={{scale:0.85,zIndex:10}}
+    whileTap={{ scale: 1, }}
+    whileDrag={{scale:0.55,zIndex:20,opacity:1,
+      pointerEvents:'none',filter:'brightness(.7)'
+  
+    }}
+    dragControls={controls}
     drag={true}
     onDragStart={(e)=>{dragStarted(e,1)}}
+    onDragEnd={()=>{setTimeout(()=>{setIds()},300)}}
     dragSnapToOrigin={dragSnap==post.id? false : true}
     >
       <Flex

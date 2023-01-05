@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Api } from "../../../../services/api";  
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
@@ -29,11 +28,12 @@ interface ResponseData{
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   if(req.method ==='POST'){
+    let reqData = JSON.parse(req.body)
     const user:userProps = await fauna.query(
       q.Get(
         q.Match(
           q.Index('user_by_email'),
-          req.body
+          reqData.user
         )
       )
     )
@@ -49,8 +49,24 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           )
         )
       )
+      if(reqData.getAlbums){
+        const allAlbums = await fauna.query(
+          q.Select(
+            ['data','albums'],
+            q.Get(
+              q.Match(
+                q.Index('albums_by_userId'),
+                user.ref
+              )
+            )
+          )
+        )
       const responseToArray = Object.values(responseData)
-      res.json(responseToArray)
+      res.json({posts:responseToArray,albums:allAlbums})
+      }else{
+      const responseToArray = Object.values(responseData)
+      res.json({posts:responseToArray})
+      }
     }catch(e){
       res.status(401).end('')
     }

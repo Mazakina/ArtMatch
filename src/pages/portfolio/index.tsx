@@ -26,7 +26,7 @@ interface idsProps{
   deleteHash?:string
 }
 
-export default function Portfolio({posts}){
+export default function Portfolio({posts,albums}){
   const container = {
     hidden: { opacity: 0, scale:0 },
     show: {
@@ -74,11 +74,13 @@ export default function Portfolio({posts}){
 
   //drag variables
   const [ids,setIds] = useState<idsProps>({})
-  const [onDragSnap,setOnDragSnap] = useState(ids.id)
+  const [onDragSnap,setOnDragSnap] = useState(()=>ids.id)
 
   //Grid Layout variables
+  
   const gridRef = useRef<any>();
   const gridContainerRef = useRef<HTMLDivElement>()
+  const [ activeAlbum,setActiveAlbum] = useState<string>('any')
   const [initialSlice,setInitialSlice] = useState<number>(0)
   const [gridLength,setGridLength] = useState<number>(30)
   const [rows,setRows] = useState<number>(1)
@@ -145,19 +147,36 @@ export default function Portfolio({posts}){
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
 
   const onMouseEnter = (event) =>{
-    setOnDragSnap(ids.id)
+    setOnDragSnap(ids?.id)
   }
   const onMouseLeave = (event) =>{
     setOnDragSnap('')
   }
+
+  async function onAlbumDrop(event,album){
+    if(!!ids){
+      const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
+        return({...post,album:album.albumRef})
+      }else{return post}})
+      setPostsCollection([...newPostsArray])
+      await Api.post('/lib/imgur/imageSetAlbum',{
+        ...album,
+        id:ids.id,
+        user:data.user
+      }).then(response =>console.log(response))
+    }
+  }
+
   const onDragDrop = async (event)=>{
-    const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
-    if(initialSlice !==0){setInitialSlice(initialSlice-1)}
-    setPostsCollection([...newPostsArray])
-    await Api.post('/lib/imgur/imgurDelete',{
-      ...ids,
-      user:data.user
-    }).then(response=>setOnDragSnap(''))
+    if(!!ids){
+      const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
+      if(initialSlice !==0){setInitialSlice(initialSlice-1)}
+      setPostsCollection([...newPostsArray])
+      await Api.post('/lib/imgur/imgurDelete',{
+        ...ids,
+        user:data.user
+      }).then(response=>setOnDragSnap(''))
+    }
   }
 
  // submit events
@@ -235,10 +254,10 @@ export default function Portfolio({posts}){
     <>
       <Header/>
       <Flex overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
-        <Sidebar data={data} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} />
+        <Sidebar setAlbum={{activeAlbum,setActiveAlbum}} albums={albums} data={data} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} onAlbumDrop={onAlbumDrop} />
 
         <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
-        <Flex ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
+        <Flex zIndex={10} ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
           <Box    w='100%' height='99%'>
               <AnimatePresence >   
                 <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} maxHeight='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
@@ -271,10 +290,11 @@ export default function Portfolio({posts}){
                     <LayoutGroup>
                     {
                       postsCollection.map((post,index)=>{
+                        if(post.album===activeAlbum || activeAlbum==='any'){
                         return(
                           <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
                         )
-                      })
+                      }})
                     }
                     </LayoutGroup>
                 </Grid>
@@ -459,20 +479,25 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
       },
     }
   }
+  const reqData={
+    user:session.user.email,
+    getAlbums:true
+  }
   const response = await fetch(`${process.env.BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
     method:'post',
     headers: {
       cookie: context.req.headers.cookie || "",
     },
-    body:
-    session.user.email
+    body:JSON.stringify(
+    reqData)
   })
-
   let posts;
-  posts = await response.json()
+  let albums;
+  await response.json().then(response => {posts = response.posts; albums = [...response.albums]})
   return {
     props: {
       posts,
+      albums,
     },
   }
 }
