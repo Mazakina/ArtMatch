@@ -12,7 +12,7 @@ export default  function Test(){
       data,
       albumRef:"Mon Jan 02 2023 05:53:07 GMT-0300 (Horário Padrão de Brasília) testing",
       albumName:'testing',
-      action:'delete'
+      action:'create'
     }).then(response =>console.log(response))
   }
   return(

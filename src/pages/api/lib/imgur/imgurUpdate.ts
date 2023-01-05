@@ -43,8 +43,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       description: reqData.description,
       deleteHash:reqData.deleteHash,
       url:reqData.link,
-      posted: reqData.posted||true
-      // album: reqData.title,
+      posted: reqData.posted||true,
+      album: reqData.album,
       // tags:[...reqData.tags],
       // midia: reqData.midia,
       }
