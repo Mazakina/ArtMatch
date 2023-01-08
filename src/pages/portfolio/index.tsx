@@ -12,6 +12,7 @@ import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import {Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,ModalCloseButton,} from '@chakra-ui/react'
 import { canvasPreview,  base64StringtoFile, useDebounceEffect, toBase64} from '../../components/Crop/reusableUtils';
+import { object, string, number, date, InferType } from 'yup';
 
 import Header from "../../components/Header";
 import { Api } from '../../services/api';
@@ -84,7 +85,9 @@ export default function Portfolio({posts,albums}){
   const [tags, setTags] = useState([])
   const [deleteHash,setDeleteHash] = useState<string>('')
   const [newImage, setNewImage] = useState(null);
-
+  let postSchema = Object({
+    name: string().required()
+  })
   //drag variables
   const [ids,setIds] = useState<idsProps>({})
   const [onDragSnap,setOnDragSnap] = useState<string>(()=>ids.id)
@@ -101,6 +104,7 @@ export default function Portfolio({posts,albums}){
   const [gridCount,setGridCount] = useState<Date>(new Date)
   let gridLastPostOnDisplay = initialSlice+gridLength
 
+  var regex = /^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/
   function updateGrid(){
     const gridHeight = gridRef.current?.clientHeight
     const gridWidth = gridRef.current?.clientWidth
@@ -194,15 +198,12 @@ export default function Portfolio({posts,albums}){
   }
 
  // submit events
-  function handleUploadClick(e){
+   function  handleUploadClick(e){
     e.preventDefault()
     const canvasRef = previewCanvasRef.current
-    const fileName = "previewFile"//          Adicionar variavel do nome da Publicaçao
     const imageData64 = canvasRef.toDataURL()
-    const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
-    // const download = downloadBase64File( imageData64,fileName)
+    setCroppedImage(imageData64)
     setFormPart(!formPart)
-    setCroppedImage(myNewCroppedFile)
   }
   async function handleOnSubmit(event) {
       event.preventDefault();
@@ -213,7 +214,8 @@ export default function Portfolio({posts,albums}){
         description:description,
         user: data.user,
         midia: midia,
-        tags:tags
+        tags:tags,
+        croppedImage:croppedImage,
       }
       if(isNewFile ===true){
         Api({
@@ -380,8 +382,8 @@ export default function Portfolio({posts,albums}){
                 
                {formPart &&  
                <Flex ml='16px' maxWidth='420px' width='100%' flexDir='column'>
-                  <Text mt='18px' fontSize="18px">Thumbnail</Text>
-                  <Text color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
+                  <Text w='90%' mt='18px' fontSize="18px">Thumbnail</Text>
+                  <Text w='90%' color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
                   <Box mt='10px' width='280px' height='280px'>
                     <ReactCrop
                         aspect={1}
@@ -390,19 +392,28 @@ export default function Portfolio({posts,albums}){
                         onChange={(c)=>{setCrop(c)}}>
                           <Image  alt='' ref={imgRef} src={newImage}/>
                     </ReactCrop>
-                    {/* <Button onClick={(e)=>handleUploadClick(e)} >aquiii</Button> */}
+                      <canvas
+                      ref={previewCanvasRef}
+                      style={{
+                        marginTop:'.5rem',
+                        width: '200px',
+                        height: '200px',
+                        objectFit: 'contain',
+                      }}
+                      />
+                      <Image src={croppedImage} />
+                      <Button onClick={(e)=>{handleUploadClick(e)}}>askldja</Button>
                   </Box>
-                  <Image src={croppedImage}/>
                   <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
                     <></> 
                     <Button
+                      disabled={crop?false:true}
                       width='35%'
                       ml='auto !important'
                       color='#000'
                       bg='#FFE767'
                       onClick={()=>setFormPart(!formPart)}
                       >Continuar</Button>
-                      <Button onClick={(e)=>handleUploadClick(e)}>asdas</Button>
                   </Flex>
                 </Flex>}
                 {!formPart &&
@@ -465,17 +476,7 @@ export default function Portfolio({posts,albums}){
                 </VStack>}
               </Flex>
               
-              {!!crop && 
-                <canvas
-                ref={previewCanvasRef}
-                style={{
-                  display:'none',
-                  width: crop.width,
-                  height: crop.height,
-                  objectFit: 'contain',
-                }}
-                />
-              }
+         
             </form>
 
             </ModalBody>
