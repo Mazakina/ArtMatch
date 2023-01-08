@@ -1,12 +1,41 @@
 import { AspectRatio, Box, Button, Flex, HStack, Text, Image,Container, chakra, shouldForwardProp  } from "@chakra-ui/react"
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import {motion, useDragControls } from "framer-motion"
+
+interface PostsProps{
+  post:{
+    id: string,
+    title: string,
+    description: string,
+    deleteHash: string,
+    url: string,
+    posted: boolean,
+    midia:string, 
+    cropped:string,
+    tag:Array<string>
+  },
+  onOpen:()=>void,
+  setImage:Dispatch<SetStateAction<string>>,
+  setTitle:Dispatch<SetStateAction<string>>,
+  setDescription:Dispatch<SetStateAction<string>>,
+  setMidia:Dispatch<SetStateAction<string>>,
+  setTags:Dispatch<SetStateAction<Array<string>>>,
+  setPublished:Dispatch<SetStateAction<Boolean>>,
+  setIds:Dispatch<SetStateAction<any>>,
+  variant:any,
+  dragSnap:string,
+  index:number,
+  first:number,
+  last:number
+}
+
+
 
 export default function Posts({
   post,onOpen,setImage,setTitle,
   setDescription,setMidia,setTags,
   setPublished,setIds, variant,
-  dragSnap,index,first,last}){
+  dragSnap,index,first,last}:PostsProps){
   const [posted,setPosted] = useState(post.posted)
   const setModalProperties = (post) => {
     setImage(post.url)
@@ -17,7 +46,6 @@ export default function Posts({
     onOpen()
   }
   const controls = useDragControls()
-  const [control,setControl] = useState('')
 
   const dragStarted= (e,id)=>{
     e.preventDefault();
@@ -50,7 +78,7 @@ export default function Posts({
     dragControls={controls}
     drag={true}
     onDragStart={(e)=>{dragStarted(e,1)}}
-    onDragEnd={()=>{setTimeout(()=>{setIds()},300)}}
+    onDragEnd={()=>{setTimeout(()=>{setIds('')},300)}}
     dragSnapToOrigin={dragSnap==post.id? false : true}
     >
       <Flex
@@ -70,7 +98,7 @@ export default function Posts({
       }}>
         <AspectRatio  w='100%' maxWidth={'200px'} ratio={1}>
           <Box position='relative'>
-            <Image transition={'.2s all ease-in-out'} align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='2px' w='101%' h='101%' objectFit='cover' src={post.url} />
+            <Image transition={'.2s all ease-in-out'} align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='2px' w='101%' h='101%' objectFit='cover' src={post.cropped} />
             <Flex
               height='100%'
               position='absolute'
