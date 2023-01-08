@@ -26,7 +26,14 @@ interface idsProps{
   deleteHash?:string
 }
 
+interface AlbumProps{
+    albumName: string,
+    albumRef: string
+}
+
 export default function Portfolio({posts,albums}){
+
+  //Framer Motion Variants
   const container = {
     hidden: { opacity: 0, scale:0 },
     show: {
@@ -46,13 +53,19 @@ export default function Portfolio({posts,albums}){
     show: {opacity: 1,scale:1 }
   }
 
+  // user Data
   const {data} = useSession()
-
-  //image refs and states
-  const [postsCollection,setPostsCollection] = useState(posts)
+  
+  // Posts and Albums from Fauna
+  const [postsCollection,setPostsCollection] = useState<Array<any>>(posts)
+  const [albumsCollection,setAlbumsCollection] = useState<Array<AlbumProps>>(albums)
   useEffect(()=>{
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
+
+
+  //image refs and states
+
   const imgRef = useRef()
   const imgInputRef = useRef<HTMLInputElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,20 +74,20 @@ export default function Portfolio({posts,albums}){
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
   const [formPart,setFormPart] = useState<Boolean>(true) 
   const [imgTest, setImgTest] = useState<any>()
-
+  const [croppedImage,setCroppedImage] = useState<any>()
   //form data
-  const [isNewFile, setIsNewFile] = useState(false)
-  const [title,setTitle] = useState('')
-  const [description,setDescription] = useState('')
-  const [published,setPublished] = useState(true)
-  const [midia,setMidia] = useState('')
+  const [isNewFile, setIsNewFile] = useState<boolean>(false)
+  const [title,setTitle] = useState<string>('')
+  const [description,setDescription] = useState<string>('')
+  const [published,setPublished] = useState<boolean>(true)
+  const [midia,setMidia] = useState<string>('')
   const [tags, setTags] = useState([])
-  const [deleteHash,setDeleteHash] = useState('')
+  const [deleteHash,setDeleteHash] = useState<string>('')
   const [newImage, setNewImage] = useState(null);
 
   //drag variables
   const [ids,setIds] = useState<idsProps>({})
-  const [onDragSnap,setOnDragSnap] = useState(()=>ids.id)
+  const [onDragSnap,setOnDragSnap] = useState<string>(()=>ids.id)
 
   //Grid Layout variables
   
@@ -89,11 +102,12 @@ export default function Portfolio({posts,albums}){
   let gridLastPostOnDisplay = initialSlice+gridLength
 
   function updateGrid(){
-    const gridHeight = gridRef.current.clientHeight
+    const gridHeight = gridRef.current?.clientHeight
     const gridWidth = gridRef.current?.clientWidth
     const gridChildrenWidth = 190
     const gapValue = 16
     const gridRows= Math.floor(gridHeight/230)
+    console.log(gridHeight)
     setGridLength((Math.floor(gridWidth/(gridChildrenWidth+gapValue))*gridRows))
   }
 
@@ -109,24 +123,23 @@ export default function Portfolio({posts,albums}){
     }
   }
 
-
-  useEffect(()=>{updateGrid()},[gridCount])
   // adding eventListeners after window mount
+  useEffect(()=>{updateGrid()},[gridCount])
   useEffect(()=>{
     window.addEventListener('resize',()=>{
       setGridCount(new Date)
+      setInitialSlice(0)
     })
     setGridCount(new Date)
     gridContainerRef.current.addEventListener("wheel",(event)=>{
       deltaCountCallback(event.deltaY)
     })
   },[])
-
   useEffect(()=>{
     if(deltaCount==0){return}
     if(initialSlice+deltaCount>= 0 &&
-      (gridLastPostOnDisplay< postsCollection.length 
-      || gridLastPostOnDisplay< postsCollection.length-deltaCount)){
+      (gridLastPostOnDisplay<= postsCollection.length ||
+      gridLastPostOnDisplay<= postsCollection.length-deltaCount)){
       setInitialSlice(initialSlice+deltaCount)
     }
   },[deltaCount])
@@ -142,7 +155,8 @@ export default function Portfolio({posts,albums}){
       setNewImage(onLoadEvent.target.result)
     }
     reader.readAsDataURL(acceptedFiles[0]);
-  }, [])
+  }
+  , [])
   
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
 
@@ -154,7 +168,7 @@ export default function Portfolio({posts,albums}){
   }
 
   async function onAlbumDrop(event,album){
-    if(!!ids){
+    if(!!ids?.id){
       const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
         return({...post,album:album.albumRef})
       }else{return post}})
@@ -188,6 +202,7 @@ export default function Portfolio({posts,albums}){
     const myNewCroppedFile = base64StringtoFile( imageData64,fileName)
     // const download = downloadBase64File( imageData64,fileName)
     setFormPart(!formPart)
+    setCroppedImage(myNewCroppedFile)
   }
   async function handleOnSubmit(event) {
       event.preventDefault();
@@ -254,13 +269,13 @@ export default function Portfolio({posts,albums}){
     <>
       <Header/>
       <Flex overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
-        <Sidebar setAlbum={{activeAlbum,setActiveAlbum}} albums={albums} data={data} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} onAlbumDrop={onAlbumDrop} />
+        <Sidebar setActAlbum={{activeAlbum,setActiveAlbum}} albums={{albumsCollection,setAlbumsCollection}} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} onAlbumDrop={onAlbumDrop} />
 
         <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
         <Flex zIndex={10} ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
           <Box    w='100%' height='99%'>
               <AnimatePresence >   
-                <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} maxHeight='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+                <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
                   <GridItem
                     transition={'all .3s ease-in-out'}
                     gridArea={'1fr,1fr'}
@@ -283,18 +298,20 @@ export default function Portfolio({posts,albums}){
                     >
                     <Flex  gap={'.7rem'}>
                       <Icon  fontSize='42px' as={BsPlusSquare}/>
-
                     </Flex>
                     <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
                   </GridItem>
                     <LayoutGroup>
                     {
-                      postsCollection.map((post,index)=>{
-                        if(post.album===activeAlbum || activeAlbum==='any'){
+                      postsCollection
+                      .filter((post)=>{
+                        return (post.album===activeAlbum|| activeAlbum==='any')
+                      })
+                      .map((post,index)=>{
                         return(
                           <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
                         )
-                      }})
+                      })
                     }
                     </LayoutGroup>
                 </Grid>
@@ -375,6 +392,7 @@ export default function Portfolio({posts,albums}){
                     </ReactCrop>
                     {/* <Button onClick={(e)=>handleUploadClick(e)} >aquiii</Button> */}
                   </Box>
+                  <Image src={croppedImage}/>
                   <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
                     <></> 
                     <Button
@@ -384,6 +402,7 @@ export default function Portfolio({posts,albums}){
                       bg='#FFE767'
                       onClick={()=>setFormPart(!formPart)}
                       >Continuar</Button>
+                      <Button onClick={(e)=>handleUploadClick(e)}>asdas</Button>
                   </Flex>
                 </Flex>}
                 {!formPart &&
@@ -493,7 +512,14 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
   })
   let posts;
   let albums;
-  await response.json().then(response => {posts = response.posts; albums = [...response.albums]})
+  try{
+    await response.json().then(response => {posts = response.posts; albums = [...response.albums]})
+  }
+  catch(e){
+    return {
+      notFound: true,
+    }
+  }
   return {
     props: {
       posts,

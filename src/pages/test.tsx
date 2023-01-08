@@ -9,9 +9,9 @@ export default  function Test(){
   const[value,setValue] = useState<any>()
   async function testing(){ 
     await Api.post('/lib/imgur/manageAlbum',{
-      data,
+      ...data,
       albumRef:"Mon Jan 02 2023 05:53:07 GMT-0300 (Horário Padrão de Brasília) testing",
-      albumName:'testing',
+      albumName:'new',
       action:'create'
     }).then(response =>console.log(response))
   }
