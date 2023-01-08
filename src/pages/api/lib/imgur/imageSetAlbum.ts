@@ -47,7 +47,7 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
               }
           }}
         )
-      ).then(response=>{console.log(response)})
+      )
       res.status(200).json({ok:true})
     }catch(e){
       console.log(e)

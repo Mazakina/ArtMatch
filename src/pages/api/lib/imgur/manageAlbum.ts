@@ -16,13 +16,14 @@ export default async function manageAlbum (req:NextApiRequest,res:NextApiRespons
       q.Get(
         q.Match(
           q.Index('user_by_email'),
-          req.body.data.user.email
+          req.body.user.email
         )
       )
     )
+    console.log(user)
     switch(req.body.action){
       case'delete':
-      const albumRef = req.body.albumRef 
+      const albumRef = req.body.album
         await fauna.query(
           q.Update(
             q.Select(
@@ -50,47 +51,54 @@ export default async function manageAlbum (req:NextApiRequest,res:NextApiRespons
                   q.Lambda(
                     'i',
                     q.Not(
-                      q.Equals(albumRef,q.Select('albumRef',q.Var('i')))
-                    )
+                      q.Equals((albumRef),q.Select('albumRef',q.Var('i')))
+                    ),
                   )
                 )
               }
             }
           )
-          ).then(response=>{console.log(response)})
+          )
       break;
       case 'create':
-        await fauna.query(
-          q.Update(
-            q.Select(
-              'ref',
-              q.Get(
-                q.Match(
-                  q.Index('albums_by_userId'),
-                  user.ref
-                )
-              )
-            ),{
-            data:{
-              albums:
-                q.Append(
-                  q.Select(
-                    ['data','albums'],
-                    q.Get(
-                      q.Match(
-                        q.Index('albums_by_userId'),
-                        user.ref
-                      )
-                    )
-                  ),
-                  [{albumName:albumName,
-                  albumRef:new Date+' '+albumName
-                  }]
-                )
-              }
+        try{
+          const newAlbum = {albumName:albumName,
+            albumRef:new Date+' '+albumName
             }
-          )        
-        ).then(response=>{console.log(response)})
+          await fauna.query(
+            q.Update(
+              q.Select(
+                'ref',
+                q.Get(
+                  q.Match(
+                    q.Index('albums_by_userId'),
+                    user.ref
+                  )
+                )
+              ),{
+              data:{
+                albums:
+                  q.Append(
+                    q.Select(
+                      ['data','albums'],
+                      q.Get(
+                        q.Match(
+                          q.Index('albums_by_userId'),
+                          user.ref
+                        )
+                      )
+                    ),
+                    [newAlbum]
+                  )
+                }
+              }
+            )        
+          ).then(
+           (response)=>{
+            res.status(200).json(newAlbum)
+           }
+          )
+        }catch(e){res.status(404)}
       break;
       case'update':
         await fauna.query(
@@ -121,7 +129,7 @@ export default async function manageAlbum (req:NextApiRequest,res:NextApiRespons
               )]}
             }
           )
-        ).then(response=>{console.log(response)})
+        )
       break;
       case'get':
         q.Select(
