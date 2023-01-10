@@ -1,8 +1,8 @@
 import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Select } from '@chakra-ui/react'
 
 
-export default function Portfolio({grid, b=[]}){
-  const i = b
+export default function Portfolio({grid, posts=[]}){
+
 
   return(
     <Box id='portfolio'>
@@ -49,9 +49,9 @@ export default function Portfolio({grid, b=[]}){
     </Flex>
     <Box mt='16px' id='image-container' >
       <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
-      { i.map((is)=>{
+      { posts.map((post)=>{
           return(
-            <GridItem key={is}  colSpan={1} display='inline !important' > 
+            <GridItem key={post.id}  colSpan={1} display='inline !important' > 
               <AspectRatio borderRadius='3px' margin='0 !important' display='flex' bg='#969696' border='1px solid black' ratio={1} >
                 <Box></Box>
               </AspectRatio>

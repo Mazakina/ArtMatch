@@ -22,6 +22,10 @@ interface PostsProps{
   setTags:Dispatch<SetStateAction<Array<string>>>,
   setPublished:Dispatch<SetStateAction<Boolean>>,
   setIds:Dispatch<SetStateAction<any>>,
+  setCroppedImage:Dispatch<SetStateAction<string>>,
+  setIsNewFile:Dispatch<SetStateAction<boolean>>,
+  setCurrentPostId:Dispatch<SetStateAction<string>>,
+  setDeleteHash:Dispatch<SetStateAction<string>>,
   variant:any,
   dragSnap:string,
   index:number,
@@ -33,16 +37,21 @@ interface PostsProps{
 
 export default function Posts({
   post,onOpen,setImage,setTitle,
-  setDescription,setMidia,setTags,
-  setPublished,setIds, variant,
+  setDescription,setMidia,setTags,setIsNewFile,setCurrentPostId,
+  setPublished,setIds, variant,setCroppedImage,setDeleteHash,
   dragSnap,index,first,last}:PostsProps){
   const [posted,setPosted] = useState(post.posted)
   const setModalProperties = (post) => {
+    console.log('posts:', post)
     setImage(post.url)
     setTitle(post.title);
     setDescription(post.description);
     setMidia(post.midia);
-    setTags(post.tags);
+    setTags(post.tags||[]);
+    setCroppedImage(post.cropped)
+    setIsNewFile(false)
+    setDeleteHash(post.deleteHash)
+    setCurrentPostId(post.id)
     onOpen()
   }
   const controls = useDragControls()
@@ -53,7 +62,6 @@ export default function Posts({
       id:post.id,
       deleteHash:post.deleteHash
     })
-    console.log(id)
   }
 
 

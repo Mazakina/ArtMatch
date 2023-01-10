@@ -1,7 +1,22 @@
 import {Image, Box, Text ,Flex, Avatar, Button, Link } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
+import Portfolio from "./Portfolio";
+import {useSession} from 'next-auth/react'
+import { Api } from "../../services/api";
+
 export default function Profile(){
+  const {data} = useSession()
+
+  const [posts,setPosts] = useState<any>(null)
+  useEffect(()=>{
+    async function getPosts(){
+      const reqData ={
+        user:data.user.email
+      }
+      await Api.post('/lib/imgur/imgurGetAllFromUser',reqData).then(response => {console.log(response)})
+    }
+  },[])
   const [grid,setGrid] = useState(7)
   const value=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
   return(
@@ -31,20 +46,7 @@ export default function Profile(){
                     */}
                   </Flex>
                 </Flex>
-                <Button
-                  h='34px'
-                  w='100%'
-                  m='16px
-                  0'
-                  borderRadius='3px'
-                  _hover={{
-                    background:'#fdee9a'
-                  }}
-                  bg='#dac761'>
-                  <Text color='black'>
-                    Entre em contato
-                  </Text>
-                </Button>
+                
               </Box>
             </Flex>
           </Flex>
@@ -56,28 +58,29 @@ export default function Profile(){
         <Flex margin='15px auto' color='white'>
           <Link _hover={{}} pb='5px' borderBottom='1px solid #FFE767' fontSize='18px' margin='0 1rem'>Portfolio</Link>
           <Link _hover={{}} fontSize='18px' margin='0 1rem'>Perfil</Link>
-          <Link _hover={{}} fontSize='18px' margin='0 1rem'>Reviews</Link>
         </Flex>
         <Box w='90%' margin='0 auto' borderBottom='1px solid #959595' />
         {/* <Portfolio grid={grid} b = {value} /> */}
                   
         {/* <Perfil/> */}
                   
-        <Box width={'675px'}  m='70px 0' pb='40px' bg='#121212'>
-          <Text  m='10px 30px'fontSize='24px' >Reviews</Text>
-          <Box w='100%' margin='0 auto 12px' borderBottom='1px solid #ECD147' />
-
-          <Flex ml='40px'>
-            <Avatar  src='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930' />
-            <Flex ml='26px' flexDir="column">
-              <Text  fontSize="18px">Jeff Van V</Text>
-              <Text mt='8px' fontSize="16px" fontWeight="Bold">Illustração digital</Text>
-              <Text mt='8px' fontSize="16px">Juras fez um otimo trabalho, e saiu melhor do que eu havia imaginado,  excedeu minhas expectativas!!</Text>
-            </Flex>
-          </Flex>
-        </Box>
+        <Portfolio albums={[]} posts={[]}/>
 
       </Flex>
     </>
   )
 }
+
+{/* <Box width={'675px'}  m='70px 0' pb='40px' bg='#121212'>
+  <Text  m='10px 30px'fontSize='24px' >Reviews</Text>
+  <Box w='100%' margin='0 auto 12px' borderBottom='1px solid #ECD147' />
+
+  <Flex ml='40px'>
+    <Avatar  src='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930' />
+    <Flex ml='26px' flexDir="column">
+      <Text  fontSize="18px">Jeff Van V</Text>
+      <Text mt='8px' fontSize="16px" fontWeight="Bold">Illustração digital</Text>
+      <Text mt='8px' fontSize="16px">Juras fez um otimo trabalho, e saiu melhor do que eu havia imaginado,  excedeu minhas expectativas!!</Text>
+    </Flex>
+  </Flex>
+</Box> */}

@@ -239,10 +239,10 @@ export default function User({userSettings,user}){
             w='100%'
             align='center'
             justify='center'>
-              <SocialOptions onChange={(e)=>{setInstagram(e.target.value)}}   icon={AiOutlineInstagram} placeholder={'Ex: @Fabiano'} text='Instagram' value={instagram} />
-              <SocialOptions onChange={(e)=>{setArtstation(e.target.value)}}   icon={FaArtstation} text='Artstation' placeholder='seu usuário do Artstation' value={artstation} />
-              <SocialOptions onChange={(e)=>{setBehance(e.target.value)}}  icon={FaBehanceSquare} text='BeHance' placeholder='seu usuário do Behance' value={behance} />
-              <SocialOptions onChange={(e)=>{setTelefone(e.target.value)}}  icon={FiPhone} text='Telefone' placeholder='Ex: (11) 99999-9999' value={telefone} />
+              <SocialOptions  onChange={setInstagram}   icon={AiOutlineInstagram} placeholder={'Ex: @Fabiano'} text='Instagram' value={instagram} />
+              <SocialOptions  onChange={setArtstation}   icon={FaArtstation} text='Artstation' placeholder='seu usuário do Artstation' value={artstation} />
+              <SocialOptions  onChange={setBehance}  icon={FaBehanceSquare} text='BeHance' placeholder='seu usuário do Behance' value={behance} />
+              <SocialOptions onChange={setTelefone}  icon={FiPhone} text='Telefone' placeholder='Ex: (11) 99999-9999' value={telefone} />
           </Flex>
           <Button 
           mt='2rem'

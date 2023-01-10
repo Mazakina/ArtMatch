@@ -3,15 +3,18 @@ import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
 import { useEffect, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
+import { Api } from '../services/api'
 
 const Home  = () => {
+  let [feedPosts,setFeedPosts] = useState([])
+  async function getPosts (){await Api.post('/lib/imgur/imgurGetAllFeed',{}).then(response =>console.log('res:',response))}
+
   const [grid,setGrid] = useState(0)
   const [currentActive, setCurrentActive] = useState('Trend')
   useEffect(()=>{
     setGrid(Math.floor(window.screen.width/200))
     console.log(grid)
   },[])
-  console.log('re')
   const slides=[
     {img:'https://i.pinimg.com/originals/b3/45/e4/b345e46becdaeaaa9dcf6ea6144c91a9.jpg'},
     {img:'https://i.pinimg.com/originals/7d/98/84/7d98840fdff1b2e7cd508cc7f3a17403.jpg'},

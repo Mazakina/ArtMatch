@@ -13,6 +13,15 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body 
   const section = req.body.section
   let newData;
+  const user:userProps = await fauna.query(
+    q.Get(
+      q.Match(
+        q.Index('user_by_email'),
+        req.body.user.email
+      )
+    )
+  )
+
   switch(section){
     case'profile':
       newData = {
@@ -38,16 +47,30 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         },
         nsfwAllow:reqData.nsfwAllow,
         allowToBeFound:reqData.allowToBeFound,
+      };
+      try{
+        await fauna.query(
+          q.Update(
+            q.Select(
+              'ref',
+              q.Get(
+                q.Match(
+                  q.Index('collections_by_user_id'),
+                  user.ref
+                )
+              )
+            ),
+            {
+              data:{
+                visible:reqData.allowToBeFound
+              }
+            }
+          ),
+        )
+      }catch(e){
+        res.status(400)
       }
   }
-  const user:userProps = await fauna.query(
-    q.Get(
-      q.Match(
-        q.Index('user_by_email'),
-        req.body.user.email
-      )
-    )
-  )
 
   try{ 
     console.log(newData)
