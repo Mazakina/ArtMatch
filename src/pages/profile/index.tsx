@@ -10,12 +10,10 @@ export default function Profile(){
 
   const [posts,setPosts] = useState<any>(null)
   useEffect(()=>{
-    async function getPosts(){
       const reqData ={
-        user:data.user.email
+        user:data?.user.email
       }
-      await Api.post('/lib/imgur/imgurGetAllFromUser',reqData).then(response => {console.log(response)})
-    }
+      Api.post('/lib/imgur/imgurGetAllFromUser',reqData).then(response => {console.log(response)})
   },[])
   const [grid,setGrid] = useState(7)
   const value=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
