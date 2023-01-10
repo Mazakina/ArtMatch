@@ -1,18 +1,13 @@
 
 import { unstable_getServerSession } from "next-auth/next"
-import {IoIosArrowBack} from 'react-icons/io'
-import {BiSearchAlt, BiChevronLeft, BiChevronRight} from 'react-icons/bi'
+import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
-import {Image , Flex, Box, Text, Icon, VStack, Button, useDisclosure, Input, Textarea, Select, Grid, GridItem } from "@chakra-ui/react";
+import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
 
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
-import {useDropzone} from "react-dropzone";
-import { useCallback, useEffect, useRef, useState  } from "react";
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
+import { useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
-import {Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,ModalCloseButton,} from '@chakra-ui/react'
-import { canvasPreview,  base64StringtoFile, useDebounceEffect, toBase64} from '../../components/Crop/reusableUtils';
-import { object, string, number, date, InferType } from 'yup';
+
 
 import Header from "../../components/Header";
 import { Api } from '../../services/api';
@@ -20,7 +15,8 @@ import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import Posts from "../../components/Posts"
-import Sidebar from "../../components/Portfolio/sidebar"
+import Sidebar from "../../components/Portfolio/SidebarComponent"
+import ModalForm from "../../components/Portfolio/ModalForm";
 
 interface idsProps{
   id?:string,
@@ -33,7 +29,8 @@ interface AlbumProps{
 }
 
 export default function Portfolio({posts,albums}){
-
+  // user Data
+  const {data} = useSession()
   //Framer Motion Variants
   const container = {
     hidden: { opacity: 0, scale:0 },
@@ -53,41 +50,26 @@ export default function Portfolio({posts,albums}){
     hidden: { opacity: 0,scale:0 },
     show: {opacity: 1,scale:1 }
   }
-
-  // user Data
-  const {data} = useSession()
-  
   // Posts and Albums from Fauna
   const [postsCollection,setPostsCollection] = useState<Array<any>>(posts)
   const [albumsCollection,setAlbumsCollection] = useState<Array<AlbumProps>>(albums)
   useEffect(()=>{
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
-
-
+  console.log(postsCollection[0 ])
   //image refs and states
 
-  const imgRef = useRef()
-  const imgInputRef = useRef<HTMLInputElement>(null);
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [crop,setCrop] = useState<Crop>(null);
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
-  const [formPart,setFormPart] = useState<Boolean>(true) 
-  const [imgTest, setImgTest] = useState<any>()
-  const [croppedImage,setCroppedImage] = useState<any>()
-  //form data
   const [isNewFile, setIsNewFile] = useState<boolean>(false)
   const [title,setTitle] = useState<string>('')
   const [description,setDescription] = useState<string>('')
   const [published,setPublished] = useState<boolean>(true)
   const [midia,setMidia] = useState<string>('')
   const [tags, setTags] = useState([])
-  const [deleteHash,setDeleteHash] = useState<string>('')
   const [newImage, setNewImage] = useState(null);
-  let postSchema = Object({
-    name: string().required()
-  })
+  const [deleteHash,setDeleteHash] = useState<string>('')
+  const [croppedImage,setCroppedImage] = useState<any>()
+  const [currentPostId, setCurrentPostId] = useState<string>()
   //drag variables
   const [ids,setIds] = useState<idsProps>({})
   const [onDragSnap,setOnDragSnap] = useState<string>(()=>ids.id)
@@ -111,7 +93,6 @@ export default function Portfolio({posts,albums}){
     const gridChildrenWidth = 190
     const gapValue = 16
     const gridRows= Math.floor(gridHeight/230)
-    console.log(gridHeight)
     setGridLength((Math.floor(gridWidth/(gridChildrenWidth+gapValue))*gridRows))
   }
 
@@ -148,22 +129,6 @@ export default function Portfolio({posts,albums}){
     }
   },[deltaCount])
 
-  //dropZone events
-
-  const onDrop = useCallback( async acceptedFiles => {
-    const test = await toBase64(acceptedFiles[0])
-    setImgTest(test)
-    const reader = new FileReader()
-
-    reader.onload = function (onLoadEvent){
-      setNewImage(onLoadEvent.target.result)
-    }
-    reader.readAsDataURL(acceptedFiles[0]);
-  }
-  , [])
-  
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
-
   const onMouseEnter = (event) =>{
     setOnDragSnap(ids?.id)
   }
@@ -181,7 +146,7 @@ export default function Portfolio({posts,albums}){
         ...album,
         id:ids.id,
         user:data.user
-      }).then(response =>console.log(response))
+      })
     }
   }
 
@@ -197,49 +162,6 @@ export default function Portfolio({posts,albums}){
     }
   }
 
- // submit events
-   function  handleUploadClick(e){
-    e.preventDefault()
-    const canvasRef = previewCanvasRef.current
-    const imageData64 = canvasRef.toDataURL()
-    setCroppedImage(imageData64)
-    setFormPart(!formPart)
-  }
-  async function handleOnSubmit(event) {
-      event.preventDefault();
-      const postData =   {
-        image:imgTest,
-        name:title,
-        title:title,
-        description:description,
-        user: data.user,
-        midia: midia,
-        tags:tags,
-        croppedImage:croppedImage,
-      }
-      if(isNewFile ===true){
-        Api({
-          method: 'post',
-          url: '/lib/imgur/imgurPost',
-          data: postData,
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-          maxContentLength: 100000000,
-          maxBodyLength: 1000000000,
-        }).then(
-          res=> setPostsCollection([...postsCollection,res.data])
-          )
-      }else{
-        Api({
-          method: 'post',
-          url: '/lib/imgur/imgurUpdate',
-          data: postData,
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-          maxContentLength: 100000000,
-          maxBodyLength: 1000000000,
-        })
-      }
-      // postData.image = fileToBase64(postData.image)
-  }
   async function deleteRequest(){
     Api.post('/lib/imgurDelete',{
       deleteHash:deleteHash,
@@ -247,25 +169,6 @@ export default function Portfolio({posts,albums}){
       id:''
     })
   }
-  useDebounceEffect(
-    async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
-        canvasPreview(
-          imgRef.current,
-          previewCanvasRef.current,
-          completedCrop,
-        )
-      }
-    },
-    100,
-    [completedCrop],
-  )
-
 
   return(
     <>
@@ -307,11 +210,12 @@ export default function Portfolio({posts,albums}){
                     {
                       postsCollection
                       .filter((post)=>{
+                        console.log('post:',post)
                         return (post.album===activeAlbum|| activeAlbum==='any')
                       })
                       .map((post,index)=>{
                         return(
-                          <Posts dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} />
+                          <Posts setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile}/>
                         )
                       })
                     }
@@ -327,162 +231,8 @@ export default function Portfolio({posts,albums}){
         </Flex>
 
       </Flex>
-
       
-      <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay bg='#000000c0' />
-          <ModalContent w='1200px !important' height='830px' bg='#373737' >
-            <ModalHeader  width='100%'>
-             <Flex justify="space-between" align='center'>
-              <Icon onClick={()=>{setFormPart(!formPart)}} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
-              <Text>{isNewFile? 'Nova':'Editar'} publicação</Text>
-              <Box/>
-              <ModalCloseButton />
-             </Flex>
-            </ModalHeader>
-            <ModalBody position='relative' width='100%' >
-            <form 
-              onSubmit={(e)=>handleOnSubmit(e)}
-              action="/action_page.php" method='post'
-            >
-              <Flex>
-                <Flex
-                  // as={Button}
-                  transition={'background 0.3s ease-in-out'}
-                  {...getRootProps()}
-                  
-                  position="relative"
-                  _hover={{bg:'#1a1a1a'}}
-                  cursor='pointer'
-                  bg='#1f1f1f'
-                  flexDir='column'
-                  align='center'
-                  justify='center'
-                  w='720px'
-                  height='720px'
-                  borderRadius='0px'
-                  border='1px dashed #fff'
-                  >
-                  <Box position="absolute">
-                    <input
-                     {...getInputProps()}
-              
-                    type="file"
-                    id="img"
-                    name="img"
-                    accept="image/*"
-                    ref={imgInputRef} />
-                    <Text zIndex={2} >Arraste uma Imagem clique aqui para escolher</Text>
-                  </Box>
-                  <Box position="absolute">
-                      <Image  alt='' src={newImage}/>
-                     
-                  </Box>
-                </Flex>
-                
-               {formPart &&  
-               <Flex ml='16px' maxWidth='420px' width='100%' flexDir='column'>
-                  <Text w='90%' mt='18px' fontSize="18px">Thumbnail</Text>
-                  <Text w='90%' color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
-                  <Box mt='10px' width='280px' height='280px'>
-                    <ReactCrop
-                        aspect={1}
-                        crop={crop}
-                        onComplete={(c) => setCompletedCrop(c)}
-                        onChange={(c)=>{setCrop(c)}}>
-                          <Image  alt='' ref={imgRef} src={newImage}/>
-                    </ReactCrop>
-                      <canvas
-                      ref={previewCanvasRef}
-                      style={{
-                        marginTop:'.5rem',
-                        width: '200px',
-                        height: '200px',
-                        objectFit: 'contain',
-                      }}
-                      />
-                      <Image src={croppedImage} />
-                      <Button onClick={(e)=>{handleUploadClick(e)}}>askldja</Button>
-                  </Box>
-                  <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                    <></> 
-                    <Button
-                      disabled={crop?false:true}
-                      width='35%'
-                      ml='auto !important'
-                      color='#000'
-                      bg='#FFE767'
-                      onClick={()=>setFormPart(!formPart)}
-                      >Continuar</Button>
-                  </Flex>
-                </Flex>}
-                {!formPart &&
-                
-                <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
-                  <Text>Titulo da Obra:</Text>
-                  <Input onChange={(e)=>{setTitle(e.target.value)}} value={title} h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595'  />
-                  <Text>Descrição:</Text>
-                  <Textarea onChange={(e)=>{setDescription(e.target.value)}} value={description} mb='6px !important' height='30%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'   />
-                  <Select
-                    onChange={(e)=>{setMidia(e.target.value)}} 
-                    value={midia}
-                    h='38px'
-                    overflow='hidden'
-                    focusBorderColor="#FFEB80"
-                    bg='#151515'
-                    borderRadius='2px'
-                    color='#BEBEBE'
-                    placeholder='Midia'
-                    cursor='pointer'
-                    border=' 1px solid #959595'  
-                    >
-                    <option style={{ color: 'black' }} value="pinturaDigital">Pintura digital</option>
-                    <option style={{ color: 'black' }} value="pinturaTradicional">Pintura tradicional</option>
-                    <option style={{ color: 'black' }} value="tatuagem">Tatuagem</option>
-                    <option style={{ color: 'black' }} value="graffite">Graffite</option>
-                  </Select>
-                
-                  <Text>Tags:</Text>
-                  <Flex 
-                    align='center'
-                    h='38px'
-                    w='100%'
-                    borderRadius='2px'
-                    bg='#151515'
-                    alignSelf='center'
-                    color='#BEBEBE'
-                    position='relative'
-                    as='label'>
-                    <Input
-                      h='38px'
-                      bg='transparent'
-                      borderRadius='2px'
-                      name={'search'}
-                      />
-                    <Icon
-                      position='absolute'
-                      right='2'
-                      zIndex='2'
-                      as={BiSearchAlt}
-                      _hover={{ 
-                        cursor:'pointer'
-                      }}
-                      fontSize='20' />
-                  </Flex>
-                  <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                    <Button onClick={()=>setPublished(false)} type='submit' width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquivar</Button>
-                    <Button onClick={()=>setPublished(true)} type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
-                  </Flex>
-                </VStack>}
-              </Flex>
-              
-         
-            </form>
-
-            </ModalBody>
-
-          </ModalContent>
-      </Modal>
+      <ModalForm currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
     </>
   )
 }

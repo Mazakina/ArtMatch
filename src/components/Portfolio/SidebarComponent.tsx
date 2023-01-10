@@ -48,7 +48,7 @@ export default function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onA
         album:album.albumRef,
         ...data,
         action:'delete'
-      }).then(response=>console.log(response))
+      })
       let newAlbumArray = albumsCollection.filter(
         albumFilter=>albumFilter.albumRef!=album.albumRef
       )

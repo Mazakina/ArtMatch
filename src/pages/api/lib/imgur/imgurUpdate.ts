@@ -10,7 +10,6 @@ interface newDataProps{
   album?:string,
   tags?:string[],
   midia?:string,
-  // cropImage:any
 }
 
 interface userProps{
@@ -25,9 +24,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   if(req.method==='POST'){
     const formData = new FormData()
     const reqData = req.body
-    const userEmail = reqData.user
+    const userEmail = reqData.user.email
     const deleteHash = reqData.deleteHash
-
     const newAppendFunction = (value)=>{
       if(reqData[value]){ 
         // newData[value]= reqData[value]
@@ -42,19 +40,15 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       title: reqData.title,
       description: reqData.description,
       deleteHash:reqData.deleteHash,
-      url:reqData.link,
+      url:reqData.image,
       posted: reqData.posted||true,
-      album: reqData.album,
-      // tags:[...reqData.tags],
-      // midia: reqData.midia,
+      tags:[...reqData.tags],
+      midia: reqData.midia,
       }
     };
     newAppendFunction('title')
     newAppendFunction('description')
-    console.log(newData)
-    // newUpdateFaunaValue('album')
-    // newUpdateFaunaValue('tags')
-    // newUpdateFaunaValue('midia')
+
     // ---------------------------
     var config = {
       method: 'post',
@@ -68,7 +62,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
     Api(config).
     then(async (response)=>{
       res.status(200)
-      console.log(JSON.stringify(response.data));
       const user:userProps = 
         await fauna.query(
           q.Get(
@@ -95,29 +88,30 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
                 data:{
                   posts:
                   q.Merge(
-                    q.Select(
-                      ["data",'posts'],
-                      q.Get(
-                        q.Match(
-                          q.Index('collections_by_user_id'),
-                          user.ref
+                      q.Select(
+                        ["data",'posts'],
+                        q.Get(
+                          q.Match(
+                            q.Index('collections_by_user_id'),
+                            user.ref
+                          )
                         )
-                      )
-                    ),
-                    newData
+                    )
+                    ,newData
                   )
                 }
               }
-            )
-          )
-          res.status(200).json({ok:true})
+            ),
+          ).then(response=>{
+            res.status(200).json(response.data.posts[reqData.id])})
+          
         }
       catch(e){
-        console.log(e)
         res.status(401).end('unauthorized')
       }
     })
     .catch(function (error) {
+      res.status(400)
       console.log(error);
     })
   }

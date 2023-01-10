@@ -13,6 +13,7 @@ export function SignInButton() {
   const [loginModal,setLoginModal] = useState(false)
   return(
       <Flex
+        zIndex={30}
         alignItems='center'
         padding='5px'
         border={data? '':('1px solid #FFEB80')}

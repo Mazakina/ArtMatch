@@ -27,6 +27,7 @@ interface ResponseData{
 }
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
+  console.log(req.body)
   if(req.method ==='POST'){
     let reqData = JSON.parse(req.body)
     const user:userProps = await fauna.query(
