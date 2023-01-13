@@ -13,7 +13,6 @@ export default  function Test(){
   Api.post('/lib/imgur/imgurGetAllFeed',{})
   .then(response=>
     data = response.data.map(collection=>{
-
       return{
         user:collection.data.userId,
         posts:[Object.values(collection.data.posts)]
