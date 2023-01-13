@@ -12,11 +12,6 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
   if(req.method==='POST'){
     console.log(req.body)
     const reqData = req.body
-    console.log( {
-      [reqData.id]:{
-        album:reqData.albumRef
-      }
-    })
     const user:userProps = 
     await fauna.query(
       q.Get(
@@ -42,7 +37,8 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
             data:{
               posts:{
                 [reqData.id]:{
-                  album:reqData.albumRef
+                  albumRef:reqData.albumRef,
+                  albumName:reqData.albumName
                 }
               }
           }}

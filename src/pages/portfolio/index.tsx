@@ -5,7 +5,7 @@ import {BsPlusSquare} from 'react-icons/bs'
 import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
 
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
-import { useEffect, useRef, useState  } from "react";
+import { useCallback, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
 
 
@@ -15,7 +15,7 @@ import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import Posts from "../../components/Posts"
-import Sidebar from "../../components/Portfolio/SidebarComponent"
+import {Sidebar} from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
 
 interface idsProps{
@@ -40,7 +40,7 @@ export default function Portfolio({posts,albums}){
       transition: {
         delay:0.3,
         when:'beforeChildren',
-        staggerChildren: 0.3,
+        staggerChildren: 0.2,
         type:'spring',
         bounce: 0.2
       }
@@ -56,7 +56,6 @@ export default function Portfolio({posts,albums}){
   useEffect(()=>{
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
-  console.log(postsCollection[0 ])
   //image refs and states
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -97,7 +96,7 @@ export default function Portfolio({posts,albums}){
   }
 
 
-  function deltaCountCallback(delta){
+  const deltaCountCallback= useCallback((delta)=>{
     if(delta>0){
       setDeltaCount(1)
       setTimeout(()=>{setDeltaCount(0)},500)
@@ -106,7 +105,7 @@ export default function Portfolio({posts,albums}){
       setDeltaCount(-1)
       setTimeout(()=>{setDeltaCount(0)},500)
     }
-  }
+  },[])
 
   // adding eventListeners after window mount
   useEffect(()=>{updateGrid()},[gridCount])
@@ -136,11 +135,14 @@ export default function Portfolio({posts,albums}){
     setOnDragSnap('')
   }
 
-  async function onAlbumDrop(event,album){
+  const onAlbumDrop = async(event,album)=>{
     if(!!ids?.id){
       const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
-        return({...post,album:album.albumRef})
-      }else{return post}})
+          return({...post,album:album.albumRef})
+        }else{
+          return post
+        }
+      })
       setPostsCollection([...newPostsArray])
       await Api.post('/lib/imgur/imageSetAlbum',{
         ...album,
@@ -165,7 +167,7 @@ export default function Portfolio({posts,albums}){
   async function deleteRequest(){
     Api.post('/lib/imgurDelete',{
       deleteHash:deleteHash,
-      user:data.user.email,
+        user:data.user.email,
       id:''
     })
   }
@@ -210,8 +212,7 @@ export default function Portfolio({posts,albums}){
                     {
                       postsCollection
                       .filter((post)=>{
-                        console.log('post:',post)
-                        return (post.album===activeAlbum|| activeAlbum==='any')
+                        return (post.albumRef===activeAlbum|| activeAlbum==='any')
                       })
                       .map((post,index)=>{
                         return(

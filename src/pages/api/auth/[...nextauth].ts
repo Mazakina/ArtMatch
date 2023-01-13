@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import { fauna } from "../../../services/fauna";
-
+import { generateFromEmail, generateUsername } from "unique-username-generator";
 import {query as q} from 'faunadb'
 
 export const authOptions = {
@@ -38,6 +38,10 @@ export const authOptions = {
     async signIn({ user, account, profile}) {
       const {email} = user
       console.log('account:',account)
+      const username = generateFromEmail(
+        email,
+        4
+      );
       try{
         await fauna.query(
           q.If(
@@ -52,7 +56,11 @@ export const authOptions = {
             [
             q.Create(
               q.Collection('users'),
-              { data: {email}}
+              { data: {
+                email:email,
+                user:username
+              },  
+            }
             ),
             q.Create(
               q.Collection('settings'),
@@ -69,7 +77,7 @@ export const authOptions = {
                 )
                 ,
                 profile:{
-                  usuario:'',
+                  usuario:username,
                   biografia:'',
                   cidade:'',
                   endereco:'',
@@ -160,6 +168,5 @@ export const authOptions = {
       return session
     }
   },
-  // secret: 'skldjaklsdhasdja',
 }
 export default NextAuth(authOptions)
