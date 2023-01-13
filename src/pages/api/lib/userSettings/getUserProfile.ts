@@ -16,16 +16,20 @@ interface userSettingsProps{
   ts:number
 }
 export default async(req:NextApiRequest,res:NextApiResponse)=>{
-  const token = await getSession({req})
+  const reqData = JSON.parse(req.body)
+  const userName = reqData.user.slug.replace(/_/g,' ')
  try{
-  const user:userProps = await fauna.query(
-    q.Get(
-      q.Match(
-        q.Index('user_by_email'),
-        token.user?.email
+  let user:userProps;
+  try{
+    user = await fauna.query(
+      q.Get(
+        q.Match(
+          q.Index('user_by_usuario'),
+          q.LowerCase(userName)
+        )
       )
     )
-  )
+  }catch(e){ res.status(404).json({ok:false})  }
   const userSettings:userSettingsProps = 
   await fauna.query(
     q.Get(
@@ -35,6 +39,7 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
       )
     )
   )
+
   const {data} = userSettings
   res.status(200)
   res.json({

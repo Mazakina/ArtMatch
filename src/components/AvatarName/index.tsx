@@ -7,6 +7,7 @@ interface AvatarNameProps{
 }
 
 export function AvatarName({name,email,avatar}:AvatarNameProps){
+
   return(
   <Flex  overflow={'hidden'} maxW={'250px'} m='20px 0px 0 20px'>
     <Avatar src={avatar}/>

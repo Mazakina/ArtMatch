@@ -8,6 +8,7 @@ import { Api } from '../services/api'
 const Home  = () => {
   let [feedPosts,setFeedPosts] = useState([])
   async function getPosts (){await Api.post('/lib/imgur/imgurGetAllFeed',{}).then(response =>console.log('res:',response))}
+  getPosts()
 
   const [grid,setGrid] = useState(0)
   const [currentActive, setCurrentActive] = useState('Trend')

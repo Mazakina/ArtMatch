@@ -1,14 +1,15 @@
 
-import {Image , Flex, Box, Text, Icon, VStack, Button, Input, Textarea, Select, FormControl,  FormLabel,  FormErrorMessage,  Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,ModalCloseButton } from "@chakra-ui/react";
-import {IoIosArrowBack} from 'react-icons/io'
-import {BiSearchAlt} from 'react-icons/bi'
 import { useCallback, useRef, useState } from "react";
 import {useDropzone} from "react-dropzone";
 import { Api } from "../../services/api";
 import { canvasPreview,  useDebounceEffect, toBase64} from '../Crop/reusableUtils';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
-import ModalTagList from "./ModalTagList";
 import { AxiosResponse } from "axios";
+import Compress from 'compress.js'
+import {Select, Text, Image, Modal, ModalOverlay, ModalContent, ModalHeader, Flex, Icon, ModalCloseButton, ModalBody, FormControl, Button, VStack, FormLabel, Input, FormErrorMessage, Textarea, Box } from "@chakra-ui/react";
+import { BiSearchAlt } from "react-icons/bi";
+import { IoIosArrowBack } from "react-icons/io";
+import { ModalTagList } from "./ModalTagList";
 
 interface resPostProps extends AxiosResponse{
     id: string,
@@ -59,11 +60,33 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
       tagsRef.current.value = ''
     }
   }
-  function  handleUploadClick(e){
+
+  const compress = new Compress()
+
+  async function  handleUploadClick(e){
     e.preventDefault()
     const canvasRef = previewCanvasRef.current
-    const imageData64 = canvasRef.toDataURL()
-    setCroppedImage(imageData64)
+    const imageData = canvasRef.toDataURL('')
+    const blob = await (await fetch(imageData)).blob(); 
+    console.log(blob)
+    let resizedImage = await compress.compress([blob],{
+      size:2,
+      quality:1,
+      maxWidth:300,
+      maxHeight:300,
+      resize:true
+    })
+    const img = resizedImage[0];
+    const base64str = img.data
+    const imgExt = img.ext
+    const resizedFile = Compress.convertBase64ToFile(base64str, imgExt)
+
+    const reader = new FileReader()
+
+    reader.onload = (onLoadEvent)=>{
+      setCroppedImage(onLoadEvent.target.result)
+    }
+    reader.readAsDataURL(resizedFile);
     setFormPart(!formPart)
   }
   function cleanPostData(){

@@ -22,7 +22,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const imageData = image.substring(image.indexOf(",") + 1);
   formData.append('image',
    imageData
-   )
+  )
   const cropData = reqData.croppedImage.substring(image.indexOf(",") + 1);
   croppedFormData.append('image',
     cropData
@@ -58,8 +58,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         deleteHash:resData.deletehash,
         url:resData.link,
         posted: reqData.posted||true,
-        // album: reqData.title,
-        // tags:[...reqData.tags],
+        tags:[...reqData.tags],
         midia: reqData.midia,
         cropped:cropResponse.data.data.link
       }
