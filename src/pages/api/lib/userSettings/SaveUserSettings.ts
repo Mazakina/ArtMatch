@@ -16,7 +16,7 @@ interface allUsersProps{
 }
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method!=='Post'){return res.status(405) }
+  if(req.method!=='POST'){return res.status(405) }
   const reqData = req.body 
   const section = req.body.section
   let newData;
@@ -24,7 +24,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   let banner 
   let bannerDeleteHash
   let avatarDeleteHash
-  
+  console.log(req.body)
   const allUsers:allUsersProps = await fauna.query(
     q.Map(
       q.Paginate(q.Documents(q.Collection("users"))),
@@ -39,15 +39,15 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       )
     )
   )
-  let mappedUsers = allUsers.data.map((users)=>{if(user.data.email!== users.data.email)return users.data.user})
-  if(mappedUsers.includes(reqData.usuario)){
-    return res.status(405).json({message:'usuario já existente'})
-  }
+  let mappedUsers 
 
 
   switch(section){
     case'profile':
-
+      mappedUsers= allUsers.data.map((users)=>{if(user.data.email!== users.data.email)return users.data.user})
+      if(mappedUsers.includes(reqData.usuario)){
+        return res.status(405).json({message:'usuario já existente'})
+      }
       try{
         if(!!req.body.banner){
           deleteImgur(req.body.bannerDeleteHash)
@@ -120,6 +120,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         nsfwAllow:reqData.nsfwAllow,
         allowToBeFound:reqData.allowToBeFound,
       };
+      console.log(newData)
       try{
         await fauna.query(
           q.Update(
