@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { fauna } from "../../../services/fauna";
 import {query as q} from 'faunadb'
 
-
+interface responseProps{
+  data:any
+}
 export default async function(req:NextApiRequest,res:NextApiResponse){
   const userName = req.body.user
 
@@ -13,6 +15,11 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
         userName
       )
     )
-  ).then((response)=> res.status(200).json(response.data))
-  
+  ).then((response:responseProps)=> res.status(200).json(
+    {user:{
+      user:response.data.user,
+      avatar:response.data.avatar,
+      banner:response.data.banner
+    }
+  }))
 }

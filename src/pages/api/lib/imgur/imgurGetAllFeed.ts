@@ -7,6 +7,10 @@ interface faunaPost{
   data: []
 }
 
+interface responseProps{
+  data:any
+}
+
 interface userProps {
   data:{
     user:string,
@@ -29,8 +33,9 @@ export default async function imgurGetAllFeed(req:NextApiRequest,res:NextApiResp
       q.Paginate(q.Documents(q.Collection("collections"))),
       q.Lambda("X", q.Get(q.Var("X")))
     )
-  ).then(async response=>{
-     response.data.map(async collection=>{
+  ).then(async (response:responseProps)=>{
+    data = await Promise.all(response.data.map(async collection=>{
+      if(collection.data.visible==false){return}
       let user:userProps = await fauna.query(
         q.Get(
           collection.data.userId
@@ -44,9 +49,8 @@ export default async function imgurGetAllFeed(req:NextApiRequest,res:NextApiResp
         },
         posts:[Object.values(collection.data.posts)]
       }
-    })
-    console.log(data)
-
+    }))
+    res.json(data)
    }).catch(e=>console.log(e))
 
   

@@ -331,7 +331,7 @@ export default function User({userSettings,user}){
           >Salvar</Button>
         </FormControl> 
 
-        <FormControl display={settingOpt=='segurança'? 'initial':'none'} as={Flex}  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
+        <FormControl display={settingOpt=='seguranca'? 'initial':'none'} as={Flex}  flexDir='column' w='60%' ml='40px' maxWidth='690px' id='config-content'>
           <Text mb='10px' fontSize='26px'>
             Conta
           </Text>
