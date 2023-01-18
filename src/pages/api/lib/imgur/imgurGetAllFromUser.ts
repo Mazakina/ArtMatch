@@ -2,14 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
-interface userProps{
+
+interface userProps {
   ref:string,
   ts:number|string,
   data:{
-    email:string
+    user:string,
+    banner:string,
+    avatar:string,
   }
 }
-
 interface ResponseData{
   id:string,
   title:string,

@@ -23,15 +23,13 @@ interface resPostProps extends AxiosResponse{
     tag:Array<string>
 }
 
-export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsCollection,postsCollection,title,setTitle,description,setDescription,setPublished,midia,setMidia,tags,setTags,newImage,setNewImage,currentPostId,data}){
+export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,deleteHash,isNewFile,setPostsCollection,postsCollection,title,setTitle,description,setDescription,setPublished,midia,setMidia,tags,setTags,newImage,setNewImage,currentPostId,data}){
   const imgInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef()
   const tagsRef = useRef<HTMLInputElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [formPart,setFormPart] = useState<Boolean>(true) 
-  const [imgDrop, setImgDrop] = useState<any>()
-  const [croppedImage,setCroppedImage] = useState<any>()
-
+  const [formPart,setFormPart] = useState<boolean>(true) 
+  const [isLoading,setIsLoading] = useState<boolean>(false)
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
 
@@ -43,12 +41,13 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
 
     reader.onload = function (onLoadEvent){
       setNewImage(onLoadEvent.target.result)
+      console.log('onload:',onLoadEvent.target.result)
     }
     reader.readAsDataURL(acceptedFiles[0]);
   }
   , [])
-  
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: !isNewFile})
+  let isDisabled = (!isNewFile || formPart== false )
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: isDisabled})
 
   function handleKeyPress(event){
     const currentTag = tagsRef.current?.value;
@@ -97,12 +96,14 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
     setMidia(''),
     setTags([]),
     setPublished(false)
-    if(isOpen==='true'){
-      isOpen=false
-    }
+    setFormPart(true)
+    setIsLoading(false)
+    onClose()
+
   }
   async function handleOnSubmit(event) {
     event.preventDefault();
+    setIsLoading(true)
     const postData =   {
       image:newImage,
       name:title,
@@ -125,11 +126,13 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
         maxContentLength: 100000000,
         maxBodyLength: 1000000000,
       }).then(
-        res=> {setPostsCollection([...postsCollection,res.data])
+        res=> {
+          setPostsCollection([...postsCollection,res.data])
+          cleanPostData()  
         })
     }else{
       Api({
-        method: 'post',
+        method: 'PUT',
         url: '/lib/imgur/imgurUpdate',
         data: postData,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -138,6 +141,7 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
       }).then(res=>{
         const newArray =postsCollection.map(post=>{if(post.id===res.data.id){return res.data}else{return post}})
         setPostsCollection(newArray)
+        cleanPostData()
       })
     }
     // postData.image = fileToBase64(postData.image)
@@ -183,10 +187,9 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
             <Flex
               transition={'background 0.3s ease-in-out'}
               {...getRootProps()}
-              
               position="relative"
               _hover={{bg:'#1a1a1a'}}
-              cursor='pointer'
+              cursor={isDisabled?'no-drop':'pointer'}
               bg='#1f1f1f'
               flexDir='column'
               align='center'
@@ -326,8 +329,8 @@ export default function ModalForm({isOpen,onClose,deleteHash,isNewFile,setPostsC
               <ModalTagList setTags={setTags} tags={tags}/>
 
               <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                <Button onClick={()=>setPublished(false)} type='submit' width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquivar</Button>
-                <Button onClick={()=>setPublished(true)} type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
+                <Button onClick={()=>setPublished(false)} isLoading={isLoading} type='submit' width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquivar</Button>
+                <Button onClick={()=>setPublished(true)} isLoading={isLoading} type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
               </Flex>
             </VStack>}
           </Flex>
