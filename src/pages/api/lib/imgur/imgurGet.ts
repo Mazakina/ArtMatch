@@ -131,12 +131,15 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           res.status(200).json({...responseData,otherPosts})
         })
         .catch(function (error) {
-          console.log(error);
+          res.status(500)
+          ;
         });
       }
-    }catch(e){console.log(e)}
+    }catch(e){
+      res.status(400)
+    }
   }else{
-    res.setHeader('allow','POST')
+    res.setHeader('allow','GET')
     res.status(405).end('Method not allowed')
   }
 }

@@ -1,33 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Api } from "../../../../services/api";  
-import FormData from  'form-data'
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
-interface userProps{
+interface userProps {
   ref:string,
   ts:number|string,
   data:{
-    email:string
+    user:string,
+    banner:string,
+    avatar:string,
   }
 }
 
 
-
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  const formData = new FormData()
-  const croppedFormData = new FormData()
   const reqData = req.body
   const image = reqData.image
-  const imageData = image.substring(image.indexOf(",") + 1);
-  formData.append('image',
-   imageData
-  )
-  const cropData = reqData.croppedImage.substring(image.indexOf(",") + 1);
-  croppedFormData.append('image',
-    cropData
-  )
-  
+
   let newData;
   var config = {
     method: 'post',
@@ -36,14 +26,20 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
       Accept: 'application/json'
     },
-    data : formData,
+    data : {
+      image: image.split(',')[1],
+      type: 'base64'
+    },
     maxContentLength: 100000000,
     maxBodyLength: 100000000
   };
   Api(config).then( async (response)=> {
     config={
       ...config,
-      data: croppedFormData
+      data: {
+        image:reqData.croppedImage.split(',')[1],
+        type: 'base64'
+      }
     }
     Api(config).then(async (cropResponse)=> {
       res.status(200)

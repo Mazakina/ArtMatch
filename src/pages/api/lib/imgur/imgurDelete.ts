@@ -4,16 +4,18 @@ import FormData from  'form-data'
 import {fauna} from "../../../../services/fauna"
 import {IsNull, query as q} from 'faunadb'
 
-interface userProps{
+interface userProps {
   ref:string,
   ts:number|string,
   data:{
-    email:string
+    user:string,
+    banner:string,
+    avatar:string,
   }
 }
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method==='POST'){
+  if(req.method==='DELETE'){
     const formData = new FormData()
     const reqData = req.body
     const deleteHash = reqData.deleteHash

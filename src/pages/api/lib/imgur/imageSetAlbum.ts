@@ -9,7 +9,7 @@ interface userProps{
   }
 }
 export default async function(req:NextApiRequest,res:NextApiResponse){
-  if(req.method==='POST'){
+  if(req.method==='PATCH'){
     console.log(req.body)
     const reqData = req.body
     const user:userProps = 
@@ -50,7 +50,7 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
       res.status(401).end('unauthorized')
     }
   }else{
-    res.setHeader('allow','POST')
+    res.setHeader('allow','PATCH')
     res.status(405).end('Method not allowed')
   }
 }

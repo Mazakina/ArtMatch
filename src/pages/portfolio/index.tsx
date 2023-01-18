@@ -138,13 +138,14 @@ export default function Portfolio({posts,albums}){
   const onAlbumDrop = async(event,album)=>{
     if(!!ids?.id){
       const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
-          return({...post,album:album.albumRef})
+          console.log(post)
+          return({...post,albumRef:album.albumRef})
         }else{
           return post
         }
       })
       setPostsCollection([...newPostsArray])
-      await Api.post('/lib/imgur/imageSetAlbum',{
+      await Api.patch('/lib/imgur/imageSetAlbum',{
         ...album,
         id:ids.id,
         user:data.user
@@ -157,19 +158,13 @@ export default function Portfolio({posts,albums}){
       const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
       if(initialSlice !==0){setInitialSlice(initialSlice-1)}
       setPostsCollection([...newPostsArray])
-      await Api.post('/lib/imgur/imgurDelete',{
+      await Api.delete('/lib/imgur/imgurDelete',{
+        data:{
         ...ids,
         user:data.user
+        }
       }).then(response=>setOnDragSnap(''))
     }
-  }
-
-  async function deleteRequest(){
-    Api.post('/lib/imgurDelete',{
-      deleteHash:deleteHash,
-        user:data.user.email,
-      id:''
-    })
   }
 
   return(
@@ -233,7 +228,7 @@ export default function Portfolio({posts,albums}){
 
       </Flex>
       
-      <ModalForm currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
+      <ModalForm setCroppedImage={setCroppedImage} croppedImage={croppedImage} currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
     </>
   )
 }

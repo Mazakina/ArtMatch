@@ -25,7 +25,6 @@ interface mapPostProps{
   }
 }
 export default async function imgurGetAllFeed(req:NextApiRequest,res:NextApiResponse){
-  console.log('triggered')
   let allPost = []
   let data;
   await fauna.query(

@@ -4,24 +4,22 @@ import FormData from  'form-data'
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
-interface newDataProps{
-  title?:string,
-  description?:string,
-  album?:string,
-  tags?:string[],
-  midia?:string,
-}
-
-interface userProps{
+interface UserProps {
   ref:string,
   ts:number|string,
   data:{
-    email:string
+    user:string,
+    banner:string,
+    avatar:string,
   }
 }
 
+interface ResponseProps{
+  data:any
+}
+
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method==='POST'){
+  if(req.method==='PUT'){
     const formData = new FormData()
     const reqData = req.body
     const userEmail = reqData.user.email
@@ -60,9 +58,9 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       data : formData,
     };
     Api(config).
-    then(async (response)=>{
+    then(async (firstResponse)=>{
       res.status(200)
-      const user:userProps = 
+      const user:UserProps = 
         await fauna.query(
           q.Get(
             q.Match(
@@ -102,7 +100,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
                 }
               }
             ),
-          ).then(response=>{
+          ).then((response:ResponseProps)=>{
             res.status(200).json(response.data.posts[reqData.id])})
           
         }
@@ -110,8 +108,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         res.status(401).end('unauthorized')
       }
     })
-    .catch(function (error) {
-      res.status(400)
+    .catch((error)=>{
+      res.status(404)
       console.log(error);
     })
   }
