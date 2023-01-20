@@ -56,7 +56,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         posted: reqData.posted||true,
         tags:[...reqData.tags],
         midia: reqData.midia,
-        cropped:cropResponse.data.data.link
+        cropped:cropResponse.data.data.link,
+        likes:[]
       }
     }
   

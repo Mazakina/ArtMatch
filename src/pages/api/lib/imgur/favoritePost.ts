@@ -14,9 +14,8 @@ interface userProps {
 
 export default async function favoritePost(req:NextApiRequest,res:NextApiResponse){
   const data = req.body
-  const userEmail = data.user.email 
+  const userEmail = data.data.email 
   if(req.method=='POST'){
-    console.log(req.method)
   }
 
   try{
@@ -41,7 +40,6 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
     res.status(401)
   }
    
-
 
   if(req.method=='PATCH'){
     const user:userProps = 
@@ -112,13 +110,12 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
           )
           ,
         )
-      ).then(resonse => res.status(201).end('updated'))
+      ).then(resonse => res.status(201).end('updated')).catch(err =>res.status(400))
     }catch(e){
       res.status(404)
     }
   }
   if(req.method=='DELETE'){
-    console.log(req.body)
     const user:userProps = 
     await fauna.query(
       q.Get(

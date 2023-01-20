@@ -29,7 +29,10 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
         )
       )
     )
-  }catch(e){ res.status(404).json({ok:false})  }
+  }catch(e){
+    res.status(404).json({ok:false})  
+  }
+  
   const userSettings:userSettingsProps = 
   await fauna.query(
     q.Get(

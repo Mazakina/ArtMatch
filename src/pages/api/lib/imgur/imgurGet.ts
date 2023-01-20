@@ -48,10 +48,12 @@ interface ResponseDataProps{
   album: string,
   tags:Array<string>,
   midia: string,
+  likes:string[],
   user:{
     name:string,
     avatar:string,
-    banner:string
+    banner:string,
+    userId?:string
   }|string
 }
 
@@ -77,7 +79,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       tags:[],
       vote:null,
       midia: '',
-      user:''
+      user:'',
+      likes:[]
     }
     try{
       const allPost:faunaPost = await fauna.query(
@@ -86,13 +89,13 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           q.Lambda("X", q.Get(q.Var("X")))
         )
       )
+      let id
       let post
       allPost.data.map((posts:mapPostProps)=>{
         if(posts.data.posts[hash]?.posted===true){
-          responseData.user = (posts.data.userId)
+          id = (posts.data.userId)
           otherPosts = Object.values(posts.data.posts).filter(post=>post!= posts.data.posts[hash])
           post = posts.data.posts[hash]
-
         }
         return
       })
@@ -100,9 +103,10 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         res.status(404)
       }else{
         await fauna.query(
-          q.Get(responseData.user)
+          q.Get(id)
         ).then((response:userProps)=>
           responseData.user = {
+            userId:id,
             avatar:response.data.avatar,
             banner:response.data.banner,
             name:response.data.user
@@ -115,6 +119,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         responseData.deleteHash = post.deleteHash
         responseData.posted = post.posted
         responseData.album = post.album
+        responseData.likes = post.likes
         var config = {
           method: 'get',
           url: `https://api.imgur.com/3/image/${hash}`,
@@ -127,7 +132,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         .then(function (response) {
           const data = response.data.data;
           responseData.timeStamp = data.datetime;
-          responseData.vote = data.vote;
           res.status(200).json({...responseData,otherPosts})
         })
         .catch(function (error) {

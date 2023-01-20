@@ -3,13 +3,27 @@ import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
 import { useEffect, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
-import { Api } from '../services/api'
+import { GetStaticProps } from 'next'
+import { fauna } from '../services/fauna'
+import {query as q} from 'faunadb'
 
-const Home  = () => {
+interface responseProps{
+  data:any
+}
+
+interface userProps {
+  data:{
+    user:string,
+    banner:string,
+    avatar:string,
+  }
+}
+
+
+const Home  = ({data}) => {
+  let postsData =JSON.parse(data)
+  console.log(postsData)
   let [feedPosts,setFeedPosts] = useState([])
-  async function getPosts (){await Api.post('/lib/imgur/imgurGetAllFeed',{}).then(response =>console.log('res:',response))}
-  getPosts()
-
   const [grid,setGrid] = useState(0)
   const [currentActive, setCurrentActive] = useState('Trend')
   useEffect(()=>{
@@ -22,6 +36,7 @@ const Home  = () => {
     {img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHXmdVmmMTIvB7V9hKXV8iYs1d4noyYyAFCsPVvV__g4s-BhZE3irbTtKMgRy2vL-C1rM&usqp=CAU'}
   ]
  
+
   const i =[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
   return (
     <>
@@ -69,3 +84,38 @@ const Home  = () => {
 }
 
 export default Home
+
+
+export const getStaticProps:GetStaticProps= async (context)=>{
+  let data;
+  await fauna.query(
+    q.Map(
+      q.Paginate(q.Documents(q.Collection("collections"))),
+      q.Lambda("X", q.Get(q.Var("X")))
+    )
+  ).then(async (response:responseProps)=>{
+    data = await Promise.all(response.data.map(async collection=>{
+      if(collection.data.visible==false){return}
+      let user:userProps = await fauna.query(
+        q.Get(
+          collection.data.userId
+        )
+      )
+      return{
+        user:{
+          user:user.data.user,
+          avatar:user.data.avatar,
+          banner:user.data.banner
+        },
+        posts:[Object.values(collection.data.posts)]
+      }
+    }))
+   }).catch(e=>console.log(e))  
+   data = JSON.stringify(data)
+  return{
+    props:{
+      data
+    },
+    revalidate: 60*15 //revalidate every 15min
+  }
+}

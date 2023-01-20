@@ -15,11 +15,14 @@ export default async function(req:NextApiRequest,res:NextApiResponse){
         userName
       )
     )
-  ).then((response:responseProps)=> res.status(200).json(
-    {user:{
-      user:response.data.user,
-      avatar:response.data.avatar,
-      banner:response.data.banner
+  ).then((response:responseProps)=>{ 
+    res.status(200).json(
+      {user:{
+        user:response.data.user,
+        avatar:response.data.avatar,
+        banner:response.data.banner
+      }
+    })
     }
-  }))
+  )
 }
