@@ -27,7 +27,7 @@ function Header(){
 
 
   useEffect(()=>{    
-    Api.post('/lib/imgur/imgurGetAllFeed')
+    Api.get('/lib/imgur/imgurGetAllFeed')
     .then(response=>{
       setInitialData(response.data);
       }

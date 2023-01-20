@@ -13,14 +13,15 @@ interface userProps {
 }
 
 export default async function likePost (req:NextApiRequest,res:NextApiResponse){
+  console.log(req.body)
   const data = req.body
-  const postId = req.body.postId
+  const postId = req.body.id
   const user:userProps = 
   await fauna.query(
     q.Get(
         q.Match(
             q.Index('user_by_email'),
-            req.body.user.email
+            req.body.data.email
         )
       )
     )
@@ -34,7 +35,7 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
     )
   )
   if(req.method=="POST"){
-
+      console.log(postOwner)
   }
 
   if(req.method=="PATCH"){
@@ -58,7 +59,7 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
                   [user.ref],
                   q.Filter(
                     q.Select(
-                      ["data",'posts',postId],
+                      ["data",'posts',postId,'likes'],
                       q.Get(
                         q.Match(
                           q.Index('collections_by_user_id'),
@@ -79,10 +80,49 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
             }
         }}
       )
-    )
+    ).then(response=>console.log(res.status(202))).catch(err=>console.log(err))
   }
 
   if(req.method=="DELETE"){
-
+    await fauna.query(
+      q.Update(
+        q.Select(
+          'ref',
+          q.Get(
+            q.Match(
+              q.Index('collections_by_user_id'),
+              postOwner.ref
+            ) 
+          )
+        ),
+        {
+          data:{
+            posts:{
+              [postId]:{
+                likes:
+                  q.Filter(
+                    q.Select(
+                      ["data",'posts',postId,'likes'],
+                      q.Get(
+                        q.Match(
+                          q.Index('collections_by_user_id'),
+                          postOwner.ref
+                        )
+                      )
+                  ),
+                    q.Lambda(
+                      'i',
+                      q.Equals(
+                        q.Var('i'),
+                        [user.ref]
+                      )
+                    )
+                  )
+              }
+            }
+        }}
+      )
+    ).then(response=>res.status(202)).catch(err=>console.log(err))
   }
+
 }
