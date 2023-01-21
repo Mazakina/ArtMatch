@@ -31,7 +31,7 @@ interface SideBarProps{
   }
 }
 
-const Sidebar= React.memo(({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps)=>{
+const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps){
 
   const {data} = useSession()
   const { activeAlbum,setActiveAlbum} = setActAlbum
