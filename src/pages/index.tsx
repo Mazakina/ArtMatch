@@ -6,6 +6,7 @@ import { ActiveLink } from '../components/ActiveLink'
 import { GetStaticProps } from 'next'
 import { fauna } from '../services/fauna'
 import {query as q} from 'faunadb'
+import PostPrev from '../components/PostPrev'
 
 interface responseProps{
   data:any
@@ -22,8 +23,6 @@ interface userProps {
 
 const Home  = ({data}) => {
   let postsData =JSON.parse(data)
-  console.log(postsData)
-  let [feedPosts,setFeedPosts] = useState([])
   const [grid,setGrid] = useState(0)
   const [currentActive, setCurrentActive] = useState('Trend')
   useEffect(()=>{
@@ -67,13 +66,9 @@ const Home  = ({data}) => {
 
         <Box id='image-container' >
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
-            { i.map((is)=>{
+            { postsData.map((post)=>{
               return(
-                <GridItem key={is} colSpan={1} display='inline !important' > 
-                  <AspectRatio margin='0 !important' display='flex' bg='#969696' border='1px solid black' ratio={1} >
-                    <Box></Box>
-                  </AspectRatio>
-                </GridItem> 
+                <PostPrev post={post} key={post.id}/>
               )
             })}
           </Grid>
@@ -111,7 +106,9 @@ export const getStaticProps:GetStaticProps= async (context)=>{
       }
     }))
    }).catch(e=>console.log(e))  
-   data = JSON.stringify(data)
+   let allPosts = []
+   data.map(users=> allPosts =[...allPosts,...users.posts])
+   data = JSON.stringify(allPosts)
   return{
     props:{
       data
