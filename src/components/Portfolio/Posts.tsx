@@ -1,4 +1,4 @@
-import { AspectRatio, Box, Button, Flex, HStack, Text, Image,Container, chakra, shouldForwardProp  } from "@chakra-ui/react"
+import { AspectRatio, Box, Button, Flex, HStack, Text, Image  } from "@chakra-ui/react"
 import { Dispatch, SetStateAction, useState } from "react"
 import {motion, useDragControls } from "framer-motion"
 
