@@ -8,7 +8,7 @@ import { Api } from '../../services/api'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { UserContext } from '../UserContext'
+import { UserContext } from '../../contexts/UserContext'
 
 interface PostDataProps{
 URL: string,

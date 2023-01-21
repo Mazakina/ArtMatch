@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState, useContext, ReactNode, SetStateAction, Dispatch, useCallback, useMemo} from 'react'
+import {createContext, useState, ReactNode, SetStateAction, Dispatch, useMemo} from 'react'
 import { Api } from '../services/api';
 import { useSession } from 'next-auth/react';
 
