@@ -15,7 +15,7 @@ import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
-import Posts from "../../components/Posts";
+import {Posts} from "../../components/Posts";
 
 interface idsProps{
   id?:string,

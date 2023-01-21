@@ -35,7 +35,7 @@ interface PostsProps{
 
 
 
-export default function Posts({
+export function Posts({
   post,onOpen,setImage,setTitle,
   setDescription,setMidia,setTags,setIsNewFile,setCurrentPostId,
   setPublished,setIds, variant,setCroppedImage,setDeleteHash,
