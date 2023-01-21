@@ -226,7 +226,6 @@ export default function Portfolio({posts,albums}){
         </Flex>
 
       </Flex>
-      
       <ModalForm setCroppedImage={setCroppedImage} croppedImage={croppedImage} currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
     </>
   )
