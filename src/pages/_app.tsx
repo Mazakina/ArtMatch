@@ -4,7 +4,7 @@ import { theme } from '../styles/theme'
 import '../components/Slider/Slider.css'
 import { SessionProvider } from "next-auth/react"
 import { Session } from "next-auth";
-import {UserProvider} from './UserContext'
+import {UserProvider} from '../contexts/UserContext'
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
 
