@@ -9,7 +9,7 @@ interface itemProps{
   id:string,
 }
 
-const  SearchComponent = React.memo<any>(({searchItems=[],isActive=''})=> {
+const  SearchComponent = React.memo<any>( function SearchComp({searchItems=[],isActive=''}) {
   const display = isActive.length>2
   return(
     <UnorderedList display={isActive?'initial':'none'} w={'100%'} m='0' boxShadow= '5px 5px 28px 0px rgba(0,0,0,0.75);' bg='#292929' color='white' p='.3rem' borderRadius={'5px'} top='35px' position='absolute'>

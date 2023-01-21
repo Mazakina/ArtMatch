@@ -16,7 +16,7 @@ const ModalTagList = React.memo<ModalTagListProps>(({tags=[],setTags}) => {
     <Flex rowGap={'.5rem'} overflow={'auto'} maxW={'100%'} mt='.5rem' flexWrap={'wrap'} maxHeight={'100%'}>
     { tags.map(tag =>{
       return(
-        <TopicTag tag={tag} removeTag={removeTag} />
+        <TopicTag tag={tag} key={tag} removeTag={removeTag} />
       )
     })}
     </Flex>
