@@ -7,7 +7,7 @@ interface ModalTagListProps{
   setTags:Dispatch<SetStateAction<Array<string>>>
 }
 
-export const ModalTagList = React.memo<ModalTagListProps>(({tags=[],setTags}) => {
+const ModalTagList = React.memo<ModalTagListProps>(({tags=[],setTags}) => {
   const removeTag= useCallback((tag)=>{
     let newTagArray = tags.filter(value=>{return (value!=tag)})
     setTags(newTagArray)
@@ -31,4 +31,6 @@ export function TopicTag({tag,removeTag}){
       <TagCloseButton onClick={()=>removeTag(tag)} />
     </Tag>
   )
-}
+};
+
+export default ModalTagList;

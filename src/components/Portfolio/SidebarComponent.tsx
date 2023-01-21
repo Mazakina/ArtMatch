@@ -31,7 +31,7 @@ interface SideBarProps{
   }
 }
 
-export const Sidebar= React.memo(({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps)=>{
+const Sidebar= React.memo(({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps)=>{
 
   const {data} = useSession()
   const { activeAlbum,setActiveAlbum} = setActAlbum
@@ -95,7 +95,7 @@ export const Sidebar= React.memo(({onMouseEnter,onMouseLeave,onDragDrop,albums,o
 
               {albumsCollection.map(album=>{
                 return(
-                  <Album  deleteAlbum={deleteAlbum} onAlbumDrop={onAlbumDrop} setActiveAlbum={setActiveAlbum} activeAlbum={activeAlbum} album={album}/>
+                  <Album key={album.albumRef} deleteAlbum={deleteAlbum} onAlbumDrop={onAlbumDrop} setActiveAlbum={setActiveAlbum} activeAlbum={activeAlbum} album={album}/>
                 )
               })}
             </LayoutGroup>
@@ -111,7 +111,9 @@ export const Sidebar= React.memo(({onMouseEnter,onMouseLeave,onDragDrop,albums,o
 
     </Flex>
   )
-})
+});
+
+export default Sidebar;
 
 interface AlbumMapProps{
   album:AlbumProps,
@@ -119,7 +121,7 @@ interface AlbumMapProps{
   setActiveAlbum:Dispatch<SetStateAction<string>>,
   onAlbumDrop:(event:any,album: any)=>void,
   deleteAlbum:(album:AlbumProps)=>void
-}
+};
 
 export function Album({album,activeAlbum,setActiveAlbum,onAlbumDrop,deleteAlbum}:AlbumMapProps){
   const active = activeAlbum===album.albumRef
@@ -157,7 +159,7 @@ export function Album({album,activeAlbum,setActiveAlbum,onAlbumDrop,deleteAlbum}
 
     </Flex>
   )
-}
+};
 
 
 export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatingNewAlbum}){
@@ -214,4 +216,4 @@ export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatin
 
     </Flex>
   )
-}
+};

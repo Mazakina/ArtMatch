@@ -7,7 +7,7 @@ import { SignInButton } from '../SignInButton'
 import NextLink from 'next/link'
 import { searchEngine } from '../../pages/api/lib/sarchEngine'
 import { Api } from '../../services/api'
-import { SearchComponent } from './SearchComponent'
+import SearchComponent from './SearchComponent'
 
 function Header(){
   const [initalData,setInitialData ]= useState()
