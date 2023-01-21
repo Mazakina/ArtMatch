@@ -133,8 +133,8 @@ export default function Posts({
     </motion.div>
   )}else{
     return(
-      <>
-      </>
+      <Flex>
+      </Flex>
     )
   }
 }
