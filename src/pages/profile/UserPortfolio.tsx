@@ -72,16 +72,16 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
           onChange={(event)=>{setALbumFilter(event.target.value)}}
           value={albumFilter}
           >
-          {albums.map((album)=>{
+          {albums? albums.map((album)=>{
             return(
               <option key={album.albumRef} value={album.AlbumName}>{album.albumName}</option>
             )
-          })}
+          }):''}
         </Select>
       </Flex>
       <Box  mt='16px' id='image-container' >
         <Grid  height='95%'   templateColumns={`repeat(${'auto-fit'},240px)`}>
-        { newPostsArray.map((post)=>{
+        {newPostsArray? newPostsArray.map((post)=>{
             return(
               <GridItem as={Link} href={`/posts/${post.id}`}  mt='.5rem' border='1px solid #0000000' maxWidth={'300px'} key={post.id}   > 
                 <Flex  justify='center' position='relative'>
@@ -97,7 +97,7 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
                 </Flex>
               </GridItem> 
             )
-          })}
+          }):''}
         </Grid >
       </Box>
     </Box>
