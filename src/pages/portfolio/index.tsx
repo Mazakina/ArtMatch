@@ -3,7 +3,6 @@ import { unstable_getServerSession } from "next-auth/next"
 import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
-
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
 import { useCallback, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
@@ -14,9 +13,9 @@ import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
-import Posts from "../../components/Posts"
-import {Sidebar} from "../../components/Portfolio/SidebarComponent"
+import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
+import Posts from "../../components/Posts";
 
 interface idsProps{
   id?:string,
