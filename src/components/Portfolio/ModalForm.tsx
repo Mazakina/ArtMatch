@@ -9,7 +9,7 @@ import Compress from 'compress.js'
 import {Select, Text, Image, Modal, ModalOverlay, ModalContent, ModalHeader, Flex, Icon, ModalCloseButton, ModalBody, FormControl, Button, VStack, FormLabel, Input, FormErrorMessage, Textarea, Box } from "@chakra-ui/react";
 import { BiSearchAlt } from "react-icons/bi";
 import { IoIosArrowBack } from "react-icons/io";
-import { ModalTagList } from "./ModalTagList";
+import ModalTagList from "./ModalTagList";
 
 interface resPostProps extends AxiosResponse{
     id: string,

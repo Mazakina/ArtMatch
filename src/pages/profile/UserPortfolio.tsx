@@ -1,4 +1,4 @@
-import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Select, SimpleGrid } from '@chakra-ui/react'
+import {Image, Box, Flex, Text, Grid, GridItem, AspectRatio, Select } from '@chakra-ui/react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { ProfilePostData } from '../../components/ProfilePostData'
@@ -74,7 +74,7 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
           >
           {albums.map((album)=>{
             return(
-              <option value={album.AlbumName}>{album.albumName}</option>
+              <option key={album.albumRef} value={album.AlbumName}>{album.albumName}</option>
             )
           })}
         </Select>

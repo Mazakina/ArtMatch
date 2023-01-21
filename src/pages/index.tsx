@@ -102,12 +102,12 @@ export const getStaticProps:GetStaticProps= async (context)=>{
         )
       )
       return{
-        user:{
-          user:user.data.user,
-          avatar:user.data.avatar,
-          banner:user.data.banner
-        },
-        posts:[Object.values(collection.data.posts)]
+        posts:[...Object.values(collection.data.posts)].map((value:object)=>{
+          return{...value,
+            user:user.data.user,
+            avatar:user.data.avatar,
+            banner:user.data.banner}
+        })
       }
     }))
    }).catch(e=>console.log(e))  
@@ -119,3 +119,43 @@ export const getStaticProps:GetStaticProps= async (context)=>{
     revalidate: 60*15 //revalidate every 15min
   }
 }
+
+
+
+// export const getStaticProps:GetStaticProps= async (context)=>{
+//   let data;
+//   await fauna.query(
+//     q.Map(
+//       q.Paginate(q.Documents(q.Collection("collections"))),
+//       q.Lambda("X", q.Get(q.Var("X")))
+//     )
+//   ).then(async (response:responseProps)=>{
+//     data = await Promise.all(response.data.map(async collection=>{
+//       if(collection.data.visible==false){return}
+//       let user:userProps = await fauna.query(
+//         q.Get(
+//           collection.data.userId
+//         )
+//       )
+//       return{
+//         user:{
+//           user:user.data.user,
+//           avatar:user.data.avatar,
+//           banner:user.data.banner
+//         },
+//         posts:[Object.values(collection.data.posts.map(post=>{
+//           return{
+//             ...post,user:user.data.user,avatar:user.data.avatar,banner:user.data.banner
+//           }}
+//         ))]
+//       }
+//     }))
+//    }).catch(e=>console.log(e))  
+//    data = JSON.stringify(data)
+//   return{
+//     props:{
+//       data
+//     },
+//     revalidate: 60*15 //revalidate every 15min
+//   }
+// }
