@@ -3,7 +3,7 @@ import { Api } from "../../../../services/api";
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 
-interface userProps {
+interface UserProps {
   ref:string,
   ts:number|string,
   data:{
@@ -13,6 +13,18 @@ interface userProps {
   }
 }
 
+interface NewDataProps{
+ id:string,
+ title:string,
+ description:string,
+ deleteHash:string,
+ url:string,
+ posted:boolean,
+ tags:string[],
+ midia:string,
+ cropped:string,
+ likes:string[]
+}
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body
@@ -57,7 +69,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         tags:[...reqData.tags],
         midia: reqData.midia,
         cropped:cropResponse.data.data.link,
-        likes:[]
+        likes:[],
+        createdAt:resData.datetime
       }
     }
   
@@ -65,7 +78,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   
  // ---------------------------
   const userEmail = reqData.user.email
-  const user:userProps = 
+  const user:UserProps = 
   await fauna.query(
     q.Get(
         q.Match(

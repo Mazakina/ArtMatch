@@ -1,18 +1,19 @@
 import {Box, AspectRatio, Grid, GridItem, HStack } from '@chakra-ui/react'
 import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
 import { GetStaticProps } from 'next'
 import { fauna } from '../services/fauna'
 import {query as q} from 'faunadb'
 import PostPrev from '../components/PostPrev'
+import { UserContext } from '../contexts/UserContext'
 
-interface responseProps{
+interface ResponseProps{
   data:any
 }
 
-interface userProps {
+interface UserProps {
   data:{
     user:string,
     banner:string,
@@ -20,11 +21,29 @@ interface userProps {
   }
 }
 
+interface HomePosts{
+  avatar:string,
+  banner:string,
+  cropped:string,
+  deleteHash:string,
+  description:string,
+  id:string,
+  midia:string,
+  title:string,
+  url:string,
+  user:string,
+  createdAt:number,
+  likes:string[],
+  tags:string[],
+}
+
 
 const Home  = ({data}) => {
+  const useUser = useContext(UserContext)
+  const {user,favorites}= useUser
   let postsData =JSON.parse(data)
   const [grid,setGrid] = useState(0)
-  const [currentActive, setCurrentActive] = useState('Trend')
+  const [currentActive, setCurrentActive] = useState('trend')
   useEffect(()=>{
     setGrid(Math.floor(window.screen.width/200))
     console.log(grid)
@@ -32,11 +51,36 @@ const Home  = ({data}) => {
   const slides=[
     {img:'https://i.pinimg.com/originals/b3/45/e4/b345e46becdaeaaa9dcf6ea6144c91a9.jpg'},
     {img:'https://i.pinimg.com/originals/7d/98/84/7d98840fdff1b2e7cd508cc7f3a17403.jpg'},
-    {img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHXmdVmmMTIvB7V9hKXV8iYs1d4noyYyAFCsPVvV__g4s-BhZE3irbTtKMgRy2vL-C1rM&usqp=CAU'}
+    {img:'https://cdn.discordapp.com/attachments/1008571163099811953/1066425655518044250/Mazakina_logo_for_a_site_called_ink-eyes_framed_in_a_circle_cd6a955c-1a50-4e01-823f-10bf72c97b0d.png'}
   ]
- 
+  
+  function sortPosts(postsData){
+    if(currentActive == 'recent'){
+      //sort by publication date
+      return (postsData.sort(
+        (a,b)=>{
+          return b.createdAt-a.createdAt
+        }
+      ))
+    }
+    if(currentActive == 'trend'){
+      //sort by likes
+      return (postsData.sort(
+        (a,b)=>{
+          return b.likes.length- a.likes.length
+        }
+      ))
+    }
+    if(currentActive == 'following'){
+      return(postsData.filter(post=>favorites.includes(post.user)).sort(
+        (a,b)=>{
+          return b.createdAt-a.createdAt
+        }
+      ))
+    }
 
-  const i =[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26]
+  }
+
   return (
     <>
       <Header/>
@@ -47,26 +91,26 @@ const Home  = ({data}) => {
           <ActiveLink
             setCurrentActive={setCurrentActive}
             currentActive={currentActive}
-            id='Trend'>
+            id='trend'>
                 Trend
           </ActiveLink>
           <ActiveLink
             setCurrentActive={setCurrentActive}
             currentActive={currentActive}
-            id='Seguindo' >
+            id='following' >
                 Seguindo
           </ActiveLink>
           <ActiveLink
             setCurrentActive={setCurrentActive}
             currentActive={currentActive}
-            id='Recente'>
+            id='recent'>
                 Recente
           </ActiveLink>
         </HStack>
 
         <Box id='image-container' >
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
-            { postsData.map((post)=>{
+            { sortPosts(postsData).map((post)=>{
               return(
                 <PostPrev post={post} key={post.id}/>
               )
@@ -88,10 +132,11 @@ export const getStaticProps:GetStaticProps= async (context)=>{
       q.Paginate(q.Documents(q.Collection("collections"))),
       q.Lambda("X", q.Get(q.Var("X")))
     )
-  ).then(async (response:responseProps)=>{
+  ).then(async (response:ResponseProps)=>{
+    //filtering data if visible, and expading post with user data
     data = await Promise.all(response.data.map(async collection=>{
       if(collection.data.visible==false){return}
-      let user:userProps = await fauna.query(
+      let user:UserProps = await fauna.query(
         q.Get(
           collection.data.userId
         )
@@ -106,14 +151,15 @@ export const getStaticProps:GetStaticProps= async (context)=>{
       }
     }))
    }).catch(e=>console.log(e))  
+
    let allPosts = []
+   
    data.map(users=> allPosts =[...allPosts,...users.posts])
    data = JSON.stringify(allPosts)
   return{
     props:{
       data
     },
-    revalidate: 60*15 //revalidate every 15min
   }
 }
 
@@ -126,10 +172,10 @@ export const getStaticProps:GetStaticProps= async (context)=>{
 //       q.Paginate(q.Documents(q.Collection("collections"))),
 //       q.Lambda("X", q.Get(q.Var("X")))
 //     )
-//   ).then(async (response:responseProps)=>{
+//   ).then(async (response:ResponseProps)=>{
 //     data = await Promise.all(response.data.map(async collection=>{
 //       if(collection.data.visible==false){return}
-//       let user:userProps = await fauna.query(
+//       let user:UserProps = await fauna.query(
 //         q.Get(
 //           collection.data.userId
 //         )

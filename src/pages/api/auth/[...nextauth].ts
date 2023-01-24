@@ -40,7 +40,7 @@ export const authOptions = {
       console.log('account:',account)
       const username = generateFromEmail(
         email,
-        4
+        8
       );
       try{
         await fauna.query(

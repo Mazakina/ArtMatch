@@ -1,14 +1,14 @@
-import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Tooltip } from '@chakra-ui/react'
-import {HiDotsVertical} from 'react-icons/hi'
+import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Tooltip, Button } from '@chakra-ui/react'
 import {AiFillHeart, AiOutlineHeart} from 'react-icons/ai'
 import {BsBookmarkHeartFill, BsBookmarkPlus} from 'react-icons/bs'
 import Header from "../../components/Header"
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Api } from '../../services/api'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { UserContext } from '../../contexts/UserContext'
+import { MdOutlineAddBox } from 'react-icons/md'
 
 interface PostDataProps{
 URL: string,
@@ -74,7 +74,6 @@ export default function Posts({postData,slug}:PostsProps){
       likeFunctions.dislike(user,slug,postData.user.name)
       const filteredLikes = currentPost.likes.filter(f=> f.toString() !=user.ref.toString())
       setCurrentPost({...currentPost,likes:[...filteredLikes]})
-      
     }
   }
   const handleFavoriteButton= (e)=>{
@@ -83,10 +82,8 @@ export default function Posts({postData,slug}:PostsProps){
       return
     }
     if(!favorited){
-      console.log(user)
       favFunctions.push(user,slug,)
       setFavorites([...favorites,slug])
-      setCurrentPost({...currentPost,likes:[user.ref]})
     }
     if(favorited){
       favFunctions.delete(user,slug)
@@ -98,7 +95,7 @@ export default function Posts({postData,slug}:PostsProps){
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
-  
+  console.log(process.env.NEXT_PUBLIC_BASE_URL)
 
   return(
     <>
@@ -110,13 +107,14 @@ export default function Posts({postData,slug}:PostsProps){
           </Flex>
 
           <Flex pl='18px' pr='18px'id='details-section' flexDir='column' bg='#272727' width='450px'>
-            <Flex  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
-              <Flex align='center'>
+            <Flex as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
+              <Flex  align='center'>
                 <Avatar mr='12px' width='44px' height='44px' src={currentPost.user.avatar}/>
                 <Box>
                   <Text fontSize='20px' color='#fff'> {capitalizeFirstLetter(currentPost.user.name)} </Text>
                   <Text fontSize='16px' color='#fff'>  3D Artist </Text>
                 </Box>
+                <Button onClick={(e)=>{handleFavoriteButton(e)}} ml='auto' mt='auto' borderRadius={' 3px'} mb='4px' h='1.5rem'  p='0.3rem !important' bg={'#FFEB80'} color={'black'} fontSize='12px' ><Icon fontSize={'18px'} as={MdOutlineAddBox}/> Follow</Button>
               </Flex>
               {/* <Icon mr='18px'fontSize='28px' color='white' as={HiDotsVertical}/> */}
             </Flex>
@@ -124,13 +122,13 @@ export default function Posts({postData,slug}:PostsProps){
             <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
 
             <Flex margin='0 8px' flexDir='column'>
-              <Text mb='12px' color='white' fontSize='24px'>
+              <Text mb='12px' color='white' fontSize='22px'>
                {currentPost?.title} 
               </Text>
-              <Text color='white'>
+              <Text fontSize={'18px'} color='white'>
                 {currentPost?.description}
               </Text>
-              <Flex mt='18px'align='center' justify='space-between'>
+              <Flex mt='16px'align='center' justify='space-between'>
                 <Flex>
                   <Icon onClick={(e)=>{handleLikeButton(e)}} color={liked[0]?'#f8473b' :'white'} fontSize='25px' cursor={'pointer'} as={liked[0]? AiFillHeart:AiOutlineHeart}/>
                   <Text ml='.5rem' color ='white'>{currentPost.likes? currentPost.likes.length:''}</Text>
@@ -173,7 +171,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
   const reqData={
     id:slug
   }
-  const response = await fetch(`${process.env.BASE_URL}/api/lib/imgur/imgurGet`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGet`,{
     method:'POST',
     body:JSON.stringify(
     reqData)
