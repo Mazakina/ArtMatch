@@ -8,11 +8,14 @@ import Perfil from "./Perfil";
 import {FaBehanceSquare, FaArtstation, FaInstagramSquare } from 'react-icons/fa'
 import {FiPhone } from 'react-icons/fi'
 import { Tooltip } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 
 export default function Profile({profile,social}){
   let [currentActive,setCurrentActive] = useState('portfolio')
   console.log(profile)
   const {data} = useSession()
+  const router = useRouter()
+  const {slug} = router.query
   const [posts,setPosts] = useState<any>([])
   const [albums,setAlbums] = useState<any>([])
   function capitalizeFirstLetter(str) {
@@ -21,7 +24,7 @@ export default function Profile({profile,social}){
   useEffect(()=>{
       if(data){
         const reqData ={
-          user:data.user.email,
+          user:slug,
           getAlbums:true
         }
         Api.post('/lib/imgur/imgurGetAllFromUser',reqData).then(response => {setPosts(response.data.posts);setAlbums(response.data.albums)})
@@ -127,7 +130,7 @@ export default function Profile({profile,social}){
 
 export async function getServerSideProps(context) {
   var id = context.query
-  let response =  await fetch(`${process.env.BASE_URL}/api/lib/userSettings/getUserProfile`,{
+  let response =  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/userSettings/getUserProfile`,{
       method:'post',
       headers: {
         cookie: context.req.headers.cookie || "",

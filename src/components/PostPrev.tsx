@@ -16,7 +16,7 @@ export default function PostPrev ({post}){
         <Flex _hover={{
           opacity:'1'
         }} w='100%'h='100%'cursor='pointer' transition={'all 0.3s ease-in-out'} opacity='0' align='flex-end' bottom='0' justify='flex-start' bg='linear-gradient(0deg, #000000 0%, #14141487 25%, rgba(0,0,0,0) 50%)' position='absolute'>
-          <ProfilePostData  post={post} avatar={post.avatar} name={capitalizeFirstLetter(name)}/>
+          <ProfilePostData  post={post} avatar={post.avatar} name={capitalizeFirstLetter(post.user)}/>
         </Flex>
       </Flex>
     </GridItem> 

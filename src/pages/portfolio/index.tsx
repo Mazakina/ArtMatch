@@ -4,7 +4,7 @@ import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
-import { useCallback, useEffect, useRef, useState  } from "react";
+import { useCallback, useContext, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
 
 
@@ -16,6 +16,7 @@ import { GetServerSideProps } from "next"
 import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
 import {Posts} from "../../components/Portfolio/Posts";
+import { UserContext } from "../../contexts/UserContext";
 
 interface idsProps{
   id?:string,
@@ -234,7 +235,6 @@ export default function Portfolio({posts,albums}){
 
 export const getServerSideProps: GetServerSideProps = async (context) =>  {
   const session = await unstable_getServerSession(context.req, context.res, authOptions)
-
   if (!session) {
     return {
       redirect: {
@@ -245,9 +245,10 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
   }
   const reqData={
     user:session.user.email,
-    getAlbums:true
+    getAlbums:true,
+    byEmail:true
   }
-  const response = await fetch(`${process.env.BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
     method:'post',
     headers: {
       cookie: context.req.headers.cookie || "",

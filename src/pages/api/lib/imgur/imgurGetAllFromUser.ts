@@ -4,9 +4,9 @@ import {query as q} from 'faunadb'
 
 
 interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
+  ref?:string,
+  ts?:number|string,
+  data?:{
     user:string,
     banner:string,
     avatar:string,
@@ -35,14 +35,27 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       reqData =  JSON.parse(req.body)}else{
     reqData= req.body}
 
-    const user:userProps = await fauna.query(
-      q.Get(
-        q.Match(
-          q.Index('user_by_email'),
-          reqData.user
+    let user:userProps
+    
+    if(reqData.byEmail == true){
+      user = await fauna.query(
+        q.Get(
+          q.Match(
+            q.Index('user_by_email'),
+            q.LowerCase(reqData.user)
+          )
         )
       )
-    )
+    }else{
+      user = await fauna.query(
+        q.Get(
+          q.Match(
+            q.Index('user_by_usuario'),
+            q.LowerCase(reqData.user)
+          )
+        )
+      )
+    }
     try{
       const responseData = await fauna.query(
         q.Select(
