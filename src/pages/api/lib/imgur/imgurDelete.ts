@@ -87,7 +87,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
               }
             )
           )
-          console.log('request received')
           res.status(200).json({ok:true})
         }catch(e){
         console.log(e)

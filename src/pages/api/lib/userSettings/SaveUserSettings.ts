@@ -24,7 +24,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
   let banner 
   let bannerDeleteHash
   let avatarDeleteHash
-  console.log(req.body)
   const allUsers:allUsersProps = await fauna.query(
     q.Map(
       q.Paginate(q.Documents(q.Collection("users"))),
@@ -60,13 +59,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             const newAvatarData = await postImgur(req.body.avatar)
             avatar = newAvatarData.data.data.link
             avatarDeleteHash =  newAvatarData.data.data.deletehash
-            console.log(newAvatarData.data.data)
         }
         try{
-          console.log('avatar:',avatar)
-          console.log('avatarDeleteHash:',avatarDeleteHash)
-          console.log('banner:',banner)
-          console.log('bannerDeleteHash:',bannerDeleteHash)
           await fauna.query(
             q.Update(
               q.Select(
@@ -120,7 +114,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         nsfwAllow:reqData.nsfwAllow,
         allowToBeFound:reqData.allowToBeFound,
       };
-      console.log(newData)
       try{
         await fauna.query(
           q.Update(

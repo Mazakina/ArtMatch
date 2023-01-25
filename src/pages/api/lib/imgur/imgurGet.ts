@@ -11,7 +11,7 @@ interface userProps{
     email:string,
     banner:string,
     avatar:string,
-    user:string
+    user:string,
   }
 }
 
@@ -53,7 +53,8 @@ interface ResponseDataProps{
     name:string,
     avatar:string,
     banner:string,
-    userId?:string
+    userId?:string,
+    ref:string
   }|string
 }
 
@@ -109,7 +110,8 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             userId:id,
             avatar:response.data.avatar,
             banner:response.data.banner,
-            name:response.data.user
+            name:response.data.user,
+            ref:response.ref
         })
         responseData.id= post.id
         responseData.title= post.title
@@ -136,7 +138,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         })
         .catch(function (error) {
           res.status(500)
-          ;
         });
       }
     }catch(e){

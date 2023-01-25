@@ -25,7 +25,8 @@ likes:Array<string>,
 user: {
   name:string,
   avatar:string,
-  banner:string
+  banner:string,
+  ref:object
 },
 vote: null|number
 }
@@ -36,12 +37,12 @@ interface PostsProps{
 
 export default function Posts({postData,slug}:PostsProps){
   const [currentPost,setCurrentPost] = useState<PostDataProps>(postData)
-  const [favorited,setFavorited] = useState(false)
+  const [favoritedPost,setFavoritedPost] = useState(false)
+  const [favoritedUser,setFavoriteduser] = useState(false)
   const [liked,setLiked] = useState([])
-
+  console.log(postData)
   const useUser = useContext(UserContext)
-  const {user,favorites,setFavorites}= useUser 
-
+  const {user,favoritePosts,setFavoritePosts,favoriteUsers,setFavoriteUsers} = useUser 
 
   useEffect(()=>{
     if(user){
@@ -50,16 +51,22 @@ export default function Posts({postData,slug}:PostsProps){
   },[user,currentPost.likes])
 
   useEffect(()=>{
+      if(user){
+      setFavoriteduser(favoriteUsers.includes(Object.values(currentPost.user.ref)[0].id))
+    }
+  },[user,currentPost.id,favoriteUsers])
+  
+  useEffect(()=>{
     setCurrentPost(postData)
   },[postData])
 
   useEffect(()=>{
-    if(favorites){
-      if(favorites.includes(slug)){
-        setFavorited(true)
-      }else{setFavorited(false)}
+    if(favoritePosts){
+      if(favoritePosts.includes(slug)){
+        setFavoritedPost(true)
+      }else{setFavoritedPost(false)}
     }
-  },[favorites])
+  },[favoritePosts])
 
   const handleLikeButton = (e)=>{
     e.preventDefault();
@@ -76,26 +83,41 @@ export default function Posts({postData,slug}:PostsProps){
       setCurrentPost({...currentPost,likes:[...filteredLikes]})
     }
   }
-  const handleFavoriteButton= (e)=>{
+  const handleFavoritePostButton= (e)=>{
     e.preventDefault();
     if(!useUser){
       return
     }
-    if(!favorited){
-      favFunctions.push(user,slug,)
-      setFavorites([...favorites,slug])
+    if(!favoritedPost){
+      favPostFunctions.push(user,slug,)
+      setFavoritePosts([...favoritePosts,slug])
     }
-    if(favorited){
-      favFunctions.delete(user,slug)
-      const filteredFavorites = favorites.filter(f=> f!=slug)
-      setFavorites(filteredFavorites)
+    if(favoritedPost){
+      favPostFunctions.delete(user,slug)
+      const filteredFavorites = favoritePosts.filter(f=> f!=slug)
+      setFavoritePosts(filteredFavorites)
     }
   }
+  const handleFavoriteUserButton = (e:React.MouseEvent<HTMLElement>)=>{
+    e.preventDefault();
+    if(!useUser){
+      return
+    }
+    if(!favoritedUser){
+      favUserFunctions.push(user,postData.user.name)
+      setFavoriteUsers([...favoriteUsers,])
+    }
+    if(favoritedUser){
+      favUserFunctions.delete(user,postData.user.name)
+      const filteredFavorites = favoriteUsers.filter(f=> f!=Object.values(currentPost.user.ref)[0].id)
+      setFavoriteUsers(filteredFavorites)
+    }
+  }
+
   function capitalizeFirstLetter(str) {
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 
-  console.log(process.env.NEXT_PUBLIC_BASE_URL)
 
   return(
     <>
@@ -114,7 +136,28 @@ export default function Posts({postData,slug}:PostsProps){
                   <Text fontSize='20px' color='#fff'> {capitalizeFirstLetter(currentPost.user.name)} </Text>
                   <Text fontSize='16px' color='#fff'>  3D Artist </Text>
                 </Box>
-                <Button onClick={(e)=>{handleFavoriteButton(e)}} ml='auto' mt='auto' borderRadius={' 3px'} mb='4px' h='1.5rem'  p='0.3rem !important' bg={'#FFEB80'} color={'black'} fontSize='12px' ><Icon fontSize={'18px'} as={MdOutlineAddBox}/> Follow</Button>
+                <Button 
+                  onClick={(e)=>{handleFavoriteUserButton(e)}}
+                  fontSize='12px'
+                  ml='auto'
+                  mt='auto'
+                  borderRadius={'3px'}
+                  mb='4px'
+                  h='1.5rem'
+                  p='0.3rem !important'
+                  _hover={{
+                    background:'none',
+                    color: '#FFEB80',
+                    border:'1px solid #FFEB80'
+                  }}
+                  bg={favoritedUser?'none':'#FFEB80'}
+                  color={favoritedUser?'#FFEB80':'black'}
+                  border={'1px solid #FFEB80'}>
+                  {favoritedUser?
+                    (<>Following</>):
+                    (<><Icon fontSize={'18px'} as={MdOutlineAddBox}/> Follow</>)
+                  }
+                </Button>
               </Flex>
               {/* <Icon mr='18px'fontSize='28px' color='white' as={HiDotsVertical}/> */}
             </Flex>
@@ -133,7 +176,7 @@ export default function Posts({postData,slug}:PostsProps){
                   <Icon onClick={(e)=>{handleLikeButton(e)}} color={liked[0]?'#f8473b' :'white'} fontSize='25px' cursor={'pointer'} as={liked[0]? AiFillHeart:AiOutlineHeart}/>
                   <Text ml='.5rem' color ='white'>{currentPost.likes? currentPost.likes.length:''}</Text>
                 </Flex>
-                <Icon onClick={(e)=>{handleFavoriteButton(e)}} fontSize='25px' cursor={'pointer'} as={favorited? BsBookmarkHeartFill:BsBookmarkPlus}/>
+                <Icon onClick={(e)=>{handleFavoritePostButton(e)}} fontSize='25px' cursor={'pointer'} as={favoritedPost? BsBookmarkHeartFill:BsBookmarkPlus}/>
               </Flex>
             </Flex>
 
@@ -177,7 +220,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
     reqData)
   })
   let postData= await response.json();
-  postData.otherPosts = postData.otherPosts.filter(post => post.posted==true)
+  // postData.otherPosts = postData.otherPosts.filter(post => post.posted==true)
 
   if (postData.id==''|| postData.posted==false) {
     return {
@@ -196,9 +239,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
   }
 }
 
-
-
-export const favFunctions = {
+export const favPostFunctions = {
   delete: (session,slug)=>{
     if(session){
       Api.delete('/lib/imgur/favoritePost',{data:{
@@ -210,18 +251,17 @@ export const favFunctions = {
     if(session){
       Api.patch('/lib/imgur/favoritePost',{
         id:slug,...session
-      })
+      }).then(res=>console.log(res))
     }
   },
   post:(session,slug)=>{
     if(session){
       Api.post('/lib/imgur/favoritePost',{
         id:slug,...session
-      })
+      }).then(res=>console.log(res))
     }
   },
 }
-
 export const likeFunctions = {
   like: (user,slug,postOwner)=>{
     if(user){
@@ -236,6 +276,31 @@ export const likeFunctions = {
         data:{
           ...user,id:slug,postOwnerName:postOwner
         }
+      })
+    }
+  }
+}
+export const favUserFunctions = {
+  post:(user,postOwner)=>{
+    if(user){
+      Api.post('/lib/imgur/favoriteUser',{
+        ...user,postOwnerName:postOwner
+      })
+    }
+  },
+  push:(user,postOwner)=>{
+    if(user){
+      Api.patch('/lib/imgur/favoriteUser',{
+        ...user,postOwnerName:postOwner
+      })
+    }
+  },
+  delete:(user,postOwner)=>{
+    if(user){
+      console.log(user)
+      Api.delete('/lib/imgur/favoriteUser',{data:{
+        ...user,postOwnerName:postOwner
+      }
       })
     }
   }

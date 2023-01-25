@@ -10,6 +10,15 @@ interface UserProps {
     avatar:string,
   }
 }
+interface FavoritedUsers{
+  ref:string,
+  data:{
+    userId:string,
+    favoritedUsers:{
+      id:number
+    }[]
+  }
+}
 export default async function getUser(req:NextApiRequest,res:NextApiResponse){
   if(req.method=='POST'){
     try{
@@ -30,7 +39,19 @@ export default async function getUser(req:NextApiRequest,res:NextApiResponse){
         )
       )
 
-      res.status(200).json({user,favoritedPosts})
+      const getfavoritedUsers:FavoritedUsers = await fauna.query(
+        q.Get(
+          q.Match(
+            q.Index('favorite_users_by_user_id'),
+            user.ref
+          )
+        )
+      )
+      const favoritedUsers = getfavoritedUsers.data.favoritedUsers.map((user)=>{return user.id})
+      try{
+        console.log(favoritedUsers[0])
+      }catch{}
+      res.status(200).json({user,favoritedPosts,favoritedUsers})
     }catch(e){
       res.status(404).end('user not Found')
     }

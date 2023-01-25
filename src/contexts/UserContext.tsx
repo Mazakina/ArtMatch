@@ -3,7 +3,7 @@ import { Api } from '../services/api';
 import { useSession } from 'next-auth/react';
 
 interface UserProps {
-  ref:string,
+  ref:string
   ts:number|string,
   data:{
     user:string,
@@ -13,16 +13,18 @@ interface UserProps {
 }
 interface userCxtProps{
   user:UserProps,
-  favorites:string[],
-  setFavorites: Dispatch<SetStateAction<string[]>>|null
-
+  favoritePosts:string[],
+  setFavoritePosts: Dispatch<SetStateAction<string[]>>|null
+  favoriteUsers:number[],
+  setFavoriteUsers: Dispatch<SetStateAction<number[]>>|null
 }
 interface ProviderProps {
   children:ReactNode
 }
 
 export const UserContext = createContext<userCxtProps>({
-    favorites:[],
+    favoritePosts:[],
+    favoriteUsers:[],
     user:{
       ref:'',
       ts:'',
@@ -31,14 +33,14 @@ export const UserContext = createContext<userCxtProps>({
         banner:'',
         avatar:'',
     }},
-    setFavorites:null
+    setFavoritePosts:null,
+    setFavoriteUsers:null,
  });
-
-
 
 export const UserProvider = ({children}:ProviderProps)=>{
   const {data} = useSession()
-  const [favorites,setFavorites] = useState<string[]>([])
+  const [favoritePosts,setFavoritePosts] = useState<string[]>([])
+  const [favoriteUsers,setFavoriteUsers] = useState<Array<number>>([])
   const [user,setUser] = useState<UserProps>({
       ref:'',
       ts:'',
@@ -48,11 +50,13 @@ export const UserProvider = ({children}:ProviderProps)=>{
         avatar:'',
       }
    })
+   console.log(favoriteUsers[0])
   useMemo(()=>{if(data){
-   Api.post('/lib/userSettings/getUser',{data}).then(response => {setUser(response.data.user),setFavorites(response.data.favoritedPosts.data.posts)})
+    Api.post('/lib/userSettings/getUser',{data}).then(response => {setFavoriteUsers(response.data.favoritedUsers);setUser(response.data.user);setFavoritePosts(response.data.favoritedPosts.data.posts)})
   }},[data])
+
   return(
-    <UserContext.Provider value={{user,favorites,setFavorites}}>
+    <UserContext.Provider value={{user,favoritePosts,setFavoritePosts,favoriteUsers,setFavoriteUsers}}>
       {children}
     </UserContext.Provider>
   )

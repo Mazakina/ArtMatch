@@ -23,7 +23,6 @@ export default async function manageAlbum (req:NextApiRequest,res:NextApiRespons
         )
       )
     )
-    console.log(user)
     switch(req.body.action){
       case'delete':
       const albumRef = req.body.album
