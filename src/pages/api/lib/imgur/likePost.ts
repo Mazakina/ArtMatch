@@ -13,18 +13,18 @@ interface userProps {
 }
 
 export default async function likePost (req:NextApiRequest,res:NextApiResponse){
-  console.log(req.body)
-  const data = req.body
   const postId = req.body.id
-  const user:userProps = 
-  await fauna.query(
-    q.Get(
+  async function getUser(){
+    const user:userProps = await fauna.query(
+      q.Get(
         q.Match(
-            q.Index('user_by_email'),
-            req.body.data.email
+          q.Index('user_by_email'),
+          req.body.data.email
         )
       )
     )
+    return user;
+  }
 
   const postOwner:userProps = await fauna.query(
     q.Get(
@@ -34,11 +34,9 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
       )
     )
   )
-  if(req.method=="POST"){
-      console.log(postOwner)
-  }
-
   if(req.method=="PATCH"){
+    const user = await getUser()
+
     await fauna.query(
       q.Update(
         q.Select(
@@ -80,10 +78,13 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
             }
         }}
       )
-    ).then(response=>console.log(res.status(202))).catch(err=>console.log(err))
+    ).then(response=>res.status(202)).catch(err=>res.status(404).end('collection not found'))
+    return
   }
 
   if(req.method=="DELETE"){
+    const user = await getUser()
+
     await fauna.query(
       q.Update(
         q.Select(
@@ -122,7 +123,8 @@ export default async function likePost (req:NextApiRequest,res:NextApiResponse){
             }
         }}
       )
-    ).then(response=>res.status(202)).catch(err=>console.log(err))
+    ).then(response=>res.status(202)).catch(err=>res.status(404).end('collection not found'))
+    return
   }
-
+  res.status(405).end('Method not Allowed')
 }

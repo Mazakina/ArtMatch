@@ -15,18 +15,25 @@ interface userProps {
 export default async function favoritePost(req:NextApiRequest,res:NextApiResponse){
   const data = req.body
   const userEmail = data.data.email 
-  if(req.method=='POST'){
-  }
 
-  try{
+  async function getUser(){
     const user:userProps = await fauna.query(
       q.Get(
         q.Match(
           q.Index('user_by_email'),
-          userEmail
+          req.body.data.email
         )
       )
     )
+    return user;
+  }
+
+
+  if(req.method=='POST'){
+  }
+
+  try{
+    const user:userProps = await getUser()
     
     const favoritePosts= await fauna.query( 
       q.Get(
@@ -42,15 +49,8 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
    
 
   if(req.method=='PATCH'){
-    const user:userProps = 
-    await fauna.query(
-      q.Get(
-          q.Match(
-              q.Index('user_by_email'),
-              userEmail
-          )
-        )
-      )
+    const user:userProps = await getUser()
+
     try{
       await fauna.query(
         q.If(
@@ -116,35 +116,10 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
     }
   }
   if(req.method=='DELETE'){
-    const user:userProps = 
-    await fauna.query(
-      q.Get(
-          q.Match(
-              q.Index('user_by_email'),
-              userEmail
-          )
-        )
-      )
+    const user:userProps = await getUser()
+
     try{
       await fauna.query(
-        q.If(
-          q.Not(
-              q.Exists(
-                  q.Match(
-                      q.Index('favorite_posts_by_user_id'),
-                      user.ref
-                  )
-              )
-          ),
-          q.Create(
-            q.Collection('favorite_posts'),
-            {
-              data: {
-                userId:user.ref,
-                posts:[req.body.id],
-                }
-            }
-          ),
           q.Update(
             q.Select(
               'ref',
@@ -179,8 +154,6 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
               }
             }
           )
-          ,
-        )
       ).then(resonse => res.status(202).end('deleted'))
     }catch(e){
       res.status(404)

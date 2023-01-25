@@ -57,7 +57,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       res.status(200)
       const resData = response.data.data
       const resDataId = response.data.data.id
-      console.log(JSON.stringify(response.data));
       newData ={
         [resDataId]:{
         id:resData.id,

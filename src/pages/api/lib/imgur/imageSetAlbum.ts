@@ -10,7 +10,6 @@ interface userProps{
 }
 export default async function(req:NextApiRequest,res:NextApiResponse){
   if(req.method==='PATCH'){
-    console.log(req.body)
     const reqData = req.body
     const user:userProps = 
     await fauna.query(

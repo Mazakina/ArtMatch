@@ -72,7 +72,7 @@ const Home  = ({data}) => {
       ))
     }
     if(currentActive == 'following'){
-      return(postsData.filter(post=>favorites.includes(post.user)).sort(
+        return(postsData.filter(post=>favorites.includes(post.user)).sort(
         (a,b)=>{
           return b.createdAt-a.createdAt
         }

@@ -18,12 +18,7 @@ interface userProps {
     avatar:string,
   }
 }
-interface mapPostProps{
-  data:{
-    userId:string,
-    posts: any
-  }
-}
+
 export default async function imgurGetAllFeed(req:NextApiRequest,res:NextApiResponse){
   if(req.method=="GET"){
     let data;
