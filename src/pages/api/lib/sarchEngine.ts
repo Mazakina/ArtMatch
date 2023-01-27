@@ -19,7 +19,6 @@ export const searchEngine = async (data, searchTerm,searchType='') => {
 
     if(searchType=='byUser'){
     
-    // const response = await axios.get(`http://localhost:3000/api/searchEngine?q=${searchTerm}`);
     const filteredData = userArray.filter(item => {
     return (
       levenshtein.get(item.user, searchTerm) <= 4
@@ -37,7 +36,6 @@ export const searchEngine = async (data, searchTerm,searchType='') => {
   });
     return filteredData;}
     if(searchType=='byPosts'){
-      // const response = await axios.get(`http://localhost:3000/api/searchEngine?q=${searchTerm}`);
 
       let filteredData=[]
       newDataArray.map(postsByUser=>{

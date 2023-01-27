@@ -16,7 +16,7 @@ import { GetServerSideProps } from "next"
 import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
 import {Posts} from "../../components/Portfolio/Posts";
-import { UserContext } from "../../contexts/UserContext";
+import { UserContext } from "../../services/hooks/UserContext";
 
 interface idsProps{
   id?:string,

@@ -13,9 +13,6 @@ interface userProps {
 }
 
 export default async function favoritePost(req:NextApiRequest,res:NextApiResponse){
-  const data = req.body
-  const userEmail = data.data.email 
-
   async function getUser(){
     const user:userProps = await fauna.query(
       q.Get(
@@ -28,29 +25,24 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
     return user;
   }
 
-
   if(req.method=='POST'){
-  }
-
-  try{
     const user:userProps = await getUser()
-    
-    const favoritePosts= await fauna.query( 
-      q.Get(
-        q.Match(
-          q.Index('favorite_posts_by_user_id'),
-          user.ref
+    try{
+      const favoritePosts= await fauna.query( 
+        q.Get(
+          q.Match(
+            q.Index('favorite_posts_by_user_id'),
+            user.ref
+          )
         )
-      )
-    ).then(response=>res.status(200).json(favoritePosts))
-  }catch(e){
-    res.status(401)
+      ).then(response=>res.status(200).json(favoritePosts))
+    }catch(e){
+      res.status(401)
+    }
   }
-   
 
   if(req.method=='PATCH'){
     const user:userProps = await getUser()
-
     try{
       await fauna.query(
         q.If(
@@ -67,7 +59,7 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
             {
               data: {
                 userId:user.ref,
-                posts:[req.body.id],
+                favoritedPosts:[req.body.id],
                 }
             }
           ),
@@ -83,12 +75,12 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
             ),
             {
               data:{
-                posts:
+                favoritedPosts:
                 q.Append(
                   [req.body.id],
                   q.Filter(
                     q.Select(
-                      ["data",'posts'],
+                      ["data",'favoritedPosts'],
                       q.Get(
                         q.Match(
                           q.Index('favorite_posts_by_user_id'),
@@ -110,14 +102,15 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
           )
           ,
         )
-      ).then(resonse => res.status(201).end('updated')).catch(err =>res.status(400))
+      ).then(resonse => res.status(201).end('updated')).
+      catch(err =>res.status(400))
     }catch(e){
       res.status(404)
     }
   }
+
   if(req.method=='DELETE'){
     const user:userProps = await getUser()
-
     try{
       await fauna.query(
           q.Update(
@@ -132,10 +125,10 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
             ),
             {
               data:{
-                posts:
+                favoritedPosts:
                   q.Filter(
                     q.Select(
-                      ["data",'posts'],
+                      ["data",'favoritedPosts'],
                       q.Get(
                         q.Match(
                           q.Index('favorite_posts_by_user_id'),

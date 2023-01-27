@@ -80,11 +80,11 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             )
           )
         )
-      const responseToArray = Object.values(responseData)
-      res.json({posts:responseToArray,albums:allAlbums})
+        const responseToArray = Object.values(responseData)
+        res.json({posts:responseToArray,albums:allAlbums})
       }else{
-      const responseToArray = Object.values(responseData)
-      res.json({posts:responseToArray})
+        const responseToArray = Object.values(responseData)
+        res.json({posts:responseToArray})
       }
     }catch(e){
       res.status(401).end('')
