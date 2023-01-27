@@ -19,18 +19,26 @@ interface FavoritedUsers{
     }[]
   }
 }
+
+interface FavoritedPosts{
+  ref:string,
+  data:{
+    userId:string,
+    favoritedPosts:number[]
+  }
+}
 export default async function getUser(req:NextApiRequest,res:NextApiResponse){
   if(req.method=='POST'){
-    try{
-      const user:UserProps = await fauna.query(
-        q.Get(
-          q.Match(
-            q.Index('user_by_email'),
-            req.body.data.user.email
-          )
+    const user:UserProps = await fauna.query(
+      q.Get(
+        q.Match(
+          q.Index('user_by_email'),
+          req.body.data.user.email
         )
       )
-      const favoritedPosts = await fauna.query(
+    )
+    try{
+      const getFavoritedPosts:FavoritedPosts = await fauna.query(
         q.Get(
           q.Match(
             q.Index('favorite_posts_by_user_id'),
@@ -38,6 +46,7 @@ export default async function getUser(req:NextApiRequest,res:NextApiResponse){
           )
         )
       )
+      const favoritedPosts = getFavoritedPosts.data.favoritedPosts
 
       const getfavoritedUsers:FavoritedUsers = await fauna.query(
         q.Get(
@@ -48,12 +57,13 @@ export default async function getUser(req:NextApiRequest,res:NextApiResponse){
         )
       )
       const favoritedUsers = getfavoritedUsers.data.favoritedUsers.map((user)=>{return user.id})
-      try{
-        console.log(favoritedUsers[0])
-      }catch{}
       res.status(200).json({user,favoritedPosts,favoritedUsers})
     }catch(e){
+      // console.log(e)
       res.status(404).end('user not Found')
     }
+    return
   }
+
+  res.status(405).end('allow POST')
 }

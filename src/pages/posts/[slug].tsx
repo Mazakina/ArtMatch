@@ -7,7 +7,7 @@ import { Api } from '../../services/api'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { UserContext } from '../../contexts/UserContext'
+import { UserContext } from '../../services/hooks/UserContext'
 import { MdOutlineAddBox } from 'react-icons/md'
 
 interface PostDataProps{
@@ -40,19 +40,21 @@ export default function Posts({postData,slug}:PostsProps){
   const [favoritedPost,setFavoritedPost] = useState(false)
   const [favoritedUser,setFavoriteduser] = useState(false)
   const [liked,setLiked] = useState([])
-  console.log(postData)
   const useUser = useContext(UserContext)
+  const userRefId = Object.values(currentPost.user.ref)[0].id
   const {user,favoritePosts,setFavoritePosts,favoriteUsers,setFavoriteUsers} = useUser 
 
   useEffect(()=>{
     if(user){
-      setLiked(currentPost.likes.filter((like)=>like.toString()==user.ref.toString()))
+      setLiked(
+        currentPost.likes.filter((like)=>like.toString()==user.ref.toString())
+      )
     }
   },[user,currentPost.likes])
 
   useEffect(()=>{
       if(user){
-      setFavoriteduser(favoriteUsers.includes(Object.values(currentPost.user.ref)[0].id))
+      setFavoriteduser(favoriteUsers.includes(userRefId))
     }
   },[user,currentPost.id,favoriteUsers])
   
@@ -61,12 +63,8 @@ export default function Posts({postData,slug}:PostsProps){
   },[postData])
 
   useEffect(()=>{
-    if(favoritePosts){
-      if(favoritePosts.includes(slug)){
-        setFavoritedPost(true)
-      }else{setFavoritedPost(false)}
-    }
-  },[favoritePosts])
+      setFavoritedPost(favoritePosts.includes(slug))
+  },[favoritePosts,currentPost.id,user])
 
   const handleLikeButton = (e)=>{
     e.preventDefault();
@@ -89,15 +87,16 @@ export default function Posts({postData,slug}:PostsProps){
       return
     }
     if(!favoritedPost){
-      favPostFunctions.push(user,slug,)
-      setFavoritePosts([...favoritePosts,slug])
+      favPostFunctions.push(user,postData.id)
+      setFavoritePosts([...favoritePosts,postData.id])
     }
     if(favoritedPost){
-      favPostFunctions.delete(user,slug)
-      const filteredFavorites = favoritePosts.filter(f=> f!=slug)
+      favPostFunctions.delete(user,postData.id)
+      const filteredFavorites = favoritePosts.filter(f=> f!=postData.id)
       setFavoritePosts(filteredFavorites)
     }
   }
+
   const handleFavoriteUserButton = (e:React.MouseEvent<HTMLElement>)=>{
     e.preventDefault();
     if(!useUser){
@@ -105,11 +104,11 @@ export default function Posts({postData,slug}:PostsProps){
     }
     if(!favoritedUser){
       favUserFunctions.push(user,postData.user.name)
-      setFavoriteUsers([...favoriteUsers,])
+      setFavoriteUsers([...favoriteUsers,userRefId])
     }
     if(favoritedUser){
       favUserFunctions.delete(user,postData.user.name)
-      const filteredFavorites = favoriteUsers.filter(f=> f!=Object.values(currentPost.user.ref)[0].id)
+      const filteredFavorites = favoriteUsers.filter(f=> f!=userRefId)
       setFavoriteUsers(filteredFavorites)
     }
   }

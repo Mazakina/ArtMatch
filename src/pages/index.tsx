@@ -7,13 +7,16 @@ import { GetStaticProps } from 'next'
 import { fauna } from '../services/fauna'
 import {query as q} from 'faunadb'
 import PostPrev from '../components/PostPrev'
-import { UserContext } from '../contexts/UserContext'
+import { UserContext } from '../services/hooks/UserContext'
 
 interface ResponseProps{
   data:any
 }
 
 interface UserProps {
+  ref:{
+    id:string
+  },
   data:{
     user:string,
     banner:string,
@@ -39,9 +42,9 @@ interface HomePosts{
 
 
 const Home  = ({data}) => {
-  const useUser = useContext(UserContext)
-  const {user,favorites}= useUser
   let postsData =JSON.parse(data)
+  const useUser = useContext(UserContext)
+  const {user,favoriteUsers}= useUser
   const [grid,setGrid] = useState(0)
   const [currentActive, setCurrentActive] = useState('trend')
   useEffect(()=>{
@@ -72,7 +75,7 @@ const Home  = ({data}) => {
       ))
     }
     if(currentActive == 'following'){
-        return(postsData.filter(post=>favorites.includes(post.user)).sort(
+        return(postsData.filter(post=>favoriteUsers.includes(post.reference)).sort(
         (a,b)=>{
           return b.createdAt-a.createdAt
         }
@@ -94,12 +97,14 @@ const Home  = ({data}) => {
             id='trend'>
                 Trend
           </ActiveLink>
+          {user?           
           <ActiveLink
             setCurrentActive={setCurrentActive}
             currentActive={currentActive}
             id='following' >
                 Seguindo
-          </ActiveLink>
+          </ActiveLink>:<></>
+          }
           <ActiveLink
             setCurrentActive={setCurrentActive}
             currentActive={currentActive}
@@ -111,6 +116,7 @@ const Home  = ({data}) => {
         <Box id='image-container' >
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
             { sortPosts(postsData).map((post)=>{
+              console.log(post)
               return(
                 <PostPrev post={post} key={post.id}/>
               )
@@ -144,6 +150,7 @@ export const getStaticProps:GetStaticProps= async (context)=>{
       return{
         posts:[...Object.values(collection.data.posts)].map((value:object)=>{
           return{...value,
+            reference:user.ref.id,
             user:user.data.user,
             avatar:user.data.avatar,
             banner:user.data.banner}
@@ -162,43 +169,3 @@ export const getStaticProps:GetStaticProps= async (context)=>{
     },
   }
 }
-
-
-
-// export const getStaticProps:GetStaticProps= async (context)=>{
-//   let data;
-//   await fauna.query(
-//     q.Map(
-//       q.Paginate(q.Documents(q.Collection("collections"))),
-//       q.Lambda("X", q.Get(q.Var("X")))
-//     )
-//   ).then(async (response:ResponseProps)=>{
-//     data = await Promise.all(response.data.map(async collection=>{
-//       if(collection.data.visible==false){return}
-//       let user:UserProps = await fauna.query(
-//         q.Get(
-//           collection.data.userId
-//         )
-//       )
-//       return{
-//         user:{
-//           user:user.data.user,
-//           avatar:user.data.avatar,
-//           banner:user.data.banner
-//         },
-//         posts:[Object.values(collection.data.posts.map(post=>{
-//           return{
-//             ...post,user:user.data.user,avatar:user.data.avatar,banner:user.data.banner
-//           }}
-//         ))]
-//       }
-//     }))
-//    }).catch(e=>console.log(e))  
-//    data = JSON.stringify(data)
-//   return{
-//     props:{
-//       data
-//     },
-//     revalidate: 60*15 //revalidate every 15min
-//   }
-// }

@@ -58,7 +58,8 @@ export const authOptions = {
               q.Collection('users'),
               { data: {
                 email:email,
-                user:username
+                user:username,
+                avatar:user.image
               },  
             }
             ),

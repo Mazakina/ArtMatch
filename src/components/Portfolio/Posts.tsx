@@ -118,7 +118,14 @@ export function Posts({
               _hover={{opacity:1}}
               transition='all 0.3s ease-in-out'
               >
-              <Button onClick={()=>setModalProperties(post)} _hover={{bg:'#FFE767'}} color='#000' borderRadius={'2px'} transform={'scale(0.9)'} bg='#FFE767'>Editar</Button>
+              <Button
+                onClick={()=>setModalProperties(post)}
+                _hover={{bg:'#FFE767'}}
+                color='#000'
+                borderRadius={'2px'}
+                transform={'scale(0.9)'}
+                bg='#FFE767'>Editar
+              </Button>
             </Flex>
           </Box>
         </AspectRatio>

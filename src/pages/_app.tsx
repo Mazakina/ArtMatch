@@ -4,20 +4,28 @@ import { theme } from '../styles/theme'
 import '../components/Slider/Slider.css'
 import { SessionProvider } from "next-auth/react"
 import { Session } from "next-auth";
-import {UserProvider} from '../contexts/UserContext'
+import {UserProvider} from '../services/hooks/UserContext'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
+import { useState } from 'react'
+
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
-
+  const [queryClient]  = useState(() => new QueryClient())
 
 
   return (
     <SessionProvider session={pageProps.session}>
-      <UserProvider>
-        <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
-        </ChakraProvider>
-      </UserProvider>
+      <QueryClientProvider client={queryClient}>
+        <UserProvider>
+          <ChakraProvider theme={theme}>
+            <Component {...pageProps} />
+          </ChakraProvider>
+        </UserProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </SessionProvider>
+
   )
 }
 
