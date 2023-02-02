@@ -42,13 +42,13 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
       )
     )
   )
-
+  const ts = userSettings.ts
   const {data} = userSettings
-  res.status(200)
+  res.status(200).end('fetched')
   res.json({
-    data
+    data,ts
   })
  }catch(e){
-  res.status(404)
+  res.status(404).end('User not found')
  }
 }

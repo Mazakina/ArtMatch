@@ -14,7 +14,6 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
   }
   
   const filterFunction = (post)=>{
-    console.log(post)
     let isMidiaOk = post.midia===midiaFilter || midiaFilter ==''
     let isAlbumOk = post.albumName==albumFilter || albumFilter ==''
     if(isMidiaOk && isAlbumOk){

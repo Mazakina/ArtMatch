@@ -3,12 +3,13 @@ import { AvatarName } from "../AvatarName";
 import Division from "../Division";
 import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineReload} from 'react-icons/ai'
 import {BiTrash} from 'react-icons/bi'
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useContext, useRef, useState } from "react";
 import { Api } from "../../services/api";
 import {useSession} from 'next-auth/react'
 import { BsCheckLg } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { AnimatePresence, LayoutGroup } from "framer-motion";
+import { UserContext } from "../../services/hooks/UserContext";
 
 
 interface AlbumProps{
@@ -32,12 +33,12 @@ interface SideBarProps{
 }
 
 const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps){
-
+  const useUser = useContext(UserContext)
+  const {user} = useUser
   const {data} = useSession()
   const { activeAlbum,setActiveAlbum} = setActAlbum
   const {albumsCollection,setAlbumsCollection} = albums
   const [isCreatingNewAlbum,setIsCreatingNewAlbum]= useState(false)
-  console.log('testing')
   function deleteAlbum(album){
     try{
       Api.post('lib/imgur/manageAlbum',{
@@ -54,7 +55,7 @@ const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDro
   }
   return(
     <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
-    <AvatarName name={data?.user.name} email={data?.user.email} avatar={data?.user.image} />
+    <AvatarName name={data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
 
     <Division width={'100%'}  bg={'#323232'}/>
       <Flex  maxH='74%' mb='.5rem' ml='20px' flexDir='column'>
@@ -169,7 +170,6 @@ export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatin
     albumNameRef.current.value = ''
     setIsCreatingNewAlbum(false)
   }
-  let loading = false;
   async function createAlbum(){ 
     const albumName = albumNameRef.current.value
     if(albumName){

@@ -4,7 +4,7 @@ import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
 import { userAgent } from "next/server";
 
-interface userProps{
+interface userProps extends NextApiResponse{
   ref:string,
   ts:number|string,
   data:{
@@ -14,18 +14,6 @@ interface userProps{
     user:string,
   }
 }
-
-// interface postProps{
-//   id:string,
-//   title:string,
-//   description:string,
-//   nsfw:boolean,
-//   URL:string,
-//   posted: boolean,
-//   album: string,
-//   midia: string,
-//   deleteHash:string,
-// }
 interface mapPostProps{
   data:{
     userId:string,
@@ -60,13 +48,18 @@ interface ResponseDataProps{
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   if(req.method ==='POST'){
+    const prepareJSONData = async (data) =>{
+      if(typeof data==='string'){
+        return JSON.parse(data)
+      }else{
+        return data
+      }
+    }
+
     let otherPosts 
-    let reqData;
-    if(typeof req.body==='string'){
-      reqData =  JSON.parse(req.body)}else{
-    reqData= req.body}
-    const hash = reqData.id
-    
+    let reqData = await prepareJSONData(req.body)
+    let id;
+    let post;
     let responseData:ResponseDataProps={
       id:'',
       title:'',
@@ -83,6 +76,9 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       user:'',
       likes:[]
     }
+
+    const hash = reqData.id
+
     try{
       const allPost:faunaPost = await fauna.query(
         q.Map(
@@ -90,8 +86,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           q.Lambda("X", q.Get(q.Var("X")))
         )
       )
-      let id
-      let post
+
       allPost.data.map((posts:mapPostProps)=>{
         if(posts.data.posts[hash]?.posted===true){
           id = (posts.data.userId)
@@ -100,51 +95,59 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         }
         return
       })
+
       if(!post){
-        res.status(404)
-      }else{
-        await fauna.query(
-          q.Get(id)
-        ).then((response:userProps)=>
-          responseData.user = {
-            userId:id,
-            avatar:response.data.avatar,
-            banner:response.data.banner,
-            name:response.data.user,
-            ref:response.ref
-        })
-        responseData.id= post.id
-        responseData.title= post.title
-        responseData.description= post.id
-        responseData.nsfw=post.nsfw
-        responseData.URL= post.url
-        responseData.deleteHash = post.deleteHash
-        responseData.posted = post.posted
-        responseData.album = post.album
-        responseData.likes = post.likes
-        var config = {
-          method: 'get',
-          url: `https://api.imgur.com/3/image/${hash}`,
-          headers: { 
-            'Authorization':`Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
-          },
-        };
-        
-        Api(config)
-        .then(function (response) {
-          const data = response.data.data;
-          responseData.timeStamp = data.datetime;
-          res.status(200).json({...responseData,otherPosts})
-        })
-        .catch(function (error) {
-          res.status(500)
-        });
+        return res.status(404).end('Not Found')
       }
+
+      await fauna.query(
+        q.Get(id)
+      ).then((response:userProps)=>{
+        responseData.user = {
+          userId:id,
+          avatar:response.data.avatar,
+          banner:response.data.banner,
+          name:response.data.user,
+          ref:response.ref
+        }
+      }).catch(
+        (error)=> {
+          return res.status(404).end('Not Found')}
+      )
+
+      responseData.id= post.id
+      responseData.title= post.title
+      responseData.description= post.id
+      responseData.nsfw=post.nsfw
+      responseData.URL= post.url
+      responseData.deleteHash = post.deleteHash
+      responseData.posted = post.posted
+      responseData.album = post.album
+      responseData.likes = post.likes
+
+      var config = {
+        method: 'get',
+        url: `https://api.imgur.com/3/image/${hash}`,
+        headers: { 
+          'Authorization':`Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
+        },
+      };
+      
+      Api(config)
+      .then(function (response) {
+        const data = response.data.data;
+        responseData.timeStamp = data.datetime;
+        res.status(202).json({...responseData,otherPosts})
+      })
+      .catch(function (error) {
+        console.log(error)
+        return res.status(500).end('Server error')
+      });
     }catch(e){
-      res.status(400)
+      return res.status(404).end('Not Found')
     }
   }else{
     res.setHeader('allow','GET')
-    res.status(405).end('Method not allowed')
+    return res.status(405).end('Method not allowed')
   }
 }

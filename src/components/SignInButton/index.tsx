@@ -43,7 +43,7 @@ export function SignInButton() {
 
             {modal?(
               <Flex box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
-                <NextLink href={'/'} passHref>
+                <NextLink href={'/favorites'} passHref>
                   <Link _hover={{ color:'#FFEB80'}} fontSize='16px' >Meus favoritos</Link>
                 </NextLink>
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
@@ -56,9 +56,9 @@ export function SignInButton() {
                   <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Editar perfil</Link>
                 </NextLink>
                 
-                <NextLink href='/userSettings' passHref>
+                {/* <NextLink href='/userSettings' passHref>
                   <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Bloqueados</Link>
-                </NextLink>
+                </NextLink> */}
                 
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
                 

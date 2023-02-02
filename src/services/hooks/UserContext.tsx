@@ -21,8 +21,7 @@ interface userCxtProps{
   setFavoriteUsers: Dispatch<SetStateAction<number[]>>|null
 }
 interface ProviderProps {
-  children:ReactNode,
-  session:object
+  children:ReactNode
 }
 
 export const UserContext = createContext<userCxtProps>({
@@ -43,7 +42,7 @@ export const UserContext = createContext<userCxtProps>({
 
 
 
-export const UserProvider = ({children,session}:ProviderProps)=>{
+export const UserProvider = ({children}:ProviderProps)=>{
   const {data} = useSession()
   const [favoritePosts,setFavoritePosts] = useState<string[]>([])
   const [favoriteUsers,setFavoriteUsers] = useState<Array<number>>([])

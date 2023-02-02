@@ -1,4 +1,3 @@
-import axios from 'axios';
 import levenshtein from 'fast-levenshtein';
 
 export const searchEngine = async (data, searchTerm,searchType='') => {
@@ -8,7 +7,7 @@ export const searchEngine = async (data, searchTerm,searchType='') => {
     data.map(dataValue=>{
       userArray.push(dataValue.user)
       newDataArray.push(
-        [...dataValue.posts[0].filter(post=>post.posted==true).map(post=>{
+        [...dataValue.posts.filter(post=>post.posted==true).map(post=>{
           return{
             ...post,
             ...dataValue.user
@@ -17,26 +16,25 @@ export const searchEngine = async (data, searchTerm,searchType='') => {
       )
     })
 
-    if(searchType=='byUser'){
-    
-    const filteredData = userArray.filter(item => {
-    return (
-      levenshtein.get(item.user, searchTerm) <= 4
-    )
-  });
-
-  filteredData.sort((a, b) => {
-    const aScore = Math.min(
-      levenshtein.get(a.title, searchTerm),
-    )
-    const bScore = Math.min(
-      levenshtein.get(b.title, searchTerm),
-    )
-    return aScore - bScore;
-  });
-    return filteredData;}
+    if(searchType==='byUser'){
+      let filteredData = userArray.filter(item => {
+        return (
+          levenshtein.get(item.user.toLowerCase(), searchTerm.toLowerCase()) <= 4
+        )
+      });
+      filteredData.sort((a, b) => {
+        const aScore = Math.min(
+          levenshtein.get(a.user, searchTerm),
+        )
+        const bScore = Math.min(
+          levenshtein.get(b.user, searchTerm),
+        )
+        return aScore - bScore;
+      });
+      console.log(filteredData)
+      return filteredData;
+    }
     if(searchType=='byPosts'){
-
       let filteredData=[]
       newDataArray.map(postsByUser=>{
         postsByUser.map(post=>

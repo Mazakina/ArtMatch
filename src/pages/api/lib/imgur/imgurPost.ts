@@ -29,7 +29,7 @@ interface NewDataProps{
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body
   const image = reqData.image
-
+  console.log(reqData.posted)
   let newData;
   var config = {
     method: 'post',
@@ -64,7 +64,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         description: reqData.description,
         deleteHash:resData.deletehash,
         url:resData.link,
-        posted: reqData.posted||true,
+        posted: reqData.posted,
         tags:[...reqData.tags],
         midia: reqData.midia,
         cropped:cropResponse.data.data.link,

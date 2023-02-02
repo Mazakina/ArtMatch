@@ -211,7 +211,7 @@ export default function Portfolio({posts,albums}){
                       })
                       .map((post,index)=>{
                         return(
-                          <Posts setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile}/>
+                          <Posts setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
                         )
                       })
                     }
@@ -227,7 +227,7 @@ export default function Portfolio({posts,albums}){
         </Flex>
 
       </Flex>
-      <ModalForm setCroppedImage={setCroppedImage} croppedImage={croppedImage} currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
+      <ModalForm published={published} setCroppedImage={setCroppedImage} croppedImage={croppedImage} currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
     </>
   )
 }
