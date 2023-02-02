@@ -8,6 +8,8 @@ import SkillsTagSection from "../SkillsTagSection";
 import Compress from 'compress.js'
 import { useDropzone } from "react-dropzone";
 import ModalTag from "../ModalTag";
+import { useQuery } from "react-query";
+import GoogleAutoComplete from "../GoogleAutoComplete";
 
 interface PerfilSec{
   settingOpt:string,
@@ -15,31 +17,25 @@ interface PerfilSec{
 }
 
 export default function PerfilSec({settingOpt,userSettings,user}){
+
   const [usuario,setUsuario] = useState( userSettings.data.profile?.usuario)
   const [biografia,setBiografia] = useState( userSettings.data.profile?.biografia)
-  const [skills, setSkills] = useState([
-    {id:'digital-art',name:'Arte Digital',icon:''},
-    {id:'tradicional-art',name:'Arte Tradicional',icon:''},
-    {id:'graffite',name:'Graffite',icon:''},
-    {id:'tattoo',name:'Tatuagem',icon:''},
-    {id:'character-design',name:'Design de Personagem',icon:''},
-    {id:'enviorement-design',name:'Design de Cenário',icon:''},
-    {id:'modeling',name:'Modelagem',icon:''},
-  ])
-  const [resume,setResume] = useState( userSettings.data.profile?.resumo)
+  const [habilidades, setHabilidades] = useState( userSettings.data.profile?.habilidades)
   const [cidade,setCidade] = useState( userSettings.data.profile?.cidade)
-  const [endereco,setEndereco] = useState( userSettings.data.profile?.endereco)
-  const [numero,setNumero] = useState( userSettings.data.profile?.numero)
+  const [endereco,setEndereco] = useState<any>( userSettings.data.profile?.endereco)
+  // const [numero,setNumero] = useState( userSettings.data.profile?.numero)
   const [avatar, setAvatar] = useState<any>(userSettings.data.profile?.avatar)
-  const [avatarDeleteHash, setAvatarDeleteHash] = useState<any>(userSettings.data.profile?.avatarDeleteHash)
+  const [avatarDeleteHash] = useState<any>(userSettings.data.profile?.avatarDeleteHash)
   const [banner, setBanner] = useState<any>(userSettings.data.profile?.banner)
-  const [bannerDeleteHash, setBannerDeleteHash] = useState<any>(userSettings.data.profile?.bannerDeleteHash)
+  const [bannerDeleteHash] = useState<any>(userSettings.data.profile?.bannerDeleteHash)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
-
+  
+  const {isLoading: queryIsLoading, data} = useQuery('skills', async ()=>{
+    const response = await Api.get('/lib/userSettings/getSkillsOptions');return response},{enabled: !!user}
+  )
+  let skillList = data?.data
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const valueNeedsUpdate = (value,current)=>{
+  function valueNeedsUpdate (value,current){
     if(userSettings.data.profile[value]!==current){
         return current
     }else {return null}
@@ -85,9 +81,10 @@ export default function PerfilSec({settingOpt,userSettings,user}){
       section:'profile',
       usuario:usuario.replace(/\s+/g, ' ').toLowerCase(),
       biografia:biografia,
+      habilidades:habilidades,
       cidade:cidade,
       endereco:endereco,
-      numero:numero,
+      // numero:numero,
       banner:valueNeedsUpdate('banner',banner),
       bannerDeleteHash:bannerDeleteHash,
       avatar:valueNeedsUpdate('avatar',avatar),
@@ -142,9 +139,10 @@ export default function PerfilSec({settingOpt,userSettings,user}){
             </Flex>
             <Flex maxWidth='480px' w='100%'  mt='1rem' align='center'>
               <Text  width='130px'>Endereço</Text>
-              <Input maxHeight='28px' borderRadius='2px' border={`1px solid white !important`}  maxWidth='250px' onChange={(e)=>{setEndereco(e.target.value)}}  value={endereco}></Input> 
-              <Text ml='1rem' >Nº</Text>
-              <Input ml='8px' h='28px' p='2px' border={`1px solid white !important`} borderRadius='2px'  maxWidth='46px'onChange={(e)=>{setNumero(e.target.value)}}  value={numero}/>
+              <GoogleAutoComplete address={endereco} setEndereco={setEndereco} />
+              {/* <Input maxHeight='28px' borderRadius='2px' border={`1px solid white !important`}  maxWidth='250px' onChange={(e)=>{setEndereco(e.target.value)}}  value={endereco}></Input>  */}
+              {/* <Text ml='1rem' >Nº</Text> */}
+              {/* <Input ml='8px' h='28px' p='2px' border={`1px solid white !important`} borderRadius='2px'  maxWidth='46px'onChange={(e)=>{setNumero(e.target.value)}}  value={numero}/> */}
             </Flex>
           </Flex>
           <label htmlFor="file-input" >
@@ -190,7 +188,7 @@ export default function PerfilSec({settingOpt,userSettings,user}){
         </Flex>
         <Division width='100%' bg='#6e6e6e' />
         <Flex mb='1rem'>
-          <SkillsTagSection skills={skills}/>
+          <SkillsTagSection skillList={skillList} habilidades={habilidades}/>
         </Flex>
       </Flex>
       <Flex
@@ -241,7 +239,7 @@ export default function PerfilSec({settingOpt,userSettings,user}){
       }}
       ml='auto' isLoading={isLoading} >Salvar</Button>
     </FormControl>
-    <ModalTag isOpen={isOpen} onClose={onClose} skills={skills} setSkills={setSkills} />
+    <ModalTag isOpen={isOpen} onClose={onClose} skillList={skillList} habilidades={habilidades}setHabilidades={setHabilidades} />
     </>
   )
 }

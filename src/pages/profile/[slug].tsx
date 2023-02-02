@@ -9,10 +9,10 @@ import {FaBehanceSquare, FaArtstation, FaInstagramSquare } from 'react-icons/fa'
 import {FiPhone } from 'react-icons/fi'
 import { Tooltip } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { useQuery } from "react-query";
 
-export default function Profile({profile,social}){
+export default function Profile({profile,social,createdAt}){
   let [currentActive,setCurrentActive] = useState('portfolio')
-  console.log(profile)
   const {data} = useSession()
   const router = useRouter()
   const {slug} = router.query
@@ -37,7 +37,8 @@ export default function Profile({profile,social}){
       <Flex position='relative' flexDir='column' justifyContent='center'  w='100%'>
         <Image zIndex='1'
         objectFit='cover'
-        src={profile.banner}
+        src={profile.banner==''?'https://i.imgur.com/Wwn5QKf.jpg':profile.banner}
+        filter={profile.banner? "":'brightness(.4)'}
         top='0px' position='absolute' width='100%' height='430px'/>
         <Flex mt='86px' flexDir='column' justifyContent='center' alignItems='center'>
           <Avatar  zIndex='2' width='120px' height='120px'  src={profile.avatar }/>
@@ -119,8 +120,9 @@ export default function Profile({profile,social}){
       </Flex>
       <Flex align="flex-start" margin='0 auto 100px' flexDir='column' >
         <Box w='90%' margin='0 auto' borderBottom='1px solid #959595' />
-        {currentActive=='portfolio'?<UserPortfolio name={profile.usuario} avatar={profile.avatar} albums={albums} posts={posts}/>:
-        <Perfil/>
+        {currentActive=='portfolio'?
+          <UserPortfolio name={profile.usuario} avatar={profile.avatar} albums={albums} posts={posts}/>:
+          <Perfil createdAt={createdAt} habilidades = {profile.habilidades} endereco={profile.endereco}/>
         }
       </Flex>
 
@@ -140,17 +142,18 @@ export async function getServerSideProps(context) {
         user:id
       })
     })
-  
-  let userProfile= await response.json()
-  if (userProfile.data===undefined){
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
+    if(response.status === 404){
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      }
     }
-  }
-  console.log(userProfile)
+  let userProfile= await response.json()
+  // if (userProfile.data===undefined){
+    
+  // }
   if(userProfile.data.seguranca.allowToBeFound==false){
     return {
       redirect: {
@@ -159,13 +162,15 @@ export async function getServerSideProps(context) {
       },
     }
   }
+
   let profile = userProfile.data.profile 
   let social = userProfile.data.social 
-
+  let createdAt = userProfile.ts
   return {
     props: {
       profile:profile,
-      social:social
+      social:social,
+      createdAt:createdAt
     },
   }
 }
@@ -176,25 +181,11 @@ export function SocialLink ({icon,link,color,prop}){
   const active = !!prop
   return(
     <Link cursor={active?'pointer':'not-allowed'} aria-disabled="true" display='flex' alignItems='center' justifyContent='center' href={
-      active?'https://www.behance.net/'+link :''
+      active? link :''
     
     } target=
     {'_blank'} >
       <Icon  as={icon}  fontSize='1.5rem'  color={active? color:'#7c7c7c'} />
     </Link>
-)
+  )
 }
-
-{/* <Box width={'675px'}  m='70px 0' pb='40px' bg='#121212'>
-  <Text  m='10px 30px'fontSize='24px' >Reviews</Text>
-  <Box w='100%' margin='0 auto 12px' borderBottom='1px solid #ECD147' />
-
-  <Flex ml='40px'>
-    <Avatar  src='https://cdna.artstation.com/p/assets/images/images/054/556/294/4k/juras-rodionovas-juras-rodionovas-the-hunter-close-up.jpg?1664820930' />
-    <Flex ml='26px' flexDir="column">
-      <Text  fontSize="18px">Jeff Van V</Text>
-      <Text mt='8px' fontSize="16px" fontWeight="Bold">Illustração digital</Text>
-      <Text mt='8px' fontSize="16px">Juras fez um otimo trabalho, e saiu melhor do que eu havia imaginado,  excedeu minhas expectativas!!</Text>
-    </Flex>
-  </Flex>
-</Box> */}

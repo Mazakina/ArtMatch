@@ -87,6 +87,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         newData = {
           usuario: reqData.usuario,
           biografia: reqData.biografia,
+          habilidades: reqData.habilidades,
           cidade: reqData.cidade,
           endereco: reqData.endereco,
           numero: reqData.numero,

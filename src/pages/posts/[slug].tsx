@@ -208,27 +208,33 @@ export default function Posts({postData,slug}:PostsProps){
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
-
-  let {slug} = params
-  const reqData={
-    id:slug
-  }
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGet`,{
-    method:'POST',
-    body:JSON.stringify(
-    reqData)
-  })
-  let postData= await response.json();
-  // postData.otherPosts = postData.otherPosts.filter(post => post.posted==true)
-
-  if (postData.id==''|| postData.posted==false) {
-    return {
+  const redirectHome = {
       redirect: {
         destination: '/',
         permanent: false,
       },
-    }
+  }  
+  let postData;
+  let {slug} = params
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGet`,{
+    method:'POST',
+    body:JSON.stringify(
+      {id:slug})
+  })
+
+  if(![200,201,202].includes(response.status)){
+    return redirectHome
   }
+  try{
+    postData= await response.json();
+  }catch(e){
+    return redirectHome
+  }
+
+  if (postData.posted==false) {
+    return redirectHome
+  }
+
   postData.otherPosts= postData.otherPosts.filter(post=>{return(post.posted==true)})
   return {
     props: {

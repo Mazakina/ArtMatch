@@ -23,7 +23,7 @@ interface resPostProps extends AxiosResponse{
     tag:Array<string>
 }
 
-export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,deleteHash,isNewFile,setPostsCollection,postsCollection,title,setTitle,description,setDescription,setPublished,midia,setMidia,tags,setTags,newImage,setNewImage,currentPostId,data}){
+export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,deleteHash,isNewFile,setPostsCollection,postsCollection,title,setTitle,description,setDescription,published,setPublished,midia,setMidia,tags,setTags,newImage,setNewImage,currentPostId,data}){
   const imgInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef()
   const tagsRef = useRef<HTMLInputElement>(null)
@@ -41,7 +41,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
 
     reader.onload = function (onLoadEvent){
       setNewImage(onLoadEvent.target.result)
-      console.log('onload:',onLoadEvent.target.result)
     }
     reader.readAsDataURL(acceptedFiles[0]);
   }
@@ -67,7 +66,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     const canvasRef = previewCanvasRef.current
     const imageData = canvasRef.toDataURL('')
     const blob = await (await fetch(imageData)).blob(); 
-    console.log(blob)
     let resizedImage = await compress.compress([blob],{
       size:2,
       quality:1,
@@ -114,9 +112,9 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
       tags:tags,
       croppedImage:croppedImage,
       deleteHash:deleteHash,
-      id:currentPostId
+      id:currentPostId,
+      posted:published
     }
-    
     if(isNewFile ===true){
       Api({
         method: 'post',
@@ -144,7 +142,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
         cleanPostData()
       })
     }
-    // postData.image = fileToBase64(postData.image)
   }
   useDebounceEffect(
     async () => {
@@ -234,6 +231,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   <canvas
                   ref={previewCanvasRef}
                   style={{
+                    display:'none',
                     marginTop:'.5rem',
                     width: '200px',
                     height: '200px',
@@ -242,9 +240,9 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   />
               </Box>
               <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                <></> 
                 <Button
-                  disabled={crop||!isNewFile?false:true}
+                  isDisabled={crop||!isNewFile?false:true}
+                  type='button'
                   width='35%'
                   ml='auto !important'
                   color='#000'

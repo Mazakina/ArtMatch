@@ -39,7 +39,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       description: reqData.description,
       deleteHash:reqData.deleteHash,
       url:reqData.image,
-      posted: reqData.posted||true,
+      posted: reqData.posted,
       tags:[...reqData.tags],
       midia: reqData.midia,
       }

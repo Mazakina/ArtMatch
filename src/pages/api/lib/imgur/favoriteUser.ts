@@ -92,9 +92,11 @@ export default async function favoriteUser(req:NextApiRequest, res:NextApiRespon
                   ),
                     q.Lambda(
                       'i',
-                      q.Equals(
-                        q.Var('i'),
-                        [postOwner.ref]
+                      q.Not(
+                        q.Equals(
+                          q.Var('i'),
+                          postOwner.ref
+                        )
                       )
                     )
                   )
@@ -114,6 +116,8 @@ export default async function favoriteUser(req:NextApiRequest, res:NextApiRespon
   if(req.method==='DELETE'){
     const user = await getUser()
     const postOwner = await getPostOwner()
+
+
 
     await fauna.query(
       q.Update(
@@ -138,12 +142,15 @@ export default async function favoriteUser(req:NextApiRequest, res:NextApiRespon
                       user.ref
                     )
                   )
-              ),
+                )
+              ,
                 q.Lambda(
                   'i',
-                  q.Equals(
-                    q.Var('i'),
-                    [postOwner.ref]
+                  q.Not(
+                    q.Equals(
+                      q.Var('i'),
+                      postOwner.ref
+                    )
                   )
                 )
               )

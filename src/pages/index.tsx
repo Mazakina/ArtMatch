@@ -116,7 +116,6 @@ const Home  = ({data}) => {
         <Box id='image-container' >
           <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
             { sortPosts(postsData).map((post)=>{
-              console.log(post)
               return(
                 <PostPrev post={post} key={post.id}/>
               )
@@ -133,6 +132,7 @@ export default Home
 
 export const getStaticProps:GetStaticProps= async (context)=>{
   let data;
+
   await fauna.query(
     q.Map(
       q.Paginate(q.Documents(q.Collection("collections"))),
@@ -159,6 +159,7 @@ export const getStaticProps:GetStaticProps= async (context)=>{
     }))
    }).catch(e=>console.log(e))  
 
+   
    let allPosts = []
    
    data.map(users=> allPosts =[...allPosts,...users.posts])
@@ -167,5 +168,6 @@ export const getStaticProps:GetStaticProps= async (context)=>{
     props:{
       data
     },
+    // revalidate: 60*15//15 minutos,
   }
 }

@@ -1,5 +1,5 @@
 import { AspectRatio, Box, Button, Flex, HStack, Text, Image  } from "@chakra-ui/react"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import {motion, useDragControls } from "framer-motion"
 
 interface PostsProps{
@@ -42,7 +42,6 @@ export function Posts({
   dragSnap,index,first,last}:PostsProps){
   const [posted,setPosted] = useState(post.posted)
   const setModalProperties = (post) => {
-    console.log('posts:', post)
     setImage(post.url)
     setTitle(post.title);
     setDescription(post.description);
@@ -52,10 +51,13 @@ export function Posts({
     setIsNewFile(false)
     setDeleteHash(post.deleteHash)
     setCurrentPostId(post.id)
+    setPosted(post.posted)
     onOpen()
   }
   const controls = useDragControls()
-
+  useEffect(()=>{
+    setPosted(post.posted)
+  },[post.posted])
   const dragStarted= (e,id)=>{
     e.preventDefault();
     setIds({

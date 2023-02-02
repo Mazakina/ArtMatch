@@ -90,9 +90,11 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
                   ),
                     q.Lambda(
                       'i',
-                      q.Equals(
-                        q.Var('i'),
-                        [req.body.id]
+                      q.Not(
+                        q.Equals(
+                          q.Var('i'),
+                          req.body.id
+                        )
                       )
                     )
                   )
@@ -111,6 +113,7 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
 
   if(req.method=='DELETE'){
     const user:userProps = await getUser()
+    console.log(req.body.id)
     try{
       await fauna.query(
           q.Update(
@@ -126,28 +129,31 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
             {
               data:{
                 favoritedPosts:
-                  q.Filter(
-                    q.Select(
-                      ["data",'favoritedPosts'],
-                      q.Get(
-                        q.Match(
-                          q.Index('favorite_posts_by_user_id'),
-                          user.ref
-                        )
+                q.Filter(
+                  q.Select(
+                    ["data",'favoritedPosts'],
+                    q.Get(
+                      q.Match(
+                        q.Index('favorite_posts_by_user_id'),
+                        user.ref
                       )
-                  ),
-                    q.Lambda(
-                      'i',
+                    )
+                ),
+                  q.Lambda(
+                    'i',
+                    q.Not(
                       q.Equals(
                         q.Var('i'),
-                        [req.body.id]
+                        req.body.id
                       )
                     )
                   )
+                )
               }
             }
           )
-      ).then(resonse => res.status(202).end('deleted'))
+      )
+      .then(resonse => res.status(202).end('deleted'))
     }catch(e){
       res.status(404)
     }
