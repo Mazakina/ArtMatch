@@ -1,4 +1,4 @@
-import {Box, AspectRatio, Grid, GridItem, HStack } from '@chakra-ui/react'
+import {Box, Grid, HStack } from '@chakra-ui/react'
 import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
 import { useContext, useEffect, useState } from 'react'

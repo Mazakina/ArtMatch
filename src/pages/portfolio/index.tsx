@@ -2,7 +2,8 @@
 import { unstable_getServerSession } from "next-auth/next"
 import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
-import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem } from "@chakra-ui/react";
+import {HiOutlineChevronDoubleRight} from 'react-icons/hi'
+import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem, useMediaQuery } from "@chakra-ui/react";
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
 import { useCallback, useContext, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
@@ -17,6 +18,7 @@ import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
 import {Posts} from "../../components/Portfolio/Posts";
 import { UserContext } from "../../services/hooks/UserContext";
+import SideBarComponentDrawer from "../../components/Portfolio/SideBarComponentDrawer";
 
 interface idsProps{
   id?:string,
@@ -31,6 +33,11 @@ interface AlbumProps{
 export default function Portfolio({posts,albums}){
   // user Data
   const {data} = useSession()
+  // Media Query hook
+  const [isBase,isLg] = useMediaQuery([
+    "(max-width: 991px)",
+    "(min-width: 992px)",
+  ]);
   //Framer Motion Variants
   const container = {
     hidden: { opacity: 0, scale:0 },
@@ -57,7 +64,8 @@ export default function Portfolio({posts,albums}){
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
   //image refs and states
-
+  const {isOpen:isOpenDrawer,onClose:onCloseDrawer,onOpen:onOpenDrawer}= useDisclosure()
+  const btnRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isNewFile, setIsNewFile] = useState<boolean>(false)
   const [title,setTitle] = useState<string>('')
@@ -74,7 +82,6 @@ export default function Portfolio({posts,albums}){
   const [onDragSnap,setOnDragSnap] = useState<string>(()=>ids.id)
 
   //Grid Layout variables
-  
   const gridRef = useRef<any>();
   const gridContainerRef = useRef<HTMLDivElement>()
   const [ activeAlbum,setActiveAlbum] = useState<string>('any')
@@ -136,6 +143,7 @@ export default function Portfolio({posts,albums}){
   }
 
   const onAlbumDrop = async(event,album)=>{
+    console.log('albumDrop')
     if(!!ids?.id){
       const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
           console.log(post)
@@ -170,14 +178,40 @@ export default function Portfolio({posts,albums}){
   return(
     <>
       <Header/>
-      <Flex overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
-        <Sidebar setActAlbum={{activeAlbum,setActiveAlbum}} albums={{albumsCollection,setAlbumsCollection}} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onDragDrop={onDragDrop} onAlbumDrop={onAlbumDrop} />
-
-        <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+      <Flex position='relative' overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
+        {isLg?        
+          <>
+          <Sidebar
+            setActAlbum={{activeAlbum,setActiveAlbum}}
+            albums={{albumsCollection,setAlbumsCollection}}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onDragDrop={onDragDrop}
+            onAlbumDrop={onAlbumDrop} />
+          <Box  height='95%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+          </>
+          :<>
+          <SideBarComponentDrawer
+            isOpen={isOpenDrawer}
+            onClose={onCloseDrawer}
+            btnRef={btnRef}
+            setActAlbum={{activeAlbum,setActiveAlbum}}
+            albums={{albumsCollection,setAlbumsCollection}}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            onDragDrop={onDragDrop}
+            onAlbumDrop={onAlbumDrop} />
+          <Flex justify="center" align="center" flexDir={'column'}>
+            <Box  height='40%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+            <Button onClick={onOpenDrawer} m='auto .4rem' p={'.2rem'}  _hover={{bg:'none',border:'1px solid #FFEB80'}} bg='none'><Icon fontSize={'1.5rem'} as={HiOutlineChevronDoubleRight} /></Button>
+            <Box  height='40%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
+          </Flex>
+          </>
+        }
         <Flex zIndex={10} ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
-          <Box    w='100%' height='99%'>
+          <Box   w='100%' height='99%'>
               <AnimatePresence >   
-                <Grid autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+                <Grid    autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
                   <GridItem
                     transition={'all .3s ease-in-out'}
                     gridArea={'1fr,1fr'}
@@ -211,7 +245,7 @@ export default function Portfolio({posts,albums}){
                       })
                       .map((post,index)=>{
                         return(
-                          <Posts setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
+                          <Posts isLg={isLg} onOpenDrawer={onOpenDrawer}  setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
                         )
                       })
                     }
@@ -222,7 +256,7 @@ export default function Portfolio({posts,albums}){
           <Flex   align='center' justify='center'>
             <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(-1)}} transition={'all .3s ease-in-out'} fontSize='2rem' opacity={initialSlice>0?'initial':'0'}   as={BiChevronLeft}/>
             <Box cursor={'row-resize'} bg={'white'} width={'1rem'} height={'1rem'} borderRadius={'50%'}/>
-            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(1)}} fontSize='2rem' opacity={(gridLastPostOnDisplay<posts.length)?'initial':'0'}  as={BiChevronRight}/>
+            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(1)}} fontSize='2rem' opacity={(gridLastPostOnDisplay<=posts.length)?'initial':'0'}  as={BiChevronRight}/>
           </Flex>
         </Flex>
 

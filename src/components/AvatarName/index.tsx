@@ -1,15 +1,15 @@
-import { Avatar, Box, Text , Link, Flex } from "@chakra-ui/react"
+import { Avatar, Box, Text , Link, Flex, FlexProps } from "@chakra-ui/react"
 
-interface AvatarNameProps{
+interface AvatarNameProps extends FlexProps{
   name:string,
   email:string,
   avatar:string,
 }
 
-export function AvatarName({name,email,avatar}:AvatarNameProps){
+export function AvatarName({name,email,avatar,...rest}:AvatarNameProps){
 
   return(
-  <Flex  overflow={'hidden'} maxW={'250px'} m='20px 0px 0 20px'>
+  <Flex  overflow={'hidden'} maxW={'250px'}  m='20px 0px 0 20px' {...rest}>
     <Avatar src={avatar}/>
     <Box ml='12px'>
       <Text>{name}</Text>

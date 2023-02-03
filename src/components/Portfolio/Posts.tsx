@@ -31,6 +31,8 @@ interface PostsProps{
   index:number,
   first:number,
   last:number
+  isLg:boolean,
+  onOpenDrawer:any,
 }
 
 
@@ -38,9 +40,10 @@ interface PostsProps{
 export function Posts({
   post,onOpen,setImage,setTitle,
   setDescription,setMidia,setTags,setIsNewFile,setCurrentPostId,
-  setPublished,setIds, variant,setCroppedImage,setDeleteHash,
+  setPublished,setIds, variant,setCroppedImage,setDeleteHash,isLg,onOpenDrawer,
   dragSnap,index,first,last}:PostsProps){
   const [posted,setPosted] = useState(post.posted)
+
   const setModalProperties = (post) => {
     setImage(post.url)
     setTitle(post.title);
@@ -54,41 +57,61 @@ export function Posts({
     setPosted(post.posted)
     onOpen()
   }
+
   const controls = useDragControls()
   useEffect(()=>{
     setPosted(post.posted)
   },[post.posted])
-  const dragStarted= (e,id)=>{
+  
+  function dragStarted(e,id){
     e.preventDefault();
+    if(!isLg){
+      onOpenDrawer()
+    }
     setIds({
       id:post.id,
       deleteHash:post.deleteHash
     })
   }
+  function dragEnded(){
+    setTimeout(()=>{setIds('')},300)
+    if(!isLg){
+      onOpenDrawer()
+    }
+  }
+  function isOnDisplay (){
+    if(index>=first && index<first+last ){return true}else{return false}}
+  
 
-
-  let display = (index>=first && index<first+last )
+  let display = isOnDisplay()
   if(display){
   return(
   <motion.div
-    style={{
-      maxHeight:'230px',
-      maxWidth:'200px',
-    }}
+    style={display?
+      {
+        display:'flex',
+        maxHeight:'230px',
+        maxWidth:'200px',
+      }:{
+        display:'none',
+        maxHeight:'230px',
+        maxWidth:'200px',
+      }
+    }
     layout
     exit={{
       opacity:0,scale:0}}
     variants={variant}
     transition={{type: 'spring', bounce:0.20}}
     whileTap={{ scale: 1, }}
-    whileDrag={{scale:0.55,zIndex:20,opacity:1,
+    whileDrag={{scale:0.55,zIndex:2401,opacity:1,
       pointerEvents:'none',filter:'brightness(.7)'
-  
+      ,
     }}
     dragControls={controls}
     drag={true}
     onDragStart={(e)=>{dragStarted(e,1)}}
-    onDragEnd={()=>{setTimeout(()=>{setIds('')},300)}}
+    onDragEnd={dragEnded}
     dragSnapToOrigin={dragSnap==post.id? false : true}
     >
       <Flex
@@ -142,8 +165,7 @@ export function Posts({
     </motion.div>
   )}else{
     return(
-      <Flex>
-      </Flex>
+      <></>
     )
   }
 }

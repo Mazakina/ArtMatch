@@ -24,7 +24,7 @@ export default function GoogleAutoComplete({setEndereco,address}:GoogleAutocompl
 function Map({setEndereco,address}){
   return(
     <>
-      <Box maxWidth={'340px'} w='100%'>
+      <Box maxWidth={{base:'100%',md:'340px'}} w='100%'>
         <PlacesAutocomplete setEndereco={setEndereco} address={address}/>
       </Box>
     </>
@@ -50,7 +50,7 @@ export const PlacesAutocomplete = ({setEndereco,address})=>{
     clearSuggestions();
   }
   return (
-    <Combobox className='combobox' onSelect={handleSelect}>
+    <Combobox  className='combobox' onSelect={handleSelect}>
       <Input autoComplete='off' p='.2rem' w='100%' m='0' as={ComboboxInput} value={value} onChange={(e)=>{setValue(e.target.value)}} disabled={!ready} placeholder='Procurar endereço' />
       <ComboboxPopover>
         <ComboboxList className='combobox-list'>

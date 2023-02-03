@@ -164,15 +164,14 @@ function Header(){
         placement='left'
         onClose={onClose}
         finalFocusRef={btnRef}
-
       >
         <DrawerOverlay />
-        <DrawerContent 
+        <DrawerContent
         bg='#272727'>
           <DrawerCloseButton />
           <DrawerHeader>Busque</DrawerHeader>
 
-          <DrawerBody>
+          <DrawerBody >
             <Flex  direction='column' align='center'>
               <Flex direction='row'>
                 <Select 
@@ -224,6 +223,7 @@ function Header(){
                     bg='#0B0B0B'
                     alignSelf='center'
                     color='#BEBEBE'
+                    initialFocusRef
                     >
                     <Input
                       h='29px'
@@ -231,7 +231,8 @@ function Header(){
                       name={'search'}
                       onChange={(e)=>{setSearchTerm(e.target.value)}}
                       value={searchTerm}
-                      autoComplete="off" />
+                      autoComplete="off" 
+                      />
                     <InputRightElement 
                     h='100%'
                     children={<Icon

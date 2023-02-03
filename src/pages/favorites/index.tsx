@@ -1,5 +1,5 @@
-import { Avatar, Flex, Image, Text,Link, Spinner, Grid } from "@chakra-ui/react";
-import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
+import { Flex, Image, Link, Spinner } from "@chakra-ui/react";
+import { NextApiRequest, NextApiResponse } from "next";
 import { useContext, useState } from "react";
 import Header from "../../components/Header";
 import { UserContext } from "../../services/hooks/UserContext";
@@ -9,7 +9,6 @@ import PostPrev from "../../components/PostPrev";
 import UserPrev from "../../components/UserPrev";
 
 export default function favorites(req:NextApiRequest,res:NextApiResponse){
-
   const useUser = useContext(UserContext)
   const {user,favoritePosts,favoriteUsers} = useUser
   async function getFavoritePosts(){
@@ -50,20 +49,17 @@ export default function favorites(req:NextApiRequest,res:NextApiResponse){
     const data = {favoritePostsData,favoriteUsersData} 
     return data
   }
-  
   const {isLoading, data, error,isFetched}= useQuery('favoritePosts',getFavoritePosts,{enabled: !!favoritePosts[0]||!!favoriteUsers[0]})
 
-
-  
   const [isCurrentActive,setIsCurrentActive] = useState('Posts')
   return(
     <>
       <Header/>
-      <Flex position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
+      <Flex mb='2rem' position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
         <Image  zIndex='1'
           objectFit='cover'
           src={user.data.banner? user.data.banner :'images/banner.jpg' }
-          width='100%' height='430px'
+          width='100%' height={{base:'300px', md:'360px'}}
           filter={user.data.banner? "":'brightness(0.4)'}
         />
         <Flex zIndex='2' borderRadius='5px' bg='#181818' align="center" margin='-2rem auto 2rem' flexDir='column' >
@@ -114,20 +110,20 @@ export default function favorites(req:NextApiRequest,res:NextApiResponse){
           </Flex>
         </Flex>
 
-        <Flex>
+        <Flex h='fit-content' >
         {!isFetched?
           <Spinner m='0 auto' size='md' />:
           isCurrentActive==='Posts'?
-          <Grid  height='95%' templateColumns={`repeat(${'auto-fit'},240px)`} w='100%'>
+          <Flex flexWrap={'wrap'} w='100%'>
           {data?.favoritePostsData.map(
-           (post=>{
-             return(
-               <PostPrev post={post} key={post.id} />
-             )
-           })
-         )}
-         </Grid>:
-         <Grid gap={'.5rem'} height='95%' templateColumns={`repeat(${'auto-fit'},240px)`} w='100%' >
+            (post=>{
+              return(
+                <PostPrev post={post} key={post.id} />
+              )
+            })
+          )}
+          </Flex>:
+          <Flex gap={'1rem'} flexWrap={'wrap'} w='100%'>
           {data?.favoriteUsersData.map(
             (client)=>{
               return(
@@ -135,7 +131,7 @@ export default function favorites(req:NextApiRequest,res:NextApiResponse){
               )
             }
           )}
-         </Grid>
+         </Flex>
         }
         </Flex>
       </Flex>
