@@ -37,11 +37,11 @@ import { NewAlbum } from "./NewAlbum";
     },
     isOpen:boolean,
     onClose:() => void,
-    btnRef:any,
+    // btnRef:any,
   }
   
   const SideBarComponentDrawer= React.memo( 
-    function SideBar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum,isOpen,onClose,btnRef}:SideBarProps)
+    function SideBar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum,isOpen,onClose}:SideBarProps)
     {
     const [isLg] = useMediaQuery('(min-width:62rem)')
   
@@ -70,21 +70,10 @@ import { NewAlbum } from "./NewAlbum";
       return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
     return(
-      <Drawer
-        
-        isOpen={isOpen}
-        placement='left'
-        onClose={onClose}
-        finalFocusRef={btnRef}
-
+      <Flex
+        bg='blackAlpha.800'
         >
-        <DrawerOverlay zIndex={10} />
-        <DrawerContent zIndex={10} bg='blackAlpha.800'>
-          <DrawerCloseButton />
-          <DrawerHeader>
             <AvatarName name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
-          </DrawerHeader>
-          <DrawerBody zIndex={10}>
             <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
             <Division width={'100%'}  bg={'#323232'}/>
               <Flex  maxH='74%' mb='.5rem' ml='20px' flexDir='column'>
@@ -140,9 +129,8 @@ import { NewAlbum } from "./NewAlbum";
               </Tooltip>
         
             </Flex>
-        </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+
+      </Flex>
     )
   });
   

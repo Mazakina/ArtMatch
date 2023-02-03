@@ -20,7 +20,7 @@ interface AlbumProps{
   albumRef: string
 }
 
-interface SideBarProps extends FlexProps{
+interface SideBarProps {
   onMouseEnter: (event: any) => void,
   onMouseLeave: (event: any) => void,
   onDragDrop: (event: any) => void,
@@ -35,7 +35,7 @@ interface SideBarProps extends FlexProps{
   }
 }
 
-const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum,...rest}:SideBarProps){
+const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps){
 
   const useUser = useContext(UserContext)
   const {user} = useUser
@@ -63,7 +63,7 @@ const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDro
   }
   return(
     
-    <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column' {...rest} >
+    <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'  >
       <AvatarName  minH='50px' name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
       <Division width={'100%'}  bg={'#323232'}/>
       <Flex minH='30%' maxH='70%' mb='.5rem' ml='20px' flexDir='column'>
@@ -166,10 +166,19 @@ export function Album({album,activeAlbum,setActiveAlbum,onAlbumDrop,deleteAlbum}
   return(
     <Flex 
       _hover={{ zIndex:11, bg:'#20343d78', border: '1px solid #FCD635'}}
-      border={'1px solid transparent'} onMouseUp={(e)=>{onAlbumDrop(e,album);loadingIcon()}}
-      data-tooltip-content='Arraste para Adicionar' cursor={'pointer'} ml={0}  w='100%' maxW={'250px'} mr='auto' 
-      borderRadius='5px' bg={active?'#20343D':''}
-      flexDir='column' align="center"
+      border={'1px solid transparent'} 
+      onMouseUp={(e)=>{onAlbumDrop(e,album);loadingIcon();console.log('cursor')}}
+      onPointerUp={(e)=>{onAlbumDrop(e,album);loadingIcon();console.log('pointer')}}
+      onPointerEnter={()=>{console.log('testing')}}
+      data-tooltip-content='Arraste para Adicionar' 
+      cursor={'pointer'}
+      ml={0}  w='100%' 
+      maxW={'250px'} 
+      mr='auto' 
+      borderRadius='5px' 
+      bg={active?'#20343D':''}
+      flexDir='column' 
+      align="center"
     >
         <Flex flexDir='row' align='center' w='100%'  > 
           <Flex onClick={()=>{active?setActiveAlbum('any'):setActiveAlbum(album.albumRef)}}  w='100%' p='.2rem 16px  ' align="center"
