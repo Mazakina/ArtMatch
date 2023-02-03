@@ -3,7 +3,7 @@ import { unstable_getServerSession } from "next-auth/next"
 import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {HiOutlineChevronDoubleRight} from 'react-icons/hi'
-import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem, useMediaQuery } from "@chakra-ui/react";
+import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem, useMediaQuery, Portal } from "@chakra-ui/react";
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
 import { useCallback, useContext, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
@@ -65,7 +65,7 @@ export default function Portfolio({posts,albums}){
   },[posts])
   //image refs and states
   const {isOpen:isOpenDrawer,onClose:onCloseDrawer,onOpen:onOpenDrawer}= useDisclosure()
-  const btnRef = useRef()
+  // const btnRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isNewFile, setIsNewFile] = useState<boolean>(false)
   const [title,setTitle] = useState<string>('')
@@ -194,7 +194,6 @@ export default function Portfolio({posts,albums}){
           <SideBarComponentDrawer
             isOpen={isOpenDrawer}
             onClose={onCloseDrawer}
-            btnRef={btnRef}
             setActAlbum={{activeAlbum,setActiveAlbum}}
             albums={{albumsCollection,setAlbumsCollection}}
             onMouseEnter={onMouseEnter}
@@ -210,48 +209,48 @@ export default function Portfolio({posts,albums}){
         }
         <Flex zIndex={10} ref={gridContainerRef} flexDir={'column'} h='100%' width='100%'>
           <Box   w='100%' height='99%'>
-              <AnimatePresence >   
-                <Grid    autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
-                  <GridItem
-                    transition={'all .3s ease-in-out'}
-                    gridArea={'1fr,1fr'}
-                    as={Button}
-                    _hover={{bg:'none'}}
-                    cursor='pointer'
-                    onClick={()=>{onOpen();setIsNewFile(true)}}
-                    flexDir='column'
-                    align='center'
-                    justify='center'
-                    w='190px'
-                    height='190px'
-                    borderRadius={'5px'}
-                    border='1px
-                    dashed
-                    #fff'
-                    bg={'none'}
-                    
-                    color={'#eeeeee'}
-                    >
-                    <Flex  gap={'.7rem'}>
-                      <Icon  fontSize='42px' as={BsPlusSquare}/>
-                    </Flex>
-                    <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
-                  </GridItem>
-                    <LayoutGroup>
-                    {
-                      postsCollection
-                      .filter((post)=>{
-                        return (post.albumRef===activeAlbum|| activeAlbum==='any')
-                      })
-                      .map((post,index)=>{
-                        return(
-                          <Posts isLg={isLg} onOpenDrawer={onOpenDrawer}  setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
-                        )
-                      })
-                    }
-                    </LayoutGroup>
-                </Grid>
-              </AnimatePresence>
+            <AnimatePresence >   
+              <Grid    autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
+                <GridItem
+                  transition={'all .3s ease-in-out'}
+                  gridArea={'1fr,1fr'}
+                  as={Button}
+                  _hover={{bg:'none'}}
+                  cursor='pointer'
+                  onClick={()=>{onOpen();setIsNewFile(true)}}
+                  flexDir='column'
+                  align='center'
+                  justify='center'
+                  w='190px'
+                  height='190px'
+                  borderRadius={'5px'}
+                  border='1px
+                  dashed
+                  #fff'
+                  bg={'none'}
+                  
+                  color={'#eeeeee'}
+                  >
+                  <Flex  gap={'.7rem'}>
+                    <Icon  fontSize='42px' as={BsPlusSquare}/>
+                  </Flex>
+                  <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
+                </GridItem>
+                  <LayoutGroup>
+                  {
+                    postsCollection
+                    .filter((post)=>{
+                      return (post.albumRef===activeAlbum|| activeAlbum==='any')
+                    })
+                    .map((post,index)=>{
+                      return(
+                        <Posts isLg={isLg} onOpenDrawer={onOpenDrawer}  setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
+                      )
+                    })
+                  }
+                  </LayoutGroup>
+              </Grid>
+            </AnimatePresence>
           </Box>
           <Flex   align='center' justify='center'>
             <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(-1)}} transition={'all .3s ease-in-out'} fontSize='2rem' opacity={initialSlice>0?'initial':'0'}   as={BiChevronLeft}/>

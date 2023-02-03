@@ -8,7 +8,7 @@ import { Api } from "../../services/api";
 import PostPrev from "../../components/PostPrev";
 import UserPrev from "../../components/UserPrev";
 
-export default function favorites(req:NextApiRequest,res:NextApiResponse){
+export default function favorites(){
   const useUser = useContext(UserContext)
   const {user,favoritePosts,favoriteUsers} = useUser
   async function getFavoritePosts(){

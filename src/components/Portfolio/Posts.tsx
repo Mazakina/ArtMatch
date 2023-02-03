@@ -104,14 +104,13 @@ export function Posts({
     variants={variant}
     transition={{type: 'spring', bounce:0.20}}
     whileTap={{ scale: 1, }}
-    whileDrag={{scale:0.55,zIndex:2401,opacity:1,
+    whileDrag={{scale:0.55,zIndex:30,opacity:1,
       pointerEvents:'none',filter:'brightness(.7)'
-      ,
     }}
     dragControls={controls}
     drag={true}
     onDragStart={(e)=>{dragStarted(e,1)}}
-    onDragEnd={dragEnded}
+    onDragEnd={()=>{dragEnded()}}
     dragSnapToOrigin={dragSnap==post.id? false : true}
     >
       <Flex
@@ -158,7 +157,9 @@ export function Posts({
           <Text  mt='auto' mb='auto' ml='10px' fontSize='10px'>{post.title}</Text>
           <HStack  mr='10px'>
             <Text fontSize='10px'>Publicado</Text>
-            <Box  onClick={()=>setPosted(!posted)} width='30px' border='1px solid gray' borderRadius='10px' ><Box transition={'margin .2s ease-in-out'} ml={posted?'18px':'0'} h='12px' w='12px' borderRadius='50%' bg={posted?'#FFEB80':'#727272'} /></Box>
+            <Box  onClick={()=>setPosted(!posted)} width='30px' border='1px solid gray' borderRadius='10px' >
+              <Box transition={'margin .2s ease-in-out'} ml={posted?'18px':'0'} h='12px' w='12px' borderRadius='50%' bg={posted?'#FFEB80':'#727272'} />
+            </Box>
           </HStack>
         </Flex>
       </Flex>
