@@ -7,7 +7,7 @@ import { Api } from "../../services/api";
 import PostPrev from "../../components/PostPrev";
 import UserPrev from "../../components/UserPrev";
 
-export default function favorites(){
+export default function favorites({}){
   const useUser = useContext(UserContext)
   const {user,favoritePosts,favoriteUsers} = useUser
   async function getFavoritePosts(){
@@ -134,7 +134,6 @@ export default function favorites(){
         }
         </Flex>
       </Flex>
-
     </>
   )
 }
