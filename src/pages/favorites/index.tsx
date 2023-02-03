@@ -1,5 +1,4 @@
 import { Flex, Image, Link, Spinner } from "@chakra-ui/react";
-import { NextApiRequest, NextApiResponse } from "next";
 import { useContext, useState } from "react";
 import Header from "../../components/Header";
 import { UserContext } from "../../services/hooks/UserContext";
