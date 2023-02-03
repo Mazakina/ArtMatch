@@ -72,6 +72,7 @@ import { NewAlbum } from "./NewAlbum";
     return(
       <Flex
         bg='blackAlpha.800'
+        flexDir={'column'}
         >
             <AvatarName name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
             <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
