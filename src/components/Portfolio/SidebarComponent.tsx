@@ -1,4 +1,7 @@
-import {Spinner, Flex ,Text, Icon, VStack, Tooltip, Button, Input} from "@chakra-ui/react";
+import {Spinner, Flex ,Text, Icon, VStack, Tooltip, Button, Input ,
+Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, 
+DrawerContent, DrawerCloseButton, FlexProps, Box,} from "@chakra-ui/react";
+import { useMediaQuery } from '@chakra-ui/react'
 import { AvatarName } from "../AvatarName";
 import Division from "../Division";
 import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineReload} from 'react-icons/ai'
@@ -17,7 +20,7 @@ interface AlbumProps{
   albumRef: string
 }
 
-interface SideBarProps{
+interface SideBarProps extends FlexProps{
   onMouseEnter: (event: any) => void,
   onMouseLeave: (event: any) => void,
   onDragDrop: (event: any) => void,
@@ -32,7 +35,8 @@ interface SideBarProps{
   }
 }
 
-const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum}:SideBarProps){
+const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum,...rest}:SideBarProps){
+
   const useUser = useContext(UserContext)
   const {user} = useUser
   const {data} = useSession()
@@ -53,12 +57,16 @@ const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDro
     }catch(e){
     }
   }
-  return(
-    <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
-    <AvatarName name={data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
 
-    <Division width={'100%'}  bg={'#323232'}/>
-      <Flex  maxH='74%' mb='.5rem' ml='20px' flexDir='column'>
+  function capitalizeFirstLetter(str) {
+    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+  return(
+    
+    <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column' {...rest} >
+      <AvatarName  minH='50px' name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
+      <Division width={'100%'}  bg={'#323232'}/>
+      <Flex minH='30%' maxH='70%' mb='.5rem' ml='20px' flexDir='column'>
         <Flex  width='100%' justify='space-between' align='center' >
           <Text>Albums</Text>
           <Flex align='center'>
@@ -104,12 +112,28 @@ const Sidebar= React.memo( function Sidebar({onMouseEnter,onMouseLeave,onDragDro
         </AnimatePresence>
       </Flex>
 
-      <Tooltip  placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
-        <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseEnter={event=>onMouseEnter(event)} onMouseLeave={event=>onMouseLeave(event)} onMouseUp={(e)=>onDragDrop(e)} zIndex={21} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
-          <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
-        </Flex>
-      </Tooltip>
-
+        <Tooltip placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
+          <Flex
+            H='40px'
+            id='lixeira'
+            data-tooltip-content='Arraste para lixeira'
+            onMouseEnter={event=>onMouseEnter(event)}
+            onMouseLeave={event=>onMouseLeave(event)}
+            onMouseUp={(e)=>onDragDrop(e)}
+            zIndex={21}
+            as={Button}
+            align='center'
+            m='auto
+            1rem
+            1rem'
+            border='1px
+            solid
+            #959595'
+            _hover={{bg:'none',color:'#FCD635',border:'1px solid #FCD635'}} 
+            bg='none'>
+            <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
+          </Flex>
+        </Tooltip>
     </Flex>
   )
 });
