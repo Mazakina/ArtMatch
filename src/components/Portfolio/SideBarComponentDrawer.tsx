@@ -131,7 +131,25 @@ import { NewAlbum } from "./NewAlbum";
             </Flex>
       
             <Tooltip  placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
-              <Flex id='lixeira' data-tooltip-content='Arraste para lixeira' onMouseEnter={event=>onMouseEnter(event)} onMouseLeave={event=>onMouseLeave(event)} onMouseUp={(e)=>onDragDrop(e)} zIndex={21} as={Button} align='center' m='auto 1rem 3rem' border='1px solid #959595' _hover={{ bg:'none', color:'#FCD635', border: '1px solid #FCD635'}} bg='none'>
+             <Flex
+                id='lixeira'
+                data-tooltip-content='Arraste
+                para
+                lixeira'
+                onMouseEnter={event=>onMouseEnter(event)}
+                onMouseLeave={event=>onMouseLeave(event)}
+                onMouseUp={onDragDrop}
+                zIndex={21}
+                as={Button}
+                align='center'
+                m='auto
+                1rem
+                3rem'
+                border='1px
+                solid
+                #959595'
+                _hover={{ bg:'none', color:'#FCD635', border:'1px solid #FCD635'}}
+                bg='none'>
                 <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
               </Flex>
             </Tooltip>

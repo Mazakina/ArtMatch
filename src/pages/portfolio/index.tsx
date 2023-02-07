@@ -14,11 +14,12 @@ import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
-import Sidebar from "../../components/Portfolio/SidebarComponent"
 import ModalForm from "../../components/Portfolio/ModalForm";
 import {Posts} from "../../components/Portfolio/Posts";
 import { UserContext } from "../../services/hooks/UserContext";
 import SideBarComponentDrawer from "../../components/Portfolio/SideBarComponentDrawer";
+import SidebarComponent from "../../components/Portfolio/SidebarComponent"
+import ModalManage from "../../components/Portfolio/ModalManage";
 
 interface idsProps{
   id?:string,
@@ -31,9 +32,7 @@ interface AlbumProps{
 }
 
 export default function Portfolio({posts,albums}){
-  // user Data
   const {data} = useSession()
-  // Media Query hook
   const [isBase,isLg] = useMediaQuery([
     "(max-width: 991px)",
     "(min-width: 992px)",
@@ -64,9 +63,10 @@ export default function Portfolio({posts,albums}){
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
   //image refs and states
-  const {isOpen:isOpenDrawer,onClose:onCloseDrawer,onOpen:onOpenDrawer}= useDisclosure()
-  // const btnRef = useRef()
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen:isOpenManage, onOpen:onOpenManage, onClose:onCloseManage } = useDisclosure();
+  const {isOpen:isOpenDrawer,onClose:onCloseDrawer,onOpen:onOpenDrawer}= useDisclosure()
+
   const [isNewFile, setIsNewFile] = useState<boolean>(false)
   const [title,setTitle] = useState<string>('')
   const [description,setDescription] = useState<string>('')
@@ -77,6 +77,8 @@ export default function Portfolio({posts,albums}){
   const [deleteHash,setDeleteHash] = useState<string>('')
   const [croppedImage,setCroppedImage] = useState<any>()
   const [currentPostId, setCurrentPostId] = useState<string>()
+  const [currentAlbum,setCurrentAlbum] = useState({albumRef:'',albumName:''})
+
   //drag variables
   const [ids,setIds] = useState<idsProps>({})
   const [onDragSnap,setOnDragSnap] = useState<string>(()=>ids.id)
@@ -92,8 +94,7 @@ export default function Portfolio({posts,albums}){
   const [gridCount,setGridCount] = useState<Date>(new Date)
   let gridLastPostOnDisplay = initialSlice+gridLength
 
-  var regex = /^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/
-  function updateGrid(){
+  function updateGridChildrenLength(){
     const gridHeight = gridRef.current?.clientHeight
     const gridWidth = gridRef.current?.clientWidth
     const gridChildrenWidth = 190
@@ -101,7 +102,6 @@ export default function Portfolio({posts,albums}){
     const gridRows= Math.floor(gridHeight/230)
     setGridLength((Math.floor(gridWidth/(gridChildrenWidth+gapValue))*gridRows))
   }
-
 
   const deltaCountCallback= useCallback((delta)=>{
     if(delta>0){
@@ -113,9 +113,11 @@ export default function Portfolio({posts,albums}){
       setTimeout(()=>{setDeltaCount(0)},500)
     }
   },[])
-
+  let postsOnDisplay = postsCollection.filter((post)=>{
+    return (post.albumRef===activeAlbum|| activeAlbum==='any')
+  })
   // adding eventListeners after window mount
-  useEffect(()=>{updateGrid()},[gridCount])
+  useEffect(()=>{updateGridChildrenLength()},[gridCount])
   useEffect(()=>{
     window.addEventListener('resize',()=>{
       setGridCount(new Date)
@@ -126,14 +128,19 @@ export default function Portfolio({posts,albums}){
       deltaCountCallback(event.deltaY)
     })
   },[])
+  //change displayed posts
   useEffect(()=>{
     if(deltaCount==0){return}
     if(initialSlice+deltaCount>= 0 &&
-      (gridLastPostOnDisplay<= postsCollection.length ||
-      gridLastPostOnDisplay<= postsCollection.length-deltaCount)){
+      (gridLastPostOnDisplay<= postsOnDisplay.length ||
+      gridLastPostOnDisplay<= postsOnDisplay.length-deltaCount)){
       setInitialSlice(initialSlice+deltaCount)
     }
   },[deltaCount])
+  //on album change reset Initial Post
+  useEffect(()=>{
+    setInitialSlice(0)
+  },[activeAlbum])
 
   const onMouseEnter = (event) =>{
     setOnDragSnap(ids?.id)
@@ -143,7 +150,6 @@ export default function Portfolio({posts,albums}){
   }
 
   const onAlbumDrop = async(event,album)=>{
-    console.log('albumDrop')
     if(!!ids?.id){
       const newPostsArray = postsCollection.map(post =>{if(post.id===ids.id){
           console.log(post)
@@ -161,9 +167,11 @@ export default function Portfolio({posts,albums}){
     }
   }
 
-  const onDragDrop = async (event)=>{
+  const onDragDrop = async ()=>{
     if(!!ids){
-      const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id && post.id)
+      const newPostsArray = postsCollection.filter((post)=>post.id!==ids.id 
+      // && post.id
+      )
       if(initialSlice !==0){setInitialSlice(initialSlice-1)}
       setPostsCollection([...newPostsArray])
       await Api.delete('/lib/imgur/imgurDelete',{
@@ -175,13 +183,16 @@ export default function Portfolio({posts,albums}){
     }
   }
 
+
+  
+
   return(
     <>
       <Header/>
       <Flex position='relative' overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
         {isLg?        
           <>
-          <Sidebar
+          <SidebarComponent
             setActAlbum={{activeAlbum,setActiveAlbum}}
             albums={{albumsCollection,setAlbumsCollection}}
             onMouseEnter={onMouseEnter}
@@ -211,40 +222,60 @@ export default function Portfolio({posts,albums}){
           <Box   w='100%' height='99%'>
             <AnimatePresence >   
               <Grid    autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
-                <GridItem
-                  transition={'all .3s ease-in-out'}
-                  gridArea={'1fr,1fr'}
-                  as={Button}
-                  _hover={{bg:'none'}}
-                  cursor='pointer'
-                  onClick={()=>{onOpen();setIsNewFile(true)}}
-                  flexDir='column'
-                  align='center'
-                  justify='center'
-                  w='190px'
-                  height='190px'
-                  borderRadius={'5px'}
-                  border='1px
-                  dashed
-                  #fff'
-                  bg={'none'}
-                  
-                  color={'#eeeeee'}
-                  >
-                  <Flex  gap={'.7rem'}>
-                    <Icon  fontSize='42px' as={BsPlusSquare}/>
-                  </Flex>
-                  <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
-                </GridItem>
+                  {isLg &&
+                    <GridItem
+                      transition={'all .3s ease-in-out'}
+                      gridArea={'1fr,1fr'}
+                      as={Button}
+                      _hover={{bg:'none'}}
+                      cursor='pointer'
+                      onClick={()=>{onOpen();setIsNewFile(true)}}
+                      flexDir='column'
+                      align='center'
+                      justify='center'
+                      w='190px'
+                      height='190px'
+                      borderRadius={'5px'}
+                      border='1px
+                      dashed
+                      #fff'
+                      bg={'none'}
+                      
+                      color={'#eeeeee'}
+                      >
+                      <Flex  gap={'.7rem'}>
+                        <Icon  fontSize='42px' as={BsPlusSquare}/>
+                      </Flex>
+                      <Text fontSize='16px' mt='1rem'>Novo Projeto</Text>
+                    </GridItem>
+                  }
                   <LayoutGroup>
                   {
-                    postsCollection
-                    .filter((post)=>{
-                      return (post.albumRef===activeAlbum|| activeAlbum==='any')
-                    })
-                    .map((post,index)=>{
+                    postsOnDisplay.map((post,index)=>{
                       return(
-                        <Posts isLg={isLg} onOpenDrawer={onOpenDrawer}  setCurrentPostId={setCurrentPostId}  setDeleteHash={setDeleteHash} dragSnap={onDragSnap} variant={item} key={post.id} setIds={setIds} first={initialSlice}  last={gridLength-1} post={post} index={index} onOpen={onOpen} setPublished={setPublished} setImage={setNewImage} setTitle={setTitle} setDescription={setDescription} setMidia={setMidia} setTags={setTags} setCroppedImage={setCroppedImage} setIsNewFile={setIsNewFile} />
+                        <Posts
+                          isLg={isLg}
+                          onOpenManage={onOpenManage}
+                          setCurrentPostId={setCurrentPostId}
+                          setCurrentAlbum={setCurrentAlbum}
+                          setDeleteHash={setDeleteHash}
+                          dragSnap={onDragSnap}
+                          variant={item}
+                          key={post.id}
+                          setIds={setIds}
+                          first={initialSlice}
+                          last={isBase?gridLength :gridLength-1}
+                          post={post}
+                          index={index}
+                          onOpen={onOpen}
+                          setPublished={setPublished}
+                          setImage={setNewImage}
+                          setTitle={setTitle}
+                          setDescription={setDescription}
+                          setMidia={setMidia}
+                          setTags={setTags}
+                          setCroppedImage={setCroppedImage}
+                          setIsNewFile={setIsNewFile} />
                       )
                     })
                   }
@@ -253,14 +284,57 @@ export default function Portfolio({posts,albums}){
             </AnimatePresence>
           </Box>
           <Flex   align='center' justify='center'>
-            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(-1)}} transition={'all .3s ease-in-out'} fontSize='2rem' opacity={initialSlice>0?'initial':'0'}   as={BiChevronLeft}/>
+            <Icon
+              cursor={'pointer'}
+              onClick={()=>{deltaCountCallback(-1)}}
+              transition={'all .3s ease-in-out'}
+              fontSize='2rem'
+              opacity={initialSlice>0?'initial':'0'}
+              as={BiChevronLeft} />
             <Box cursor={'row-resize'} bg={'white'} width={'1rem'} height={'1rem'} borderRadius={'50%'}/>
-            <Icon cursor={'pointer'} onClick={()=>{deltaCountCallback(1)}} fontSize='2rem' opacity={(gridLastPostOnDisplay<=posts.length)?'initial':'0'}  as={BiChevronRight}/>
+            <Icon
+              cursor={'pointer'}
+              onClick={()=>{deltaCountCallback(1)}}
+              fontSize='2rem'
+              opacity={(gridLastPostOnDisplay<=postsOnDisplay.length)?'initial':'0'}
+              as={BiChevronRight} />
           </Flex>
         </Flex>
 
       </Flex>
-      <ModalForm published={published} setCroppedImage={setCroppedImage} croppedImage={croppedImage} currentPostId={currentPostId} isOpen={isOpen} onClose={onClose} deleteHash={deleteHash} isNewFile={isNewFile} setPostsCollection={setPostsCollection} postsCollection={postsCollection} title={title} setTitle={setTitle} description={description} setDescription={setDescription} setPublished={setPublished} midia={midia} setMidia={setMidia} tags={tags} setTags={setTags} newImage={newImage} setNewImage={setNewImage} data={data} />
+      <ModalForm
+        published={published}
+        setCroppedImage={setCroppedImage}
+        croppedImage={croppedImage}
+        currentPostId={currentPostId}
+        isOpen={isOpen}
+        onClose={onClose}
+        deleteHash={deleteHash}
+        isNewFile={isNewFile}
+        setPostsCollection={setPostsCollection}
+        postsCollection={postsCollection}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        setPublished={setPublished}
+        midia={midia}
+        setMidia={setMidia}
+        tags={tags}
+        setTags={setTags}
+        newImage={newImage}
+        setNewImage={setNewImage}
+        data={data} />
+
+      <ModalManage
+        currentAlbum={currentAlbum}
+        onAlbumDrop={onAlbumDrop}
+        setCurrentAlbum={setCurrentAlbum}
+        isOpen={isOpenManage}
+        onClose={onCloseManage}
+        setIds={setIds}
+        onDragDrop={onDragDrop}
+        albums={albums} />
     </>
   )
 }
@@ -282,7 +356,7 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
     byEmail:true
   }
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
-    method:'post',
+    method:'post',                
     headers: {
       cookie: context.req.headers.cookie || "",
     },

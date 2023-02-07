@@ -25,7 +25,7 @@ export function ProfilePostData({name,post,avatar}:AvatarNameProps){
     }
   }
   return(
-  <Flex  align={'center'} overflow={'hidden'} maxW={'250px'} m='20px 0px 1rem 20px'>
+  <Flex  align={'center'} overflow={'hidden'}  m='20px 0px 1rem 20px'>
     <Avatar src={avatar}/>
     <Box ml='12px'>
       <Text fontSize={'1rem'} >{post.title}</Text>

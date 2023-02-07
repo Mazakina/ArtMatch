@@ -6,8 +6,8 @@ export default function userPrev ({user}){
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
   return(
-    <Flex   as={Link} href={`/profile/${user.user}`}  mt='.5rem' border='1px solid #0000000' > 
-      <Flex borderRadius='5px' overflow={'hidden'}  w={{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}} maxWidth={'260px'} justify='center' position='relative'>
+    <Flex   as={Link} href={`/profile/${user.user}`}passHref  mt='.5rem' border='1px solid #0000000' > 
+      <Flex cursor='pointer'  borderRadius='5px' overflow={'hidden'}  w={{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}} maxWidth={'260px'} justify='center' position='relative'>
         <AspectRatio  w={'100%'} h={'100%'} borderRadius='3px' margin='0 !important' display='flex' bg='#969696'  ratio={1} >
             <Image  position='absolute' objectFit='cover' src={user.banner? user.banner:'images/banner.jpg'}/>
           </AspectRatio>

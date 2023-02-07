@@ -114,7 +114,13 @@ const Home  = ({data}) => {
         </HStack>
 
         <Box id='image-container' >
-          <Grid templateColumns={`repeat(${grid}, 1fr)`} width='100%'>
+          <Grid
+            className='grid-container'
+            templateColumns={{base:`repeat(3,1fr)`,
+            md:`repeat(5, 1fr)`,
+            lg:`repeat(7,1fr)`,
+            xl:`repeat(9,1fr)`}}
+            width='100%'>
             { sortPosts(postsData).map((post)=>{
               return(
                 <PostPrev post={post} key={post.id}/>
