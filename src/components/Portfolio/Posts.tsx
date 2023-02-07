@@ -12,7 +12,9 @@ interface PostsProps{
     posted: boolean,
     midia:string, 
     cropped:string,
-    tag:Array<string>
+    tag:Array<string>,
+    albumRef:string,
+    albumName:string
   },
   onOpen:()=>void,
   setImage:Dispatch<SetStateAction<string>>,
@@ -26,21 +28,23 @@ interface PostsProps{
   setIsNewFile:Dispatch<SetStateAction<boolean>>,
   setCurrentPostId:Dispatch<SetStateAction<string>>,
   setDeleteHash:Dispatch<SetStateAction<string>>,
+  setCurrentAlbum:Dispatch<SetStateAction<any>>,
   variant:any,
   dragSnap:string,
   index:number,
   first:number,
   last:number
   isLg:boolean,
-  onOpenDrawer:any,
+  onOpenManage:any,
+
 }
 
 
 
 export function Posts({
   post,onOpen,setImage,setTitle,
-  setDescription,setMidia,setTags,setIsNewFile,setCurrentPostId,
-  setPublished,setIds, variant,setCroppedImage,setDeleteHash,isLg,onOpenDrawer,
+  setDescription,setMidia,setTags,setIsNewFile,setCurrentPostId,setCurrentAlbum,
+  setPublished,setIds, variant,setCroppedImage,setDeleteHash,isLg,onOpenManage,
   dragSnap,index,first,last}:PostsProps){
   const [posted,setPosted] = useState(post.posted)
 
@@ -55,7 +59,7 @@ export function Posts({
     setDeleteHash(post.deleteHash)
     setCurrentPostId(post.id)
     setPosted(post.posted)
-    onOpen()
+      onOpen()
   }
 
   const controls = useDragControls()
@@ -63,24 +67,28 @@ export function Posts({
     setPosted(post.posted)
   },[post.posted])
   
-  function dragStarted(e,id){
+  function dragStarted(e){
     e.preventDefault();
-    if(!isLg){
-      onOpenDrawer()
-    }
     setIds({
       id:post.id,
       deleteHash:post.deleteHash
     })
+    if(!isLg){
+      setCurrentAlbum({albumRef:post.albumRef,albumName:post.albumName})
+      onOpenManage()
+    }
   }
   function dragEnded(){
     setTimeout(()=>{setIds('')},300)
-    if(!isLg){
-      onOpenDrawer()
-    }
+
   }
   function isOnDisplay (){
-    if(index>=first && index<first+last ){return true}else{return false}}
+    if(index>=first && index<first+last ){
+      return true
+    }else{
+      return false
+    }
+  }
   
 
   let display = isOnDisplay()
@@ -109,7 +117,7 @@ export function Posts({
     }}
     dragControls={controls}
     drag={true}
-    onDragStart={(e)=>{dragStarted(e,1)}}
+    onDragStart={(e)=>{dragStarted(e)}}
     onDragEnd={()=>{dragEnded()}}
     dragSnapToOrigin={dragSnap==post.id? false : true}
     >
@@ -141,14 +149,27 @@ export function Posts({
               bgColor='#14141473'
               _hover={{opacity:1}}
               transition='all 0.3s ease-in-out'
+              flexFlow={'column'}
               >
               <Button
                 onClick={()=>setModalProperties(post)}
-                _hover={{bg:'#FFE767'}}
-                color='#000'
+                _hover={{bg:'#FFE767', color:'black'}}
+                color='#ffffff'
+                w='70px'
+                border='1px solid #FFE767'
                 borderRadius={'2px'}
                 transform={'scale(0.9)'}
-                bg='#FFE767'>Editar
+                bg='#00000081'>Editar
+              </Button>
+              <Button
+                onClick={(e)=>{dragStarted(e)}}
+                _hover={{bg:'#FFE767', color:'black'}}
+                color='#ffffff'
+                w='70px'
+                borderRadius={'2px'}
+                border='1px solid #FFE767'
+                transform={'scale(0.9)'}
+                bg='#00000081'>Gerir
               </Button>
             </Flex>
           </Box>

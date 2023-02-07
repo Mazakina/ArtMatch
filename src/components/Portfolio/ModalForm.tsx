@@ -97,7 +97,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     setFormPart(true)
     setIsLoading(false)
     onClose()
-
   }
   async function handleOnSubmit(event) {
     event.preventDefault();
@@ -163,8 +162,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   )
 
   return(
-    
-    <Modal size={'1400px'} isOpen={isOpen} onClose={onClose}>
+    <Modal useInert onCloseComplete={cleanPostData} size={'1400px'} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay bg='#000000c0' />
       <ModalContent w='1200px !important' height='830px' bg='#373737' >
         <ModalHeader  width='100%'>
@@ -172,7 +170,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
           <Icon onClick={()=>{setFormPart(!formPart)}} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
           <Text>{isNewFile? 'Nova':'Editar'} publicação</Text>
           <Box/>
-          <ModalCloseButton onClick={()=>{cleanPostData()}} />
+          <ModalCloseButton onClick={()=>{onClose()}} />
         </Flex>
         </ModalHeader>
         <ModalBody position='relative' width='100%' >

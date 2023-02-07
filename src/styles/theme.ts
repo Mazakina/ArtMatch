@@ -14,7 +14,7 @@ export const theme = extendTheme({
       body:{
         fontSize:'18px',
         bg: '#181818',
-        color: 'white'
+        color: 'white',
       },
 
     }
