@@ -78,7 +78,7 @@ export default function ModalManage({
               flexDir={'column'}>
               {albums.map(album =>{
                 return (
-                  <ModalAlbum album={album} onAlbumDrop={onAlbumDrop} />
+                  <ModalAlbum key={album.albumRef} album={album} onAlbumDrop={onAlbumDrop} />
                 )
               })}
             </RadioGroup >
