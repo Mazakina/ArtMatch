@@ -188,7 +188,6 @@ export default function Portfolio({posts,albums}){
 
   return(
     <>
-      <Header/>
       <Flex position='relative' overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
         {isLg?        
           <>

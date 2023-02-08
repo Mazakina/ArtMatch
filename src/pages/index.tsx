@@ -1,14 +1,15 @@
-import {Box, Grid, HStack } from '@chakra-ui/react'
+import {Box, Grid,Text, HStack, useMediaQuery  } from '@chakra-ui/react'
 import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
 import { GetStaticProps } from 'next'
 import { fauna } from '../services/fauna'
 import {query as q} from 'faunadb'
 import PostPrev from '../components/PostPrev'
 import { UserContext } from '../services/hooks/UserContext'
-
+import {useInView} from "framer-motion"
+import Division from '../components/Division'
 interface ResponseProps{
   data:any
 }
@@ -42,15 +43,24 @@ interface HomePosts{
 
 
 const Home  = ({data}) => {
+  const ref = useRef(null)
+  const isInView = useInView(ref)
+  const [isBase,isSm,isMd,isLg] = useMediaQuery([
+    "(max-width: 479px)",
+    "(min-width: 480px) and (max-width: 767px)",
+    "(min-width: 768px) and (max-width: 991px)",
+    "(min-width: 992px) ",
+  ]);
   let postsData =JSON.parse(data)
   const useUser = useContext(UserContext)
   const {user,favoriteUsers}= useUser
-  const [grid,setGrid] = useState(0)
+  const [grid,setGrid] = useState(3)
+  const [gridRows,setGridRows] = useState(2)
   const [currentActive, setCurrentActive] = useState('trend')
-  useEffect(()=>{
-    setGrid(Math.floor(window.screen.width/200))
-    console.log(grid)
-  },[])
+  const getBreakPoints =  [isBase,isSm,isMd,isLg].findIndex(el=> el === true)
+  const gridColumns = [3,5,7,9]
+  const newGridValue =gridColumns[getBreakPoints]* gridRows
+
   const slides=[
     {img:'https://i.pinimg.com/originals/b3/45/e4/b345e46becdaeaaa9dcf6ea6144c91a9.jpg'},
     {img:'https://i.pinimg.com/originals/7d/98/84/7d98840fdff1b2e7cd508cc7f3a17403.jpg'},
@@ -64,7 +74,7 @@ const Home  = ({data}) => {
         (a,b)=>{
           return b.createdAt-a.createdAt
         }
-      ))
+      ).slice(0,grid))
     }
     if(currentActive == 'trend'){
       //sort by likes
@@ -72,64 +82,78 @@ const Home  = ({data}) => {
         (a,b)=>{
           return b.likes.length- a.likes.length
         }
-      ))
+      ).slice(0,grid))
     }
     if(currentActive == 'following'){
         return(postsData.filter(post=>favoriteUsers.includes(post.reference)).sort(
         (a,b)=>{
           return b.createdAt-a.createdAt
         }
-      ))
+      ).slice(0,grid))
     }
 
   }
+  const postsOnDisplay = sortPosts(postsData)
+  
+  useEffect(()=>{
+    setTimeout(()=>{ 
+      if(!isNaN(newGridValue)){
+        setGrid(newGridValue)
+      }
+    },200)
+  },[gridRows,isBase,isSm,isMd,isLg])
+
+  useEffect(()=>{
+    if(isInView &&grid<postsOnDisplay ){
+      setGridRows(gridRows=>gridRows+3)
+    }
+  },[isInView])
 
   return (
-    <>
-      <Header/>
-      <Box margin='50px 0'id='heroBox'>
-        <HeroSlider slides={slides}/>
-
-        <HStack borderTop='10px solid #323232' margin='50px 0 16px' padding='0 25px'>
-          <ActiveLink
-            setCurrentActive={setCurrentActive}
-            currentActive={currentActive}
-            id='trend'>
-                Trend
-          </ActiveLink>
-          {user?           
-          <ActiveLink
-            setCurrentActive={setCurrentActive}
-            currentActive={currentActive}
-            id='following' >
-                Seguindo
-          </ActiveLink>:<></>
-          }
-          <ActiveLink
-            setCurrentActive={setCurrentActive}
-            currentActive={currentActive}
-            id='recent'>
-                Recente
-          </ActiveLink>
-        </HStack>
-
-        <Box id='image-container' >
-          <Grid
-            className='grid-container'
-            templateColumns={{base:`repeat(3,1fr)`,
-            md:`repeat(5, 1fr)`,
-            lg:`repeat(7,1fr)`,
-            xl:`repeat(9,1fr)`}}
-            width='100%'>
-            { sortPosts(postsData).map((post)=>{
-              return(
-                <PostPrev post={post} key={post.id}/>
-              )
-            })}
-          </Grid>
-        </Box>
+    <Box margin='50px 0'id='heroBox'>
+      <HeroSlider slides={slides}/>
+      <HStack borderTop='10px solid #323232' margin='50px 0 16px' padding='0 25px'>
+        <ActiveLink
+          setCurrentActive={setCurrentActive}
+          currentActive={currentActive}
+          id='trend'>
+              Trend
+        </ActiveLink>
+        {user?           
+        <ActiveLink
+          setCurrentActive={setCurrentActive}
+          currentActive={currentActive}
+          id='following' >
+              Seguindo
+        </ActiveLink>:<></>
+        }
+        <ActiveLink
+          setCurrentActive={setCurrentActive}
+          currentActive={currentActive}
+          id='recent'>
+              Recente
+        </ActiveLink>
+      </HStack>
+      <Box id='image-container' >
+        <Grid
+          className='grid-container'
+          templateColumns={{base:`repeat(3,1fr)`,
+          md:`repeat(5, 1fr)`,
+          lg:`repeat(7,1fr)`,
+          xl:`repeat(9,1fr)`}}
+          pb='1rem'
+          borderBottom='5px solid #323232'
+          width='100%'>
+          {postsOnDisplay.map((post)=>{
+            return(
+              <PostPrev  post={post} key={post.id}/>
+            )
+          })}
+        </Grid>
       </Box>
-    </>
+      <Box ref={ref}/>
+      <Division width='100%' bg='#323232'/>
+    </Box>
   )
 }
 
