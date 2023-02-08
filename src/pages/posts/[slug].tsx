@@ -119,91 +119,88 @@ export default function Posts({postData,slug}:PostsProps){
 
 
   return(
-    <>
-      <Header/>
-      <Box>
-        <Flex p='50px 0 0' margin='-50px 0 0' h='100vh'>
-          <Flex align='center' justify='center' p='1rem' id='post-image' h='calc(100vh-50px)' bg='#0a0a0a' width='100%' >
-            <Image alt=''  maxH='94%' src={currentPost?.URL} />
+    <Box>
+      <Flex p='50px 0 0' margin='-50px 0 0' h='100vh'>
+        <Flex align='center' justify='center' p='1rem' id='post-image' h='calc(100vh-50px)' bg='#0a0a0a' width='100%' >
+          <Image alt=''  maxH='94%' src={currentPost?.URL} />
+        </Flex>
+
+        <Flex pl='18px' pr='18px'id='details-section' flexDir='column' bg='#272727' width='450px'>
+          <Flex as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
+            <Flex  align='center'>
+              <Avatar mr='12px' width='44px' height='44px' src={currentPost.user.avatar}/>
+              <Box>
+                <Text fontSize='20px' color='#fff'> {capitalizeFirstLetter(currentPost.user.name)} </Text>
+                <Text fontSize='16px' color='#fff'>  3D Artist </Text>
+              </Box>
+              <Button 
+                onClick={(e)=>{handleFavoriteUserButton(e)}}
+                fontSize='12px'
+                ml='auto'
+                mt='auto'
+                borderRadius={'3px'}
+                mb='4px'
+                h='1.5rem'
+                p='0.3rem !important'
+                _hover={{
+                  background:'none',
+                  color: '#FFEB80',
+                  border:'1px solid #FFEB80'
+                }}
+                bg={favoritedUser?'none':'#FFEB80'}
+                color={favoritedUser?'#FFEB80':'black'}
+                border={'1px solid #FFEB80'}>
+                {favoritedUser?
+                  (<>Following</>):
+                  (<><Icon fontSize={'18px'} as={MdOutlineAddBox}/> Follow</>)
+                }
+              </Button>
+            </Flex>
+            {/* <Icon mr='18px'fontSize='28px' color='white' as={HiDotsVertical}/> */}
           </Flex>
 
-          <Flex pl='18px' pr='18px'id='details-section' flexDir='column' bg='#272727' width='450px'>
-            <Flex as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
-              <Flex  align='center'>
-                <Avatar mr='12px' width='44px' height='44px' src={currentPost.user.avatar}/>
-                <Box>
-                  <Text fontSize='20px' color='#fff'> {capitalizeFirstLetter(currentPost.user.name)} </Text>
-                  <Text fontSize='16px' color='#fff'>  3D Artist </Text>
-                </Box>
-                <Button 
-                  onClick={(e)=>{handleFavoriteUserButton(e)}}
-                  fontSize='12px'
-                  ml='auto'
-                  mt='auto'
-                  borderRadius={'3px'}
-                  mb='4px'
-                  h='1.5rem'
-                  p='0.3rem !important'
-                  _hover={{
-                    background:'none',
-                    color: '#FFEB80',
-                    border:'1px solid #FFEB80'
-                  }}
-                  bg={favoritedUser?'none':'#FFEB80'}
-                  color={favoritedUser?'#FFEB80':'black'}
-                  border={'1px solid #FFEB80'}>
-                  {favoritedUser?
-                    (<>Following</>):
-                    (<><Icon fontSize={'18px'} as={MdOutlineAddBox}/> Follow</>)
-                  }
-                </Button>
+          <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
+
+          <Flex margin='0 8px' flexDir='column'>
+            <Text mb='12px' color='white' fontSize='22px'>
+              {currentPost?.title} 
+            </Text>
+            <Text fontSize={'18px'} color='white'>
+              {currentPost?.description}
+            </Text>
+            <Flex mt='16px'align='center' justify='space-between'>
+              <Flex>
+                <Icon onClick={(e)=>{handleLikeButton(e)}} color={liked[0]?'#f8473b' :'white'} fontSize='25px' cursor={'pointer'} as={liked[0]? AiFillHeart:AiOutlineHeart}/>
+                <Text ml='.5rem' color ='white'>{currentPost.likes? currentPost.likes.length:''}</Text>
               </Flex>
-              {/* <Icon mr='18px'fontSize='28px' color='white' as={HiDotsVertical}/> */}
+              <Icon onClick={(e)=>{handleFavoritePostButton(e)}} fontSize='25px' cursor={'pointer'} as={favoritedPost? BsBookmarkHeartFill:BsBookmarkPlus}/>
             </Flex>
+          </Flex>
 
-            <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
-
-            <Flex margin='0 8px' flexDir='column'>
-              <Text mb='12px' color='white' fontSize='22px'>
-               {currentPost?.title} 
-              </Text>
-              <Text fontSize={'18px'} color='white'>
-                {currentPost?.description}
-              </Text>
-              <Flex mt='16px'align='center' justify='space-between'>
-                <Flex>
-                  <Icon onClick={(e)=>{handleLikeButton(e)}} color={liked[0]?'#f8473b' :'white'} fontSize='25px' cursor={'pointer'} as={liked[0]? AiFillHeart:AiOutlineHeart}/>
-                  <Text ml='.5rem' color ='white'>{currentPost.likes? currentPost.likes.length:''}</Text>
-                </Flex>
-                <Icon onClick={(e)=>{handleFavoritePostButton(e)}} fontSize='25px' cursor={'pointer'} as={favoritedPost? BsBookmarkHeartFill:BsBookmarkPlus}/>
-              </Flex>
-            </Flex>
-
-            <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
-            <Flex flexDir='column'>
-              <Text mb='1rem' fontSize='20px'>
-                Mais de {capitalizeFirstLetter(currentPost?.user.name)} </Text>  
-              <Grid bg='#1a1a1a' padding='.5rem' borderRadius={'5px'} templateColumns={`repeat(3, 1fr)`} width='100%'>
-              { 
-              currentPost.otherPosts.slice(0,9).map((post)=>{
-                return(
-                  <GridItem key={post.id} cursor='pointer' colSpan={1} display='inline !important' > 
-                    <Tooltip label={post.title} aria-label='A tooltip'>
-                      <AspectRatio  margin='0 !important' display='flex'   ratio={1} >
-                        <Link href={`/posts/${post.id}`}>
-                          <Image borderRadius='5px' src={post.cropped} />
-                        </Link>
-                      </AspectRatio>
-                    </Tooltip>
-                  </GridItem> 
-                )
-              })}
-              </Grid>
-            </Flex>
+          <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
+          <Flex flexDir='column'>
+            <Text mb='1rem' fontSize='20px'>
+              Mais de {capitalizeFirstLetter(currentPost?.user.name)} </Text>  
+            <Grid bg='#1a1a1a' padding='.5rem' borderRadius={'5px'} templateColumns={`repeat(3, 1fr)`} width='100%'>
+            { 
+            currentPost.otherPosts.slice(0,9).map((post)=>{
+              return(
+                <GridItem key={post.id} cursor='pointer' colSpan={1} display='inline !important' > 
+                  <Tooltip label={post.title} aria-label='A tooltip'>
+                    <AspectRatio  margin='0 !important' display='flex'   ratio={1} >
+                      <Link href={`/posts/${post.id}`}>
+                        <Image borderRadius='5px' src={post.cropped} />
+                      </Link>
+                    </AspectRatio>
+                  </Tooltip>
+                </GridItem> 
+              )
+            })}
+            </Grid>
           </Flex>
         </Flex>
-      </Box>
-    </>
+      </Flex>
+    </Box>
   )
 }
 

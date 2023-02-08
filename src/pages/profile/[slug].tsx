@@ -33,7 +33,6 @@ export default function Profile({profile,social,createdAt}){
   },[data])
   return(
     <>
-      <Header/>
       <Flex position='relative' flexDir='column' justifyContent='center'  w='100%'>
         <Image zIndex='1'
         objectFit='cover'
@@ -125,7 +124,6 @@ export default function Profile({profile,social,createdAt}){
           <Perfil createdAt={createdAt} habilidades = {profile.habilidades} endereco={profile.endereco}/>
         }
       </Flex>
-
     </>
   )
 }

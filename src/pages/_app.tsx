@@ -9,6 +9,7 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { useState } from 'react'
 import "../styles/global.css"
+import Header from '../components/Header'
 
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
@@ -21,6 +22,7 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session }>) {
         <QueryClientProvider client={queryClient}>
           <UserProvider>
             <ChakraProvider theme={theme}>
+              <Header/>
               <Component {...pageProps} />
             </ChakraProvider>
           </UserProvider>

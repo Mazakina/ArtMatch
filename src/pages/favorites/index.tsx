@@ -52,89 +52,86 @@ export default function Favorites({}){
 
   const [isCurrentActive,setIsCurrentActive] = useState('Posts')
   return(
-    <>
-      <Header/>
-      <Flex mb='2rem' position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
-        <Image  zIndex='1'
-          objectFit='cover'
-          src={user.data.banner? user.data.banner :'images/banner.jpg' }
-          width='100%' height={{base:'300px', md:'360px'}}
-          filter={user.data.banner? "":'brightness(0.4)'}
-        />
-        <Flex zIndex='2' borderRadius='5px' bg='#181818' align="center" margin='-2rem auto 2rem' flexDir='column' >
-          <Flex zIndex='2' margin='15px auto' color='white'>
-            <Link _hover={{}} onClick={()=>{setIsCurrentActive('Posts')}} position='relative'  pb='5px' _after={(isCurrentActive=='Posts')?
-              {
-                transition:'all ease-in-out .3s',
-                content:'""',
-                position:'absolute',
-                bottom:0,
-                left:0,
-                width:'100%',
-                height:'1px',
-                background:' #FFE767'
-              }:{
-                transition:'all ease-in-out .3s',
-                content:'""',
-                position:'absolute',
-                bottom:0,
-                left:0,
-                width:'0%',
-                height:'1px',
-                background:' #FFE767'
-              }
-            } fontSize='18px' margin='0 1rem'>Posts</Link>
-            <Link _hover={{}} onClick={()=>{setIsCurrentActive('Artistas')}} position='relative' fontSize='18px' margin='0 1rem'  _after={(isCurrentActive=='Artistas')?
-              {
-                transition:'all ease-in-out .3s',
-                content:'""',
-                position:'absolute',
-                bottom:0,
-                left:0,
-                width:'100%',
-                height:'1px',
-                background:' #FFE767'
-              }:{
-                transition:'all ease-in-out .3s',
-                content:'""',
-                position:'absolute',
-                bottom:0,
-                left:0,
-                width:'0%',
-                height:'1px',
-                background:' #FFE767'
-              }
+    <Flex mb='2rem' position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
+      <Image  zIndex='1'
+        objectFit='cover'
+        src={user.data.banner? user.data.banner :'images/banner.jpg' }
+        width='100%' height={{base:'300px', md:'360px'}}
+        filter={user.data.banner? "":'brightness(0.4)'}
+      />
+      <Flex zIndex='2' borderRadius='5px' bg='#181818' align="center" margin='-2rem auto 2rem' flexDir='column' >
+        <Flex zIndex='2' margin='15px auto' color='white'>
+          <Link _hover={{}} onClick={()=>{setIsCurrentActive('Posts')}} position='relative'  pb='5px' _after={(isCurrentActive=='Posts')?
+            {
+              transition:'all ease-in-out .3s',
+              content:'""',
+              position:'absolute',
+              bottom:0,
+              left:0,
+              width:'100%',
+              height:'1px',
+              background:' #FFE767'
+            }:{
+              transition:'all ease-in-out .3s',
+              content:'""',
+              position:'absolute',
+              bottom:0,
+              left:0,
+              width:'0%',
+              height:'1px',
+              background:' #FFE767'
             }
-              >Artistas</Link>
-          </Flex>
-        </Flex>
-
-        <Flex h='fit-content' >
-        {!isFetched?
-          <Spinner m='0 auto' size='md' />:
-          isCurrentActive==='Posts'?
-          <Flex flexWrap={'wrap'} w='100%'>
-          {data?.favoritePostsData.map(
-            (post=>{
-              return(
-                <PostPrev post={post} key={post.id} />
-              )
-            })
-          )}
-          </Flex>:
-          <Flex gap={'1rem'} flexWrap={'wrap'} w='100%'>
-          {data?.favoriteUsersData.map(
-            (client)=>{
-              return(
-                <UserPrev user={client.user} key={client.user.user} />
-              )
+          } fontSize='18px' margin='0 1rem'>Posts</Link>
+          <Link _hover={{}} onClick={()=>{setIsCurrentActive('Artistas')}} position='relative' fontSize='18px' margin='0 1rem'  _after={(isCurrentActive=='Artistas')?
+            {
+              transition:'all ease-in-out .3s',
+              content:'""',
+              position:'absolute',
+              bottom:0,
+              left:0,
+              width:'100%',
+              height:'1px',
+              background:' #FFE767'
+            }:{
+              transition:'all ease-in-out .3s',
+              content:'""',
+              position:'absolute',
+              bottom:0,
+              left:0,
+              width:'0%',
+              height:'1px',
+              background:' #FFE767'
             }
-          )}
-         </Flex>
-        }
+          }
+            >Artistas</Link>
         </Flex>
       </Flex>
-    </>
+
+      <Flex h='fit-content' >
+      {!isFetched?
+        <Spinner m='0 auto' size='md' />:
+        isCurrentActive==='Posts'?
+        <Flex flexWrap={'wrap'} w='100%'>
+        {data?.favoritePostsData.map(
+          (post=>{
+            return(
+              <PostPrev post={post} key={post.id} />
+            )
+          })
+        )}
+        </Flex>:
+        <Flex gap={'1rem'} flexWrap={'wrap'} w='100%'>
+        {data?.favoriteUsersData.map(
+          (client)=>{
+            return(
+              <UserPrev user={client.user} key={client.user.user} />
+            )
+          }
+        )}
+        </Flex>
+      }
+      </Flex>
+    </Flex>
   )
 }
 
