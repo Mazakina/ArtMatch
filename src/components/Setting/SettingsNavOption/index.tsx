@@ -4,7 +4,7 @@ import {IoIosArrowForward,} from 'react-icons/io'
 import { IconType } from "react-icons/lib";
 
 interface SettingsNavOptionsProps extends FlexProps{
-  icon: string|IconType;
+  icon: any;
   children:ReactNode;
   active:boolean
 }
