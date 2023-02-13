@@ -44,7 +44,7 @@ interface ModalFormProps{
   setCroppedImage:Dispatch<SetStateAction<any>>,
   setDescription:Dispatch<SetStateAction<string>>,
   setPublished:Dispatch<SetStateAction<boolean>>,
-  currentPostId:Dispatch<SetStateAction<string>>,
+  currentPostId:string,
   data:any
 }
 
