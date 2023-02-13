@@ -6,6 +6,27 @@ import { FiPhone } from "react-icons/fi"
 import { Api } from "../../../services/api"
 import SocialOptions from "../SocialOptions"
 
+interface SocialSec{
+  isLoading:boolean;
+  settingOpt:string;
+  userSettings:{
+    data:{
+      social: {
+        instagram: string,
+        artstation: string,
+        behance: string,
+        telefone: string
+      }
+    }
+  }
+  user:{
+    name:string,
+    image:string,
+    email:{
+      email:string
+    }
+  }
+}
 
 export default function SocialSec({ isLoading, settingOpt, userSettings,user,setIsLoading}){
   const [artstation, setArtstation] = useState(userSettings.data.social?.artstation)
@@ -70,6 +91,7 @@ export default function SocialSec({ isLoading, settingOpt, userSettings,user,set
         bg:'none',
       }}
       ml='auto'
+      aria-label='salvar'
       isLoading={isLoading} 
       onClick={(event)=>{saveSettingsSocial(event)}}
       >Salvar</Button>

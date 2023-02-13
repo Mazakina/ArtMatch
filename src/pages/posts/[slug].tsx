@@ -138,6 +138,8 @@ export default function Posts({postData,slug}:PostsProps){
                 fontSize='12px'
                 ml='auto'
                 mt='auto'
+                aria-active={favoritedUser?'true':'false'}
+                aria-label='adicionar/remover artista aos favoritos'
                 borderRadius={'3px'}
                 mb='4px'
                 h='1.5rem'
@@ -170,10 +172,26 @@ export default function Posts({postData,slug}:PostsProps){
             </Text>
             <Flex mt='16px'align='center' justify='space-between'>
               <Flex>
-                <Icon onClick={(e)=>{handleLikeButton(e)}} color={liked[0]?'#f8473b' :'white'} fontSize='25px' cursor={'pointer'} as={liked[0]? AiFillHeart:AiOutlineHeart}/>
+                <Icon
+                  onClick={(e)=>{handleLikeButton(e)}}
+                  color={liked[0]?'#f8473b'
+                  :'white'}
+                  aria-active={liked[0]?'true':'false'}
+                  aria-label='curtir Post'
+                  fontSize='25px'
+                  cursor={'pointer'}
+                  as={liked[0]?
+                  AiFillHeart:AiOutlineHeart} />
                 <Text ml='.5rem' color ='white'>{currentPost.likes? currentPost.likes.length:''}</Text>
               </Flex>
-              <Icon onClick={(e)=>{handleFavoritePostButton(e)}} fontSize='25px' cursor={'pointer'} as={favoritedPost? BsBookmarkHeartFill:BsBookmarkPlus}/>
+              <Icon
+                onClick={(e)=>{handleFavoritePostButton(e)}}
+                fontSize='25px'
+                cursor={'pointer'}
+                aria-active={favoritedPost?'true':'false'}
+                aria-label='adicionar/remover post aos favoritos'
+                as={favoritedPost?
+                BsBookmarkHeartFill:BsBookmarkPlus} />
             </Flex>
           </Flex>
 
@@ -188,8 +206,8 @@ export default function Posts({postData,slug}:PostsProps){
                 <GridItem key={post.id} cursor='pointer' colSpan={1} display='inline !important' > 
                   <Tooltip label={post.title} aria-label='A tooltip'>
                     <AspectRatio  margin='0 !important' display='flex'   ratio={1} >
-                      <Link href={`/posts/${post.id}`}>
-                        <Image borderRadius='5px' src={post.cropped} />
+                      <Link aria-label={`visitar postagem ${post.title}`} href={`/posts/${post.id}`}>
+                        <Image  borderRadius='5px' src={post.cropped} />
                       </Link>
                     </AspectRatio>
                   </Tooltip>

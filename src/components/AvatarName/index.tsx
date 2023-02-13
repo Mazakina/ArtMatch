@@ -10,7 +10,7 @@ export function AvatarName({name,email,avatar,...rest}:AvatarNameProps){
 
   return(
   <Flex  overflow={'hidden'} maxW={'250px'}  m='20px 0px 0 20px' {...rest}>
-    <Avatar src={avatar}/>
+    <Avatar aria-label="Avatar do usuário" src={avatar}/>
     <Box ml='12px'>
       <Text>{name}</Text>
       <Link fontSize='12px'>{email}</Link>

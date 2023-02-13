@@ -32,7 +32,7 @@ function Map({setEndereco,address}){
 }
 
 
-export const PlacesAutocomplete = ({setEndereco,address})=>{
+export const PlacesAutocomplete = ({setEndereco,address}:GoogleAutocompleteProps)=>{
   const {
     ready,
     value,
@@ -51,7 +51,7 @@ export const PlacesAutocomplete = ({setEndereco,address})=>{
   }
   return (
     <Combobox  className='combobox' onSelect={handleSelect}>
-      <Input autoComplete='off' p='.2rem' w='100%' m='0' as={ComboboxInput} value={value} onChange={(e)=>{setValue(e.target.value)}} disabled={!ready} placeholder='Procurar endereço' />
+      <Input aria-label='editar seu endereço' autoComplete='off' p='.2rem' w='100%' m='0' as={ComboboxInput} value={value} onChange={(e)=>{setValue(e.target.value)}} disabled={!ready} placeholder='Procurar endereço' />
       <ComboboxPopover>
         <ComboboxList className='combobox-list'>
           {status === 'OK' && data.map(({place_id, description})=>(

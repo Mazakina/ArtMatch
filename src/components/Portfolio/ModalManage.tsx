@@ -75,6 +75,7 @@ export default function ModalManage({
               maxH='80%'
               value={value||currentAlbum.albumRef}
               onChange={setValue}
+              aria-label='adionar ao album'
               flexDir={'column'}>
               {albums.map(album =>{
                 return (
@@ -85,7 +86,14 @@ export default function ModalManage({
           </ModalBody>
 
           <ModalFooter m='0 1rem 2rem' p='0' flexDir={'column'}>
-            <Button mt='1rem' onClick={onOpenAlert} border='1px solid #db1919' _hover={{background:'#d84747', color:'black'}} variant='ghost'>Excluir Publicação</Button>
+           <Button
+              mt='1rem'
+              onClick={onOpenAlert}
+              border='1px solid #db1919'
+              aria-label='excluir publicação'
+              _hover={{background:'#d84747',  color:'black'}}
+              variant='ghost'>Excluir
+              Publicação</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

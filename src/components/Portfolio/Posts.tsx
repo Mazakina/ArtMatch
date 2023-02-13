@@ -138,7 +138,17 @@ export function Posts({
       }}>
         <AspectRatio  w='100%' maxWidth={'200px'} ratio={1}>
           <Box position='relative'>
-            <Image transition={'.2s all ease-in-out'} align={'50% 50%'} alt='' position='absolute' transform='brightness(0.6)' borderRadius='2px' w='101%' h='101%' objectFit='cover' src={post.cropped} />
+            <Image
+              transition={'.2s all ease-in-out'} 
+              align={'50% 50%'}
+              alt='imagem de prévia da postagem'
+              position='absolute'
+              transform='brightness(0.6)'
+              borderRadius='2px'
+              w='101%'
+              h='101%'
+              objectFit='cover'
+              src={post.cropped} />
             <Flex
               height='100%'
               position='absolute'
@@ -158,6 +168,7 @@ export function Posts({
                 w='70px'
                 border='1px solid #FFE767'
                 borderRadius={'2px'}
+                aria-label='editar'
                 transform={'scale(0.9)'}
                 bg='#00000081'>Editar
               </Button>
@@ -166,6 +177,7 @@ export function Posts({
                 _hover={{bg:'#FFE767', color:'black'}}
                 color='#ffffff'
                 w='70px'
+                aria-label='Gerir albums ou Deletar'
                 borderRadius={'2px'}
                 border='1px solid #FFE767'
                 transform={'scale(0.9)'}
@@ -179,7 +191,13 @@ export function Posts({
           <HStack  mr='10px'>
             <Text fontSize='10px'>Publicado</Text>
             <Box  onClick={()=>setPosted(!posted)} width='30px' border='1px solid gray' borderRadius='10px' >
-              <Box transition={'margin .2s ease-in-out'} ml={posted?'18px':'0'} h='12px' w='12px' borderRadius='50%' bg={posted?'#FFEB80':'#727272'} />
+              <Box
+                transition={'margin .2s ease-in-out'}
+                ml={posted?'18px':'0'}
+                h='12px'
+                w='12px'
+                borderRadius='50%'
+                bg={posted?'#FFEB80':'#727272'} />
             </Box>
           </HStack>
         </Flex>

@@ -25,6 +25,7 @@ export default function SocialOptions({icon, text, value,placeholder, onChange,d
         <Text fontSize="14px" ml='5px'>{text}</Text>
       </Flex>
       <Input
+        aria-label={text}
         type={text.toLowerCase()=='telefone'?
         'number':
         'text'}

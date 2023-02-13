@@ -68,12 +68,38 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
           justify='center'>
         <Flex  mt='21px' w='100% !important'  align='center'>
           <Text  fontSize='14px' w='20%' maxWidth='130px'>E-mail</Text>
-          <Input disabled={true}  onChange={(e)=>{setEmail((e.target.value))}} border={`1px solid white !important`} value={email} fontSize='14px' w='70%' type='email' h='28px' borderRadius='2px'  maxWidth='490px'/>
+          <Input
+            disabled={true}
+            onChange={(e)=>{setEmail((e.target.value))}}
+            border={`1px
+            solid
+            white
+            !important`}
+            value={email}
+            fontSize='14px'
+            w='70%'
+            type='email'
+            h='28px'
+            borderRadius='2px'
+            maxWidth='490px' />
         </Flex>
 
         <Division width='100%' bg='#323232'/>
-        <Checkbox  fontSize='14px' onChange={(e)=>{setNsfwAllow(e.target.checked)}} isChecked={nsfwAllow} >Mostrar conteúdo adulto</Checkbox>
-        <Checkbox  fontSize='14px'  onChange={(e)=>{setAllowToBeFound(e.target.checked)}} isChecked={allowToBeFound} mt='10px'>Permitir ser visto na secção de busca</Checkbox>
+        <Checkbox
+          fontSize='14px'
+          onChange={(e)=>{setNsfwAllow(e.target.checked)}}
+          aria-label='mostrar conteudo adulto'
+          isChecked={nsfwAllow}>
+          Mostrar conteúdo adulto
+        </Checkbox>
+        <Checkbox
+          fontSize='14px'
+          aria-label='permitir ser encontrado na secção de busca '
+          onChange={(e)=>{setAllowToBeFound(e.target.checked)}}
+          isChecked={allowToBeFound}
+          mt='10px'>
+          Permitir ser visto na secção de busca
+        </Checkbox>
 
         <Division width='100%' bg='#323232'/>
         <Button 
@@ -86,6 +112,7 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
             bg:'none',
           }}
           ml='auto' 
+          aria-label='salvar configurações'
           isLoading={isLoading} 
           onClick={(event)=>{saveSettingsSeguranca(event)}}
           >Salvar</Button>
@@ -95,6 +122,7 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
           bg='#121212'
           mt='1rem'
           p='1rem 5%'
+          aria-disabled='true'
           border='1px
           solid
           #959595'
@@ -124,6 +152,8 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
             bg:'none',
           }}
           ml='auto'
+          isDisabled
+          aria-disabled='true'
           onClick={(event)=>{saveSettingsSeguranca(event)}}
           isLoading={isLoading} 
           >Salvar</Button>

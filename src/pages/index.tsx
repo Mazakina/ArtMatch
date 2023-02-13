@@ -55,7 +55,7 @@ const Home  = ({data}) => {
   const useUser = useContext(UserContext)
   const {user,favoriteUsers}= useUser
   const [grid,setGrid] = useState(3)
-  const [gridRows,setGridRows] = useState(2)
+  const [gridRows,setGridRows] = useState(5)
   const [currentActive, setCurrentActive] = useState('trend')
   const getBreakPoints =  [isBase,isSm,isMd,isLg].findIndex(el=> el === true)
   const gridColumns = [3,5,7,9]
@@ -104,7 +104,7 @@ const Home  = ({data}) => {
   },[gridRows,isBase,isSm,isMd,isLg])
 
   useEffect(()=>{
-    if(isInView &&grid<postsOnDisplay ){
+      if(isInView &&grid<postsOnDisplay ){
       setGridRows(gridRows=>gridRows+3)
     }
   },[isInView])
@@ -161,43 +161,54 @@ export default Home
 
 
 export const getStaticProps:GetStaticProps= async (context)=>{
-  let data;
-
-  await fauna.query(
-    q.Map(
-      q.Paginate(q.Documents(q.Collection("collections"))),
-      q.Lambda("X", q.Get(q.Var("X")))
-    )
-  ).then(async (response:ResponseProps)=>{
-    //filtering data if visible, and expading post with user data
-    data = await Promise.all(response.data.map(async collection=>{
-      if(collection.data.visible==false){return}
-      let user:UserProps = await fauna.query(
-        q.Get(
-          collection.data.userId
-        )
+  try{
+    let data;
+    await fauna.query(
+      q.Map(
+        q.Paginate(q.Documents(q.Collection("collections"))),
+        q.Lambda("X", q.Get(q.Var("X")))
       )
-      return{
-        posts:[...Object.values(collection.data.posts)].map((value:object)=>{
-          return{...value,
-            reference:user.ref.id,
-            user:user.data.user,
-            avatar:user.data.avatar,
-            banner:user.data.banner}
-        })
+    ).then(async (response:ResponseProps)=>{
+      //filtering data if visible, and expading post with user data
+      data = await Promise.all(response.data.map(async collection=>{
+        if(collection.data.visible==false){return}
+        let user:UserProps = await fauna.query(
+          q.Get(
+            collection.data.userId
+          )
+        )
+        return{
+          posts:[...Object.values(collection.data.posts)].map((value:object)=>{
+            return{...value,
+              reference:user.ref.id,
+              user:user.data.user,
+              avatar:user.data.avatar,
+              banner:user.data.banner}
+          })
+        }
+      }))
+     }).catch(e=>console.log(e))  
+  
+     
+     let allPosts = []
+     
+    data.map(users=>{ if(users?.posts){
+      try{
+        return allPosts =[...allPosts,...users.posts]
+      }catch{
+        return allPosts
       }
-    }))
-   }).catch(e=>console.log(e))  
-
-   
-   let allPosts = []
-   
-   data.map(users=> allPosts =[...allPosts,...users.posts])
-   data = JSON.stringify(allPosts)
-  return{
-    props:{
-      data
-    },
-    // revalidate: 60*15//15 minutos,
+    }})
+     data = JSON.stringify(allPosts)
+    return{
+      props:{
+        data
+      },
+    }
+  }catch{
+    return{
+      props:{
+      }
+    }
   }
 }

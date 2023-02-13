@@ -1,7 +1,15 @@
-import { Flex, Icon, Text } from "@chakra-ui/react";
+import { Flex, FlexProps, Icon, Text } from "@chakra-ui/react";
+import { ReactNode } from "react";
 import {IoIosArrowForward,} from 'react-icons/io'
+import { IconType } from "react-icons/lib";
 
-export function SettingsNavOptions ({icon, children, active, ...rest}){
+interface SettingsNavOptionsProps extends FlexProps{
+  icon: string|IconType;
+  children:ReactNode;
+  active:boolean
+}
+
+export function SettingsNavOptions ({icon, children, active, ...rest}:SettingsNavOptionsProps){
   return(
     <Flex
       mt='6px'

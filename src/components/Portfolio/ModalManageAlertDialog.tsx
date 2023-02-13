@@ -9,7 +9,13 @@ import {
 } from '@chakra-ui/react'
 import { useRef } from 'react'
 
-export default function ModalManageAlertDialog({onDeleteHandle,isOpenAlert,onCloseAlert}){
+interface ModalManageAlertDialogProps{
+  onDeleteHandle:()=>void;
+  isOpenAlert:boolean;
+  onCloseAlert:()=>void;
+}
+
+export default function ModalManageAlertDialog({onDeleteHandle,isOpenAlert,onCloseAlert}:ModalManageAlertDialogProps){
   const cancelRef = useRef()
   function confirmDelete(){
     onCloseAlert()
@@ -43,12 +49,13 @@ export default function ModalManageAlertDialog({onDeleteHandle,isOpenAlert,onClo
               _hover={{bg:'#FFE767', color:'black'}}
               color='#ffffff'
               bg='#00000081'
+              aria-label='cancelar'
               _focus={{ boxShadow:'0px 0px 10px 2px rgba(255,232,103,    1)'}}
               border='1px solid #FFE767'
               ref={cancelRef} onClick={onCloseAlert}>
                 Cancel
               </Button>
-              <Button colorScheme='red' onClick={confirmDelete} ml={3}>
+              <Button colorScheme='red' aria-label='deletar postagem' onClick={confirmDelete} ml={3}>
                 Delete
               </Button>
             </AlertDialogFooter>

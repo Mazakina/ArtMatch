@@ -140,6 +140,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
             </Text>
             <Input
               h='28px'
+              aria-label='editar nome de usuário'
               borderRadius='2px'
               border={`1px solid white !important`}
               maxWidth={{base:'100%',md:'490px'}}
@@ -150,7 +151,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
             <Text w={{base:'fit-content',md:'20%'}} maxWidth='130px'>
               Biografia
             </Text>
-            <Textarea h='28px' border={`1px solid white  !important`} borderRadius='2px'  maxWidth={{base:'100%',md:'490px'}} onChange={(e)=>{setBiografia(e.target.value)}}  value={biografia}></Textarea>
+            <Textarea aria-label='editar sua Biografia' h='28px' border={`1px solid white  !important`} borderRadius='2px'  maxWidth={{base:'100%',md:'490px'}} onChange={(e)=>{setBiografia(e.target.value)}}  value={biografia}></Textarea>
           </Flex>
 
           <Flex  mt='1rem' w='100%'  flexDir={{base:'column',md:'row'}} align={{base:'flex-start',md:'center'}}>
@@ -159,7 +160,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
                 <Text width='130px'>
                   Cidade
                 </Text>
-                <Input h='28px' borderRadius='2px' border={`1px solid white !important`}  maxWidth={{base:'100%',md:'340px'}} onChange={(e)=>{setCidade(e.target.value)}}  value={cidade}></Input>
+                <Input aria-label='editar sua cidade' h='28px' borderRadius='2px' border={`1px solid white !important`}  maxWidth={{base:'100%',md:'340px'}} onChange={(e)=>{setCidade(e.target.value)}}  value={cidade}></Input>
               </Flex>
               <Flex maxWidth={{base:'100%',md:'480px'}} w='100%'  mt='1rem' flexDir={{base:'column',md:'row'}} align={{base:'flex-start',md:'center'}}>
                 <Text  width='130px'>
@@ -170,7 +171,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
             </Flex>
             <label style={{margin:'1rem auto 0'}} htmlFor="file-input" >
               <Flex  cursor={'pointer'} as={motion.div} whileTap={{ scale: 0.95 }}  h='70px' width='70px' borderRadius={'50%'}>
-                <Avatar position='absolute' mr='2rem !important' h='70px' width='70px' src={avatar} />
+                <Avatar aria-label='seu avatar' position='absolute' mr='2rem !important' h='70px' width='70px' src={avatar} />
                 <Flex
                   transition='all 1 ease-in-out'
                   align='center'
@@ -190,6 +191,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
               </Flex>
             </label>
             <input
+              aria-label='adicionar novo avatar'
               accept="image/png, image/gif, image/jpeg"
               id="file-input"
               type="file"
@@ -216,6 +218,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
             </Text>
             <Icon
               onClick={onOpen}
+              aria-label='editar secçao de habilidades'
               cursor={'pointer'}
               _hover={{color:'#FFEB80',border:'1px solid #FFEB80'}}
               fontSize={'1.9rem'}
@@ -255,7 +258,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
           position={'absolute'}
           filter='blur(2px) brightness(0.3)'
           />
-          <input {...getInputProps()} />
+          <input {...getInputProps()} aria-label='escolha uma imagem para o Banner' />
           {
             isDragActive ?
             <Text m='1rem' zIndex={2}>
@@ -276,6 +279,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
         border='1px solid #ffeb80'
         color='#ffeb80'
         borderRadius='2px'
+        aria-label='salvar'
         _hover={{
           bg:'none',
         }}
