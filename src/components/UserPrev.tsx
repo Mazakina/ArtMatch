@@ -1,15 +1,38 @@
 import {Image, GridItem, Flex, Text , AspectRatio, Avatar } from "@chakra-ui/react";
 import Link from "next/link";
 
-export default function userPrev ({user}){
+interface UserProps{
+  user:{
+    user:string;
+    banner:string;
+    avatar:string
+  }
+}
+
+export default function userPrev ({user}:UserProps){
   function capitalizeFirstLetter(str) {
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
   return(
     <Flex   as={Link} href={`/profile/${user.user}`} passHref  mt='.5rem' border='1px solid #0000000' > 
-      <Flex cursor='pointer'  borderRadius='5px' overflow={'hidden'}  w={{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}} maxWidth={'260px'} justify='center' position='relative'>
-        <AspectRatio  w={'100%'} h={'100%'} borderRadius='3px' margin='0 !important' display='flex' bg='#969696'  ratio={1} >
-            <Image  position='absolute' objectFit='cover' src={user.banner? user.banner:'images/banner.jpg'}/>
+     <Flex
+        cursor='pointer'
+        borderRadius='5px'
+        overflow={'hidden'}
+        w={{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}}
+        maxWidth={'260px'}
+        justify='center'
+        position='relative'>
+        <AspectRatio
+          w={'100%'}
+          h={'100%'}
+          borderRadius='3px'
+          margin='0
+          !important'
+          display='flex'
+          bg='#969696'
+          ratio={1}>
+            <Image aria-label={`banner de ${user.user}` } transform='scale(1.01)' position='absolute' objectFit='cover' src={user.banner? user.banner:'images/banner.jpg'}/>
           </AspectRatio>
           <Flex
             w='100%'h='50%'cursor='pointer'

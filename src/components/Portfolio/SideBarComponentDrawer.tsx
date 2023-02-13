@@ -133,18 +133,14 @@ import { NewAlbum } from "./NewAlbum";
             <Tooltip  placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
              <Flex
                 id='lixeira'
-                data-tooltip-content='Arraste
-                para
-                lixeira'
+                data-tooltip-content='Arraste  para  lixeira'
                 onMouseEnter={event=>onMouseEnter(event)}
                 onMouseLeave={event=>onMouseLeave(event)}
                 onMouseUp={onDragDrop}
                 zIndex={21}
                 as={Button}
                 align='center'
-                m='auto
-                1rem
-                3rem'
+                m='auto 1rem 3rem'
                 border='1px
                 solid
                 #959595'

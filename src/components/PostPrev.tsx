@@ -2,7 +2,7 @@ import {Image, GridItem, Flex, AspectRatio } from "@chakra-ui/react";
 import Link from "next/link";
 import { ProfilePostData } from "./ProfilePostData";
 
-export default function PostPrev ({post}){
+export default function PostPrev ({post,isFlex=false}){
   function capitalizeFirstLetter(str) {
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
@@ -14,9 +14,18 @@ export default function PostPrev ({post}){
       w={'100%'}
       justify='center'
       position='relative'>
-      <AspectRatio maxW='260px'  w={'100%'} h={'100%'} borderRadius='3px' margin='0 !important' display='flex' bg='#969696'  ratio={1} >
+      <AspectRatio
+        maxW='260px'
+        maxH='260px'
+        w={isFlex?{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}:'100%'}
+        borderRadius='3px'
+        margin='0
+        !important'
+        display='flex'
+        bg='#969696'
+        ratio={1}>
         <Flex>
-          <Image w='100%' h={'100%'} position='absolute' objectFit='cover' src={post.cropped}/>
+          <Image aria-label={`preview: ${post.title}`} w='100%' h={'100%'} position='absolute' objectFit='cover' src={post.cropped}/>
           <Flex
             _hover={{
             opacity:'1'

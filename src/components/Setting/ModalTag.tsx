@@ -1,7 +1,15 @@
 import {Select, Text, Image, Modal, ModalOverlay, ModalContent, ModalHeader, Flex, Icon, ModalCloseButton, ModalBody, FormControl, Button, VStack, FormLabel, Input, FormErrorMessage, Textarea, Box, useDisclosure, InputGroup, InputLeftElement, InputRightElement, Checkbox, HStack } from "@chakra-ui/react";
+import { Dispatch, SetStateAction } from "react";
 
+interface ModalTagProps {
+  isOpen: boolean;
+  onClose: () => void;
+  skillList?: Array<any>;
+  habilidades:Array<any>;
+  setHabilidades:Dispatch<SetStateAction<Array<any>>>;
+}
 
-export default function ModalTag({isOpen,onClose,skillList=[],habilidades=[],setHabilidades}){
+export default function ModalTag({isOpen,onClose,skillList=[],habilidades=[],setHabilidades}:ModalTagProps){
   function handleOnSkillChange(e){
     e.preventDefault();
     if(e.target.checked ===true ){

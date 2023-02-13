@@ -226,6 +226,7 @@ export default function Portfolio({posts,albums}){
                       transition={'all .3s ease-in-out'}
                       gridArea={'1fr,1fr'}
                       as={Button}
+                      aria-label='adicionar nova publicação'
                       _hover={{bg:'none'}}
                       cursor='pointer'
                       onClick={()=>{onOpen();setIsNewFile(true)}}
@@ -288,11 +289,13 @@ export default function Portfolio({posts,albums}){
               onClick={()=>{deltaCountCallback(-1)}}
               transition={'all .3s ease-in-out'}
               fontSize='2rem'
+              aria-label="retroceder lista de publicações"
               opacity={initialSlice>0?'initial':'0'}
               as={BiChevronLeft} />
             <Box cursor={'row-resize'} bg={'white'} width={'1rem'} height={'1rem'} borderRadius={'50%'}/>
             <Icon
               cursor={'pointer'}
+              aria-label='avançar na lista de publicações'
               onClick={()=>{deltaCountCallback(1)}}
               fontSize='2rem'
               opacity={(gridLastPostOnDisplay<=postsOnDisplay.length)?'initial':'0'}

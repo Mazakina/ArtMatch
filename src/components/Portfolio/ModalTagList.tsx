@@ -28,7 +28,7 @@ export function TopicTag({tag,removeTag}){
   return(
     <Tag maxHeight={'1rem'}  color='white' ml='.5rem' bg='#151515'  borderRadius={'1rem'}>
       <TagLabel m='.25rem'>{tag}</TagLabel>
-      <TagCloseButton onClick={()=>removeTag(tag)} />
+      <TagCloseButton aria-label='remover tag' onClick={()=>removeTag(tag)} />
     </Tag>
   )
 };

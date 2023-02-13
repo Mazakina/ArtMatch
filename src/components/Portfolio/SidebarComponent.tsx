@@ -131,12 +131,8 @@ const SidebarComponent= React.memo( function Sidebar({onMouseEnter,onMouseLeave,
             zIndex={21}
             as={Button}
             align='center'
-            m='auto
-            1rem
-            1rem'
-            border='1px
-            solid
-            #959595'
+            m='auto 1rem 1rem'
+            border='1px solid #959595'
             _hover={{bg:'none',color:'#FCD635',border:'1px solid #FCD635'}} 
             bg='none'>
             <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>

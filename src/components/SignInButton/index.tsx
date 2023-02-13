@@ -19,7 +19,6 @@ export function SignInButton() {
         border={data? '':('1px solid #FFEB80')}
         borderRadius='3px'
         direction='row'>
-        
         {data? (
           <Flex flexDir='column' position={'relative'}>
             <Link
@@ -77,6 +76,7 @@ export function SignInButton() {
             pr='22px'
             borderRightWidth='1px'
             borderRadius='0'
+            aria-label='fazer log-in'
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
               bg:'transparent',
@@ -88,6 +88,7 @@ export function SignInButton() {
           <Button
             bg='tranparent'
             h='21px'
+            aria-label='cadastrar-se'
             fontSize='14px'
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
@@ -100,8 +101,27 @@ export function SignInButton() {
 
           {loginModal?
             <Flex border='1px solid #7e7e7e' position='absolute' left='-70px' w='250px' width='320px'  borderRadius='5px' p='24px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' align='space-around' justify='space-around' >
-              <Button onClick={()=>signIn('facebook')} _hover={{bg:'#334b81'}} color='white' mb='20px' bg={'#3b5998'}><Icon  fontSize='25px' ml='10px' mr='20px' as={BsFacebook}/>Fazer login com Facebook</Button>
-              <Button onClick={()=>signIn('google')} color='black' bg={'white'}><Image w='50px' mr='10px' h='50px' src={'images/google.svg'} />Fazer login com o Google</Button>
+             <Button
+                onClick={()=>signIn('facebook')}
+                _hover={{bg:'#334b81'}}
+                color='white'
+                mb='20px'
+                bg={'#3b5998'}><Icon
+                fontSize='25px'
+                ml='10px'
+                aria-label='Fazer login com Facebook'
+                mr='20px'
+                as={BsFacebook}/>Fazer login com Facebook</Button>
+              <Button
+                onClick={()=>signIn('google')}
+                color='black'
+                bg={'white'}><Image
+                w='50px'
+                mr='10px'
+                h='50px'
+                aria-label='Fazer login com o Google'
+                src={'images/google.svg'}
+                />Fazer login com o Google</Button>
             </Flex>
           :''}
 

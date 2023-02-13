@@ -38,6 +38,7 @@ export default function Profile({profile,social,createdAt}){
         objectFit='cover'
         src={profile.banner==''?'https://i.imgur.com/Wwn5QKf.jpg':profile.banner}
         filter={profile.banner? "":'brightness(.4)'}
+        aria-label='Banner'
         top='0px' position='absolute' width='100%' height='430px'/>
         <Flex mt='86px' flexDir='column' justifyContent='center' alignItems='center'>
           <Avatar  zIndex='2' width='120px' height='120px'  src={profile.avatar }/>

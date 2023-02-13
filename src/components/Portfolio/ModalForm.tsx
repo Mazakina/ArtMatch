@@ -1,5 +1,5 @@
 
-import { useCallback, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import {useDropzone} from "react-dropzone";
 import { Api } from "../../services/api";
 import { canvasPreview,  useDebounceEffect, toBase64} from '../Crop/reusableUtils';
@@ -23,7 +23,35 @@ interface resPostProps extends AxiosResponse{
     tag:Array<string>
 }
 
-export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,deleteHash,isNewFile,setPostsCollection,postsCollection,title,setTitle,description,setDescription,published,setPublished,midia,setMidia,tags,setTags,newImage,setNewImage,currentPostId,data}){
+interface ModalFormProps{
+  croppedImage:string|any,
+  isOpen:boolean,
+  onClose:()=>void,
+  deleteHash:string,
+  isNewFile:boolean,
+  postsCollection:Array<any>,
+  title:string,
+  setTitle:Dispatch<SetStateAction<string>>,
+  description:string,
+  published:boolean,
+  midia:string,
+  setMidia:Dispatch<SetStateAction<string>>,
+  tags:string[],
+  newImage:string,
+  setTags:Dispatch<SetStateAction<Array<string>>>,
+  setNewImage:Dispatch<SetStateAction<any>>,
+  setPostsCollection:Dispatch<SetStateAction<Array<any>>>,
+  setCroppedImage:Dispatch<SetStateAction<any>>,
+  setDescription:Dispatch<SetStateAction<string>>,
+  setPublished:Dispatch<SetStateAction<boolean>>,
+  currentPostId:Dispatch<SetStateAction<string>>,
+  data:any
+}
+
+export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,deleteHash
+  ,isNewFile,setPostsCollection,postsCollection,title,setTitle,
+  description,setDescription,published,setPublished,midia,setMidia,
+  tags,setTags,newImage,setNewImage,currentPostId,data}:ModalFormProps){
   const imgInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef()
   const tagsRef = useRef<HTMLInputElement>(null)
@@ -224,7 +252,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     crop={crop}
                     onComplete={(c) => setCompletedCrop(c)}
                     onChange={(c)=>{setCrop(c)}}>
-                      <Image  alt='' ref={imgRef} src={newImage}/>
+                      <Image  alt='preview da imagem recortada' ref={imgRef} src={newImage}/>
                 </ReactCrop>
                   <canvas
                   ref={previewCanvasRef}
@@ -245,6 +273,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   ml='auto !important'
                   color='#000'
                   bg='#FFE767'
+                  aria-label='próxima página do formulário'
                   onClick={(e)=>{handleUploadClick(e)}}
                   >Continuar</Button>
               </Flex>
@@ -254,19 +283,19 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
             <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
               <FormControl isRequired  w='100%'>
                 <FormLabel>Titulo da Obra:</FormLabel>
-                <Input  onChange={(e)=>{setTitle(e.target.value)}} 
+                <Input  aria-label='titulo' onChange={(e)=>{setTitle(e.target.value)}} 
                 value={title}
                 h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595' 
                 />
-                <FormErrorMessage>Necessario Título.</FormErrorMessage>
+                <FormErrorMessage>Necessário Título.</FormErrorMessage>
               </FormControl >
               <FormControl isRequired  w='100%'>
                 <FormLabel>Descrição:</FormLabel>
                 <Textarea onChange={(e)=>{setDescription(e.target.value)}} 
-                value={description}
+                value={description} aria-label='descriçao'
                 mb='6px !important' height='70%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'
                     />
-                  <FormErrorMessage>Necessario Título.</FormErrorMessage>
+                  <FormErrorMessage>Necessário Título.</FormErrorMessage>
               </FormControl>
               <FormControl isRequired  w='100%'>
                   <Select
@@ -275,6 +304,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     value={midia}
                     h='38px'
                     overflow='hidden'
+                    aria-label='midia na qual foi feita'
                     focusBorderColor="#FFEB80"
                     bg='#151515'
                     borderRadius='2px'
@@ -308,6 +338,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     bg='transparent'
                     borderRadius='2px'
                     name={'search'}
+                    aria-lable='digite tags relacionadas'
                     ref={tagsRef}
                     onKeyPress={(e)=>handleKeyPress(e)}
                     />
@@ -325,8 +356,25 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
               <ModalTagList setTags={setTags} tags={tags}/>
 
               <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
-                <Button onClick={()=>setPublished(false)} isLoading={isLoading} type='submit' width='35%' color='#D9D9D9' bg='#646464' border ='1px solid #D9D9D9' >Arquivar</Button>
-                <Button onClick={()=>setPublished(true)} isLoading={isLoading} type='submit' width='35%' color='#000' bg='#FFE767' >Publicar</Button>
+                <Button
+                  onClick={()=>setPublished(false)}
+                  isLoading={isLoading}
+                  type='submit'
+                  width='35%'
+                  color='#D9D9D9'
+                  bg='#646464'
+                  border ='1px solid #D9D9D9'
+                  aria-label='arquivar publicação'
+                  >Arquivar</Button>
+                <Button
+                  onClick={()=>setPublished(true)}
+                  isLoading={isLoading}
+                  type='submit'
+                  width='35%'
+                  color='#000'
+                  aria-label='Publicar'
+                  bg='#FFE767'
+                  >Publicar</Button>
               </Flex>
             </VStack>}
           </Flex>

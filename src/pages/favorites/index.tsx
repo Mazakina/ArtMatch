@@ -109,17 +109,19 @@ export default function Favorites({}){
 
       <Flex h='fit-content' >
       {!isFetched?
-        <Spinner m='0 auto' size='md' />:
+        <Spinner m='0 auto' size='md' />
+        :
         isCurrentActive==='Posts'?
         <Flex flexWrap={'wrap'} w='100%'>
         {data?.favoritePostsData.map(
           (post=>{
             return(
-              <PostPrev post={post} key={post.id} />
+              <PostPrev post={post} isFlex={true} key={post.id} />
             )
           })
         )}
-        </Flex>:
+        </Flex>
+        :
         <Flex gap={'1rem'} flexWrap={'wrap'} w='100%'>
         {data?.favoriteUsersData.map(
           (client)=>{

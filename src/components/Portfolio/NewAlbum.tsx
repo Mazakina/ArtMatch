@@ -1,13 +1,23 @@
 import {Spinner, Flex ,Icon, Input ,} from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Api } from "../../services/api";
 import { BsCheckLg } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 
-  
+interface AlbumsProps{
+  albumRef:string,
+  albumName:string,
+}
+
+interface NewAlbumProps{
+  albumsCollection:Array<AlbumsProps>;
+  setAlbumsCollection:Dispatch<SetStateAction<Array<AlbumsProps>>>;
+  data:any;
+  setIsCreatingNewAlbum:Dispatch<SetStateAction<boolean>>;
+}
 
 
-export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatingNewAlbum}){
+export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatingNewAlbum}:NewAlbumProps){
   const albumNameRef = useRef<HTMLInputElement>(null)
   const [isLoading,setIsloading]= useState(false)
   function cancel(){
@@ -50,12 +60,39 @@ export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatin
       <Flex flexDir='row' align='center' w='100%'  > 
         <Flex onClick={()=>{}}  w='100%' p='.2rem 16px  ' align="center"
         > 
-          <Input autoFocus id='newAlbumInput' onKeyUp={(event)=>{handleKeyUp(event)}} onKeyPress={(e)=>handleKeyPress(e)} disabled={isLoading} ref={albumNameRef} padding={0} m={0} h='1.5rem' border={'none'} _selected={{border:'none'}}  fontSize={'1rem'} type="text"/>
+          <Input
+            autoFocus
+            id='newAlbumInput'
+            onKeyUp={(event)=>{handleKeyUp(event)}}
+            onKeyPress={(e)=>handleKeyPress(e)}
+            disabled={isLoading}
+            ref={albumNameRef}
+            padding={0}
+            m={0}
+            h='1.5rem'
+            border={'none'}
+            _selected={{border:'none'}}
+            fontSize={'1rem'}
+            aria-label='nome do álbum'
+            type="text" />
           {isLoading? <Spinner size='sm'/>:''}
         </Flex>
         {!isLoading?
-        <><Icon onClick={()=>{createAlbum()}} mr='.5rem'fontSize={'1rem'}  _hover={{color:'#FCD635'}} color={'#959595'} as={BsCheckLg} /> 
-        <Icon onClick={()=>{cancel()}} mr='.5rem' fontSize={'1.3rem'} _hover={{color:'#FCD635'}} color={'#959595'}  as={IoClose} /></>:'' }
+        <>
+          <Icon
+            onClick={()=>{createAlbum()}}
+            mr='.5rem'fontSize={'1rem'}
+            _hover={{color:'#FCD635'}}
+            color={'#959595'}
+            as={BsCheckLg} /> 
+          <Icon
+            onClick={()=>{cancel()}}
+            mr='.5rem'
+            fontSize={'1.3rem'}
+            _hover={{color:'#FCD635'}}
+            color={'#959595'}
+            as={IoClose} />
+        </>:'' }
       </Flex>
 
     </Flex>

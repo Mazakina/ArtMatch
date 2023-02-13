@@ -1,5 +1,5 @@
-import {Box, Button, Flex, HStack, Icon, IconButton, InputGroup,
-  InputRightElement, Link, ListIcon, ListItem, Select, Stack, UnorderedList,
+import {Box, Button, Flex, Icon, IconButton, InputGroup,
+  InputRightElement, Link, Select,Image, 
   Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure,
 } from '@chakra-ui/react'
 import { memo, useEffect, useRef, useState } from 'react'
@@ -51,7 +51,16 @@ function Header(){
   
   return( 
     <>
-      <Flex zIndex={30} position='fixed'  w='100%' h='50px' p={{base:'0 1rem',lg:'0 2rem'}}  bg='#272727' direction='row' justify='space-between' alignItems='center' >
+      <Flex
+        zIndex={30}
+        position='fixed'
+        w='100%'
+        h='50px'
+        p={{base:'0 1rem',lg:'0 2rem'}}
+        bg='#272727'
+        direction='row'
+        justify='space-between'
+        alignItems='center'>
         <IconButton
           icon={<Icon   fontSize={'1.5rem'} as={BiSearchAlt}/>}
           bg='none'
@@ -68,7 +77,9 @@ function Header(){
 
         <NextLink id='logo' passHref href='/'>
          <Link >
-            <Box color='gray.900'>Logo</Box>
+            <Flex align={'center'} color='#FFEB80'>
+              <Image aria-label='icone da Logo' w='2.3rem' h='2.3rem' mr='.5rem' src='/images/pixil-gif-drawing.gif'/>Ink Trail
+            </Flex>
           </Link>
         </NextLink>
         <Flex display={{base:'none', md:'flex'}} direction='row' align='center'>
