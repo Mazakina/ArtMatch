@@ -119,13 +119,13 @@ const Home  = ({data}) => {
           id='trend'>
               Trend
         </ActiveLink>
-        {user?           
+        {user?.data &&     
         <ActiveLink
           setCurrentActive={setCurrentActive}
           currentActive={currentActive}
           id='following' >
               Seguindo
-        </ActiveLink>:<></>
+        </ActiveLink>
         }
         <ActiveLink
           setCurrentActive={setCurrentActive}
