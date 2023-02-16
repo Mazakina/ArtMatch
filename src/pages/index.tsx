@@ -163,43 +163,43 @@ export default Home
 export const getStaticProps:GetStaticProps= async (context)=>{
   try{
     let data;
-    await fauna.query(
-      q.Map(
-        q.Paginate(q.Documents(q.Collection("collections"))),
-        q.Lambda("X", q.Get(q.Var("X")))
-      )
-    ).then(async (response:ResponseProps)=>{
-      //filtering data if visible, and expading post with user data
-      data = await Promise.all(response.data.map(async collection=>{
-        if(collection.data.visible==false){return}
-        let user:UserProps = await fauna.query(
-          q.Get(
-            collection.data.userId
-          )
-        )
-        return{
-          posts:[...Object.values(collection.data.posts)].map((value:object)=>{
-            return{...value,
-              reference:user.ref.id,
-              user:user.data.user,
-              avatar:user.data.avatar,
-              banner:user.data.banner}
-          })
-        }
-      }))
-     }).catch(e=>console.log(e))  
+    // await fauna.query(
+    //   q.Map(
+    //     q.Paginate(q.Documents(q.Collection("collections"))),
+    //     q.Lambda("X", q.Get(q.Var("X")))
+    //   )
+    // ).then(async (response:ResponseProps)=>{
+    //   //filtering data if visible, and expading post with user data
+    //   data = await Promise.all(response.data.map(async collection=>{
+    //     if(collection.data.visible==false){return}
+    //     let user:UserProps = await fauna.query(
+    //       q.Get(
+    //         collection.data.userId
+    //       )
+    //     )
+    //     return{
+    //       posts:[...Object.values(collection.data.posts)].map((value:object)=>{
+    //         return{...value,
+    //           reference:user.ref.id,
+    //           user:user.data.user,
+    //           avatar:user.data.avatar,
+    //           banner:user.data.banner}
+    //       })
+    //     }
+    //   }))
+    //  }).catch(e=>console.log(e))  
   
      
-     let allPosts = []
+    //  let allPosts = []
      
-    data.map(users=>{ if(users?.posts){
-      try{
-        return allPosts =[...allPosts,...users.posts]
-      }catch{
-        return allPosts
-      }
-    }})
-     data = JSON.stringify(allPosts)
+    // data.map(users=>{ if(users?.posts){
+    //   try{
+    //     return allPosts =[...allPosts,...users.posts]
+    //   }catch{
+    //     return allPosts
+    //   }
+    // }})
+     data = []
     return{
       props:{
         data
