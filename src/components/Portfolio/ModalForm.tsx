@@ -192,7 +192,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   return(
     <Modal useInert onCloseComplete={cleanPostData} size={'1400px'} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay bg='#000000c0' />
-      <ModalContent w='1200px !important' height='830px' bg='#373737' >
+      <ModalContent w={{base:'95vw',lg:'1200px !important'}} height={{base:'fit-content',lg:'830px'}} bg='#373737' >
         <ModalHeader  width='100%'>
         <Flex justify="space-between" align='center'>
           <Icon onClick={()=>{setFormPart(!formPart)}} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
@@ -206,7 +206,9 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
           onSubmit={(e)=>handleOnSubmit(e)}
           action="/action_page.php" method='post'
         >
-          <Flex>
+          <Flex h='100%'
+          flexDir={{base:'column',lg:'row'}}
+          >
             <Flex
               transition={'background 0.3s ease-in-out'}
               {...getRootProps()}
@@ -214,11 +216,12 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
               _hover={{bg:'#1a1a1a'}}
               cursor={isDisabled?'no-drop':'pointer'}
               bg='#1f1f1f'
+              sx={{aspectRatio:'1'}}
               flexDir='column'
+              height={{base:'40vh',lg:'720px'}}
               align='center'
               justify='center'
-              w='720px'
-              height='720px'
+              minH='200px'
               borderRadius='0px'
               border='1px dashed #fff'
               >
@@ -236,14 +239,13 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   !newImage?<Text zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>:''
                 }
               </FormControl >
-              <Box position="absolute">
-                  <Image  alt='' src={newImage}/>
-                
+              <Box h='inherit' width='inherit' position="absolute">
+                  <Image transform={'scale(.99)'} h='inherit' width='inherit' alt='' src={newImage}/>
               </Box>
             </Flex>
             
           {formPart &&  
-          <Flex ml='16px' maxWidth='420px' width='100%' flexDir='column'>
+          <Flex ml='16px'  maxWidth='420px' width='100%' flexDir='column'>
               <Text w='90%' mt='18px' fontSize="18px">Thumbnail</Text>
               <Text w='90%' color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
               <Box mt='10px' width='280px' height='280px'>
@@ -252,7 +254,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     crop={crop}
                     onComplete={(c) => setCompletedCrop(c)}
                     onChange={(c)=>{setCrop(c)}}>
-                      <Image  alt='preview da imagem recortada' ref={imgRef} src={newImage}/>
+                      <Image alt='preview da imagem recortada' ref={imgRef} src={newImage}/>
                 </ReactCrop>
                   <canvas
                   ref={previewCanvasRef}
@@ -271,6 +273,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   type='button'
                   width='35%'
                   ml='auto !important'
+                  mt='1rem'
                   color='#000'
                   bg='#FFE767'
                   aria-label='próxima página do formulário'
@@ -280,7 +283,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
             </Flex>}
             {!formPart &&
             
-            <VStack ml='16px' w='100%' align='flex-start' maxWidth='420px' gap='8px'>
+            <VStack mt='1rem' ml={{base:0,lg:'16px'}} w='100%' align='flex-start' maxWidth='420px' gap='8px'>
               <FormControl isRequired  w='100%'>
                 <FormLabel>Titulo da Obra:</FormLabel>
                 <Input  aria-label='titulo' onChange={(e)=>{setTitle(e.target.value)}} 

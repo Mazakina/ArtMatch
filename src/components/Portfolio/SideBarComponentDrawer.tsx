@@ -6,10 +6,10 @@ import {Spinner, Flex ,Text, Icon, VStack, Tooltip, Button, Input ,
   import Division from "../Division";
   import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineReload} from 'react-icons/ai'
   import {BiTrash} from 'react-icons/bi'
-  import React, { Dispatch, SetStateAction, useContext, useRef, useState } from "react";
+  import React, { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
   import { Api } from "../../services/api";
   import {useSession} from 'next-auth/react'
-  import { BsCheckLg } from "react-icons/bs";
+  import { BsCheckLg, BsPlusSquare } from "react-icons/bs";
   import { IoClose } from "react-icons/io5";
   import { AnimatePresence, LayoutGroup } from "framer-motion";
   import { UserContext } from "../../services/hooks/UserContext";
@@ -23,9 +23,6 @@ import { NewAlbum } from "./NewAlbum";
   }
   
   interface SideBarProps{
-    onMouseEnter: (event: any) => void,
-    onMouseLeave: (event: any) => void,
-    onDragDrop: (event: any) => void,
     albums:{
       albumsCollection:Array<AlbumProps>|null,
       setAlbumsCollection:Dispatch<SetStateAction<Array<any>>>
@@ -36,15 +33,16 @@ import { NewAlbum } from "./NewAlbum";
       setActiveAlbum:Dispatch<SetStateAction<string>>
     },
     isOpen:boolean,
+    onOpenNewPost:() => void,
     onClose:() => void,
+    setIsNewFile:Dispatch<SetStateAction<boolean>>
     // btnRef:any,
   }
   
   const SideBarComponentDrawer= React.memo( 
-    function SideBar({onMouseEnter,onMouseLeave,onDragDrop,albums,onAlbumDrop,setActAlbum,isOpen,onClose}:SideBarProps)
+    function SideBar({albums,onOpenNewPost,onAlbumDrop,setIsNewFile,setActAlbum,isOpen,onClose}:SideBarProps)
     {
-    const [isLg] = useMediaQuery('(min-width:62rem)')
-  
+
     const useUser = useContext(UserContext)
     const {user} = useUser
     const {data} = useSession()
@@ -65,7 +63,9 @@ import { NewAlbum } from "./NewAlbum";
       }catch(e){
       }
     }
-  
+    useEffect(()=>{
+      onClose()
+    }, [activeAlbum])
     function capitalizeFirstLetter(str) {
       return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
@@ -79,11 +79,15 @@ import { NewAlbum } from "./NewAlbum";
       <DrawerContent zIndex={10} bg='blackAlpha.800'>
         <DrawerCloseButton />
         <DrawerHeader>
-          <AvatarName name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
+          <AvatarName
+            display={{base:'none',md:'flex'}}
+            name={capitalizeFirstLetter(user.data.user)||data?.user.name}
+            email={data?.user.email}
+            avatar={user.data.avatar||data?.user.image} />
         </DrawerHeader>
         <DrawerBody zIndex={10}>
           <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
-          <Division width={'100%'}  bg={'#323232'}/>
+            <Division display={{base:'none',md:'flex'}} m={'0.2rem'} width={'100%'}  bg={'#323232'}/>
             <Flex  maxH='74%' mb='.5rem' ml='20px' flexDir='column'>
               <Flex  width='100%' justify='space-between' align='center' >
                 <Text>Albums</Text>
@@ -117,12 +121,21 @@ import { NewAlbum } from "./NewAlbum";
                 <LayoutGroup>
                     <Album deleteAlbum={deleteAlbum} onAlbumDrop={onAlbumDrop} setActiveAlbum={setActiveAlbum} activeAlbum={activeAlbum}album={{albumName:'Todos',albumRef:'any'}}/>
                     
-                    {isCreatingNewAlbum? 
-                    <NewAlbum albumsCollection={albumsCollection} setAlbumsCollection={setAlbumsCollection}  setIsCreatingNewAlbum={setIsCreatingNewAlbum} data={data}/>:''}
-      
+                    {isCreatingNewAlbum &&
+                   <NewAlbum
+                      albumsCollection={albumsCollection}
+                      setAlbumsCollection={setAlbumsCollection}
+                      setIsCreatingNewAlbum={setIsCreatingNewAlbum}
+                      data={data} />}
                     {albumsCollection.map(album=>{
                       return(
-                        <Album key={album.albumRef} deleteAlbum={deleteAlbum} onAlbumDrop={onAlbumDrop} setActiveAlbum={setActiveAlbum} activeAlbum={activeAlbum} album={album}/>
+                        <Album
+                          key={album.albumRef}
+                          deleteAlbum={deleteAlbum}
+                          onAlbumDrop={onAlbumDrop}
+                          setActiveAlbum={setActiveAlbum}
+                          activeAlbum={activeAlbum}
+                          album={album} />
                       )
                     })}
                   </LayoutGroup>
@@ -131,23 +144,20 @@ import { NewAlbum } from "./NewAlbum";
             </Flex>
       
             <Tooltip  placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
-             <Flex
-                id='lixeira'
-                data-tooltip-content='Arraste  para  lixeira'
-                onMouseEnter={event=>onMouseEnter(event)}
-                onMouseLeave={event=>onMouseLeave(event)}
-                onMouseUp={onDragDrop}
+             <Button
+                id='new-post'
+                data-tooltip-content='Criar nova postagem'
                 zIndex={21}
-                as={Button}
-                align='center'
+                onClick={()=>{onOpenNewPost(),setIsNewFile(true)}}
+                alignItems='center'
                 m='auto 1rem 3rem'
                 border='1px
                 solid
                 #959595'
                 _hover={{ bg:'none', color:'#FCD635', border:'1px solid #FCD635'}}
                 bg='none'>
-                <Icon as={BiTrash} /> <Text  mr='auto'>Lixeira</Text>
-              </Flex>
+                 <Text ml='1em'  mr='auto'>Novo projeto</Text><Icon as={BsPlusSquare} fontSize='1.5rem' />
+              </Button>
             </Tooltip>
       
           </Flex>
