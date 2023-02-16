@@ -213,7 +213,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
               transition={'background 0.3s ease-in-out'}
               {...getRootProps()}
               position="relative"
-              _hover={{bg:'#1a1a1a'}}
+              // _hover={{bg:'#1a1a1a'}}
               cursor={isDisabled?'no-drop':'pointer'}
               bg='#1f1f1f'
               sx={{aspectRatio:'1'}}
@@ -230,8 +230,8 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                 {...getInputProps()}
                 id="img"
                 name="img"
-                accept="image/*"
-                ref={imgInputRef}
+                // accept="image/*"
+                // ref={imgInputRef}
                 />
                 {
                   !newImage?<Text m='0 1rem' zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>:''
