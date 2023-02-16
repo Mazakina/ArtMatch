@@ -77,8 +77,8 @@ function Header(){
 
         <NextLink id='logo' passHref href='/'>
          <Link >
-            <Flex align={'center'} color='#FFEB80'>
-              <Image aria-label='icone da Logo' w='2.3rem' h='2.3rem' mr='.5rem' src='/images/pixil-gif-drawing.gif'/>Ink Trail
+            <Flex fontFamily={"Plaster"} fontSize='1rem' align={'center'} color='#FFEB80'>
+              <Image aria-label='icone da Logo' w='2.3rem' h='2.3rem'  mr='.5rem' src='/images/pixil-gif-drawing.gif'/>Ink Trail
             </Flex>
           </Link>
         </NextLink>
