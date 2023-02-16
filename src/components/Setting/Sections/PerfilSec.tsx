@@ -258,7 +258,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
           position={'absolute'}
           filter='blur(2px) brightness(0.3)'
           />
-          <input {...getInputProps()} aria-label='escolha uma imagem para o Banner' />
+          <input {...getInputProps()} id='banner-img' aria-label='escolha uma imagem para o Banner' />
           {
             isDragActive ?
             <Text m='1rem' zIndex={2}>

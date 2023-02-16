@@ -85,7 +85,7 @@ import { NewAlbum } from "./NewAlbum";
             email={data?.user.email}
             avatar={user.data.avatar||data?.user.image} />
         </DrawerHeader>
-        <DrawerBody zIndex={10}>
+        <DrawerBody  zIndex={10}>
           <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'>
             <Division display={{base:'none',md:'flex'}} m={'0.2rem'} width={'100%'}  bg={'#323232'}/>
             <Flex  maxH='74%' mb='.5rem' ml='20px' flexDir='column'>

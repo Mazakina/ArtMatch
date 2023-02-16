@@ -8,7 +8,7 @@ export default function TransitionOverlay({controls}){
  
   return(
     <motion.div
-      style={{opacity:'0',zIndex:0,position:'absolute',
+      style={{opacity:'0',zIndex:0,position:'fixed',
       height:'100vh',width:'0%',background:'#2c2c2c',
       display:'flex',justifyContent:'center',alignItems:'center'}}
       animate={controls}>

@@ -201,7 +201,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
           <ModalCloseButton onClick={()=>{onClose()}} />
         </Flex>
         </ModalHeader>
-        <ModalBody position='relative' width='100%' >
+        <ModalBody   position='relative' width='100%' >
         <form 
           onSubmit={(e)=>handleOnSubmit(e)}
           action="/action_page.php" method='post'
@@ -228,15 +228,13 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
               <FormControl as={Flex} justify='center'  position="absolute">
                 <input
                 {...getInputProps()}
-          
-                type="file"
                 id="img"
                 name="img"
                 accept="image/*"
                 ref={imgInputRef}
                 />
                 {
-                  !newImage?<Text zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>:''
+                  !newImage?<Text m='0 1rem' zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>:''
                 }
               </FormControl >
               <Box h='inherit' width='inherit' position="absolute">
@@ -245,16 +243,16 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
             </Flex>
             
           {formPart &&  
-          <Flex ml='16px'  maxWidth='420px' width='100%' flexDir='column'>
+          <Flex ml='16px'   maxWidth='420px' width='100%' flexDir='column'>
               <Text w='90%' mt='18px' fontSize="18px">Thumbnail</Text>
-              <Text w='90%' color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
+              <Text w='90%'  color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
               <Box mt='10px' width='280px' height='280px'>
                 <ReactCrop
                     aspect={1}
                     crop={crop}
                     onComplete={(c) => setCompletedCrop(c)}
                     onChange={(c)=>{setCrop(c)}}>
-                      <Image alt='preview da imagem recortada' ref={imgRef} src={newImage}/>
+                      {newImage &&<Image alt='preview da imagem recortada' ref={imgRef} src={newImage}/>}
                 </ReactCrop>
                   <canvas
                   ref={previewCanvasRef}
