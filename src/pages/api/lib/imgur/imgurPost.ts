@@ -29,7 +29,7 @@ interface NewDataProps{
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
   const reqData = req.body
   const image = reqData.image
-  console.log(reqData.posted)
+ 
   let newData;
   var config = {
     method: 'post',

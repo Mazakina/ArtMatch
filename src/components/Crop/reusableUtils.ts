@@ -13,21 +13,6 @@ export const toBase64 = file => new Promise((resolve, reject) => {
   reader.onload = () => resolve(reader.result);
   reader.onerror = error => reject(error);
 })
-
-export function downloadBase64File (base64Data, filename) {
-  var element = document.createElement('a')
-  element.setAttribute('href', base64Data)
-  element.setAttribute('download', filename)
-  element.style.display = 'none'
-  document.body.appendChild(element)
-  element.click()
-  document.body.removeChild(element)
-}
-
-
-
-
-
 import { PixelCrop } from 'react-image-crop'
 
 const TO_RADIANS = Math.PI / 180
