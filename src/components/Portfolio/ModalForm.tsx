@@ -73,6 +73,9 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     reader.readAsDataURL(acceptedFiles[0]);
   }
   , [])
+
+
+  
   let isDisabled = (!isNewFile || formPart== false )
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: isDisabled})
 
@@ -97,15 +100,15 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     let resizedImage = await compress.compress([blob],{
       size:2,
       quality:1,
-      maxWidth:300,
-      maxHeight:300,
+      maxWidth:230,
+      maxHeight:230,
       resize:true
     })
     const img = resizedImage[0];
     const base64str = img.data
-    const imgExt = img.ext
+    const imgExt = 'webp'
     const resizedFile = Compress.convertBase64ToFile(base64str, imgExt)
-
+    console.log(resizedFile)
     const reader = new FileReader()
 
     reader.onload = (onLoadEvent)=>{
@@ -148,8 +151,8 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
         url: '/lib/imgur/imgurPost',
         data: postData,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        maxContentLength: 100000000,
-        maxBodyLength: 1000000000,
+        maxContentLength: 1000000,
+        maxBodyLength: 10000000,
       }).then(
         res=> {
           setPostsCollection([...postsCollection,res.data])
@@ -161,8 +164,8 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
         url: '/lib/imgur/imgurUpdate',
         data: postData,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        maxContentLength: 100000000,
-        maxBodyLength: 1000000000,
+        maxContentLength: 1000000,
+        maxBodyLength: 10000000,
       }).then(res=>{
         const newArray =postsCollection.map(post=>{if(post.id===res.data.id){return res.data}else{return post}})
         setPostsCollection(newArray)
