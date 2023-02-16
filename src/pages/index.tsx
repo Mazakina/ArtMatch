@@ -51,7 +51,7 @@ const Home  = ({data}) => {
     "(min-width: 768px) and (max-width: 991px)",
     "(min-width: 992px) ",
   ]);
-  let postsData =JSON.parse(data)
+  let postsData =data
   const useUser = useContext(UserContext)
   const {user,favoriteUsers}= useUser
   const [grid,setGrid] = useState(3)
