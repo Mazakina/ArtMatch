@@ -12,6 +12,7 @@ export default function Document(){
           href="https://fonts.googleapis.com/css2?family=Plaster&display=swap"
           rel="stylesheet"
         />
+        <title>Ink-Trail</title>
       </Head>
       <body>
         <Main/>

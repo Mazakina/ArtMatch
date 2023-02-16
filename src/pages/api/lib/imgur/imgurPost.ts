@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Api } from "../../../../services/api";  
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
-
 interface UserProps {
   ref:string,
   ts:number|string,
