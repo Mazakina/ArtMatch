@@ -120,13 +120,13 @@ export default function Posts({postData,slug}:PostsProps){
 
   return(
     <Box>
-      <Flex p='50px 0 0' margin='-50px 0 0' h='100vh'>
+      <Flex w='100vw' flexDir={{base:'column',lg:'row'}} p='50px 0 0' margin='-50px 0 0' h='100vh'>
         <Flex align='center' justify='center' p='1rem' id='post-image' h='calc(100vh-50px)' bg='#0a0a0a' width='100%' >
           <Image alt=''  maxH='94%' src={currentPost?.URL} />
         </Flex>
 
-        <Flex pl='18px' pr='18px'id='details-section' flexDir='column' bg='#272727' width='450px'>
-          <Flex as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
+        <Flex pl='18px' pr='18px' paddingTop={'1rem '} id='details-section' flexDir='column' bg='#272727' width={{base:'100vw',lg:'450px'}}>
+          <Flex  as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
             <Flex  align='center'>
               <Avatar mr='12px' width='44px' height='44px' src={currentPost.user.avatar}/>
               <Box>
