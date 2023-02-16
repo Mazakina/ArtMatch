@@ -43,16 +43,16 @@ export function SignInButton() {
             {modal?(
               <Flex box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
                 <NextLink href={'/favorites'} passHref>
-                  <Link _hover={{ color:'#FFEB80'}} fontSize='16px' >Meus favoritos</Link>
+                  <Link _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}} fontSize='16px' >Meus favoritos</Link>
                 </NextLink>
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
                 
                 <NextLink href='/portfolio' passHref>
-                 <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Minhas coleções</Link>
+                 <Link  _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}} fontSize='16px'>Minhas coleções</Link>
                 </NextLink>
 
                 <NextLink href='/userSettings' passHref>
-                  <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Editar perfil</Link>
+                  <Link  _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}}  fontSize='16px'>Editar perfil</Link>
                 </NextLink>
                 
                 {/* <NextLink href='/userSettings' passHref>

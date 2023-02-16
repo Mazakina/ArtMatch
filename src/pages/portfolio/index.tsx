@@ -202,13 +202,12 @@ export default function Portfolio({posts,albums}){
           </>
           :<>
           <SideBarComponentDrawer
+            setIsNewFile={setIsNewFile}
             isOpen={isOpenDrawer}
+            onOpenNewPost={onOpen}
             onClose={onCloseDrawer}
             setActAlbum={{activeAlbum,setActiveAlbum}}
             albums={{albumsCollection,setAlbumsCollection}}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            onDragDrop={onDragDrop}
             onAlbumDrop={onAlbumDrop} />
           <Flex justify="center" align="center" flexDir={'column'}>
             <Box  height='40%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
