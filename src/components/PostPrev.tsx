@@ -15,9 +15,8 @@ export default function PostPrev ({post,isFlex=false}){
       justify='center'
       position='relative'>
       <AspectRatio
-        maxW='260px'
-        maxH='260px'
-        w={isFlex?{base:'33.33%',md:'25%',lg:'20%',xl:'12.5'}:'100%'}
+ 
+        w={isFlex?{base:'33.33%',md:'25%',lg:'20%',xl:'12.5%'}:'100%'}
         borderRadius='3px'
         margin='0
         !important'
