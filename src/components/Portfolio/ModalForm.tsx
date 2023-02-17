@@ -52,7 +52,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   ,isNewFile,setPostsCollection,postsCollection,title,setTitle,
   description,setDescription,published,setPublished,midia,setMidia,
   tags,setTags,newImage,setNewImage,currentPostId,data}:ModalFormProps){
-  const imgInputRef = useRef<HTMLInputElement>(null);
+
   const imgRef = useRef()
   const tagsRef = useRef<HTMLInputElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +60,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   const [isLoading,setIsLoading] = useState<boolean>(false)
   const [crop,setCrop] = useState<Crop>(null);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
-
 
   const onDrop = useCallback( async acceptedFiles => {
     const imgDropTo64 = await toBase64(acceptedFiles[0])
@@ -74,8 +73,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   }
   , [])
 
-
-  
   let isDisabled = (!isNewFile || formPart== false )
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, disabled: isDisabled})
 
@@ -195,10 +192,19 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
   return(
     <Modal useInert onCloseComplete={cleanPostData} size={'1400px'} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay bg='#000000c0' />
-      <ModalContent w={{base:'95vw',lg:'1200px !important'}} height={{base:'fit-content',lg:'830px'}} bg='#373737' >
+      <ModalContent
+        w={{base:'95vw',lg:'1200px !important'}}
+        height={{base:'fit-content',lg:'830px'}}
+        bg='#373737'>
         <ModalHeader  width='100%'>
         <Flex justify="space-between" align='center'>
-          <Icon onClick={()=>{setFormPart(!formPart)}} cursor='pointer' opacity={!formPart? '1':'0'} fontSize='24px' as={IoIosArrowBack} />
+          <Icon
+            onClick={()=>{setFormPart(!formPart)}}
+            cursor='pointer'
+            opacity={!formPart?
+            '1':'0'}
+            fontSize='24px'
+            as={IoIosArrowBack} />
           <Text>{isNewFile? 'Nova':'Editar'} publicação</Text>
           <Box/>
           <ModalCloseButton onClick={()=>{onClose()}} />
@@ -216,7 +222,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
               transition={'background 0.3s ease-in-out'}
               {...getRootProps()}
               position="relative"
-              // _hover={{bg:'#1a1a1a'}}
               cursor={isDisabled?'no-drop':'pointer'}
               bg='#1f1f1f'
               sx={{aspectRatio:'1'}}
@@ -233,22 +238,32 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                 {...getInputProps()}
                 id="img"
                 name="img"
-                // accept="image/*"
-                // ref={imgInputRef}
+                accept="image/*"
                 />
-                {
-                  !newImage?<Text m='0 1rem' zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>:''
-                }
+                {!newImage && <Text m='0 1rem' zIndex={2} >Arraste uma Imagem ou clique aqui para escolher</Text>}
               </FormControl >
               <Box h='inherit' width='inherit' position="absolute">
-                  <Image transform={'scale(.99)'} h='inherit' width='inherit' alt='' src={newImage}/>
+                  <Image
+                    transform={'scale(.99)'}
+                    h='inherit'
+                    width='inherit'
+                    alt=''
+                    src={newImage} />
               </Box>
             </Flex>
             
           {formPart &&  
           <Flex ml='16px'   maxWidth='420px' width='100%' flexDir='column'>
-              <Text w='90%' mt='18px' fontSize="18px">Thumbnail</Text>
-              <Text w='90%'  color='#BEBEBE' mt='14px' fontSize='12px'>Ajuste a previa de sua publicação</Text>
+              <Text w='90%' mt='18px' fontSize="18px">
+                Thumbnail
+              </Text>
+              <Text
+                w='90%'
+                color='#BEBEBE'
+                mt='14px'
+                fontSize='12px'>
+                  Ajuste a previa de sua publicação
+                </Text>
               <Box mt='10px' width='280px' height='280px'>
                 <ReactCrop
                     aspect={1}
@@ -268,39 +283,71 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   }}
                   />
               </Box>
-              <Flex mt='auto !important'  p='0 3rem !important'mb='1rem !important' justify='space-between' w='100%'> 
+              <Flex
+                mt='auto
+                !important'
+                p='0 3rem !important' 
+                justify='space-between'
+                w='100%'>
                 <Button
                   isDisabled={crop||!isNewFile?false:true}
                   type='button'
                   width='35%'
-                  ml='auto !important'
-                  mt='1rem'
+                  m='1rem 1rem 1rem auto'
                   color='#000'
-                  bg='#FFE767'
+                  bg='cYellow.500'
                   aria-label='próxima página do formulário'
-                  onClick={(e)=>{handleUploadClick(e)}}
-                  >Continuar</Button>
+                  onClick={(e)=>{handleUploadClick(e)}}>
+                    Continuar
+                  </Button>
               </Flex>
             </Flex>}
             {!formPart &&
             
-            <VStack mt='1rem' ml={{base:0,lg:'16px'}} w='100%' align='flex-start' maxWidth='420px' gap='8px'>
+            <VStack
+              mt='1rem'
+              ml={{base:0,lg:'16px'}}
+              w='100%'
+              align='flex-start'
+              maxWidth='420px'
+              gap='8px'>
+
               <FormControl isRequired  w='100%'>
-                <FormLabel>Titulo da Obra:</FormLabel>
-                <Input  aria-label='titulo' onChange={(e)=>{setTitle(e.target.value)}} 
-                value={title}
-                h='38px' borderRadius='2px' bg='#151515' border=' 1px solid #959595' 
-                />
-                <FormErrorMessage>Necessário Título.</FormErrorMessage>
+                <FormLabel>
+                  Titulo da Obra:
+                </FormLabel>
+                <Input
+                  aria-label='titulo'
+                  onChange={(e)=>{setTitle(e.target.value)}}
+                  value={title}
+                  h='38px'
+                  borderRadius='2px'
+                  bg='#151515'
+                  border='1px solid#959595' />
+                <FormErrorMessage>
+                  Necessário Título.
+                </FormErrorMessage>
               </FormControl >
+
               <FormControl isRequired  w='100%'>
-                <FormLabel>Descrição:</FormLabel>
-                <Textarea onChange={(e)=>{setDescription(e.target.value)}} 
-                value={description} aria-label='descriçao'
-                mb='6px !important' height='70%' borderRadius='2px' bg='#151515'  border=' 1px solid #959595'
-                    />
-                  <FormErrorMessage>Necessário Título.</FormErrorMessage>
+                <FormLabel>
+                  Descrição:
+                </FormLabel>
+                <Textarea
+                  onChange={(e)=>{setDescription(e.target.value)}}
+                  value={description}
+                  aria-label='descriçao'
+                  mb='6px
+                  !important'
+                  height='70%'
+                  borderRadius='2px'
+                  bg='#151515'
+                  border=' 1px solid #959595' />
+                  <FormErrorMessage>
+                    Necessário Título.
+                  </FormErrorMessage>
               </FormControl>
+
               <FormControl isRequired  w='100%'>
                   <Select
                     mt='1rem'
@@ -309,15 +356,13 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     h='38px'
                     overflow='hidden'
                     aria-label='midia na qual foi feita'
-                    focusBorderColor="#FFEB80"
+                    focusBorderColor="cYellow.300"
                     bg='#151515'
                     borderRadius='2px'
                     color='#BEBEBE'
                     placeholder='Midia'
                     cursor='pointer'
                     border=' 1px solid #959595'  
-                    // {...register('midia')} 
-                    
                     >
                     <option style={{ color: 'black' }} value="pinturaDigital">Pintura digital</option>
                     <option style={{ color: 'black' }} value="pinturaTradicional">Pintura tradicional</option>
@@ -325,6 +370,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     <option style={{ color: 'black' }} value="graffite">Graffite</option>
                   </Select>
               </FormControl>
+
               <Box w='100%'>
                 <Text>Tags:</Text>
                 <Flex 
@@ -377,17 +423,13 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   width='35%'
                   color='#000'
                   aria-label='Publicar'
-                  bg='#FFE767'
+                  bg='cYellow.500'
                   >Publicar</Button>
               </Flex>
             </VStack>}
           </Flex>
-          
-    
         </form>
-
         </ModalBody>
-
       </ModalContent>
     </Modal>
   )

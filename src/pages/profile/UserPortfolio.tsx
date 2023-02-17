@@ -39,7 +39,7 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
           m='25px 12px 0 1rem'
           overflow='hidden'
           border='none'
-          focusBorderColor="#FFEB80"
+          focusBorderColor="cYellow.300"
           padding='2px'
           bg='#0B0B0B'
           borderRadius='5px'
@@ -61,7 +61,7 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
           m='25px 12px 0 0'
           overflow='hidden'
           border='none'
-          focusBorderColor="#FFEB80"
+          focusBorderColor="cYellow.300"
           padding='2px'
           bg='#0B0B0B'
           borderRadius='5px'
@@ -98,7 +98,7 @@ export default function UserPortfolio({name,avatar,albums, posts=[]}){
                     borderRadius='3px'
                     margin='0 !important'
                     display='flex'
-                    bg='#969696'
+                    bg='cGray.900'
                     ratio={1}>
                     <Image aria-label={`post: ${post.title}`} position='absolute' objectFit='cover' src={post.cropped}/>
                     

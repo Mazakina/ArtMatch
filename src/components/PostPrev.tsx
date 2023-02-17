@@ -22,7 +22,7 @@ export default function PostPrev ({post,isFlex=false}){
         margin='0
         !important'
         display='flex'
-        bg='#969696'
+        bg='cGray.900'
         ratio={1}>
         <Flex>
           <Image aria-label={`preview: ${post.title}`} w='100%' h={'100%'} position='absolute' objectFit='cover' src={post.cropped}/>
