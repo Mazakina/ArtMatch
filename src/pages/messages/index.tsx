@@ -12,11 +12,11 @@ export default function Messages(){
     <Flex  h='100vh' mt='-50px' pt='50px' justify="flex-start">
       <Flex id='left-nav' flexDir='column'>
         <AvatarName avatar={data?.user.image} email={data?.user.email} name={data?.user.name}  />
-        <Division  width={'100%'}  bg={'cGray.900'}/>
+        <Division  width={'100%'}  bg={'#323232'}/>
         <Flex width='100%' justify='space-between' align='center' >
           <Text ml='20px'>Mensagens</Text>
         </Flex>
-        <Division  width={'100%'}  bg={'cGray.900'}/>
+        <Division  width={'100%'}  bg={'#323232'}/>
         
         <Flex 
             align='center'
@@ -48,7 +48,7 @@ export default function Messages(){
             fontSize='20' />
         </Flex>
 
-        <Division  width={'100%'}  bg={'cGray.900'}/>
+        <Division  width={'100%'}  bg={'#323232'}/>
         
         <VStack>
           <Flex cursor='pointer' mb='.5rem' h='36px' width='90%' >
@@ -59,16 +59,16 @@ export default function Messages(){
             </Flex>
             <Text fontSize='12px' mt='2px' ml='auto' mr='12px'>03/10/2022</Text>
           </Flex>
-          <Division width={'100%'}  bg={'cGray.900'}/>
+          <Division width={'100%'}  bg={'#323232'}/>
 
         </VStack>
       </Flex>
-      <Box height='100%' m='auto 0 0 16px' w={'1px'} bg='cGray.900' />
+      <Box height='100%' m='auto 0 0 16px' w={'1px'} bg='#323232' />
       <Flex flexDir='column'>
         <Flex flexDir='column'>
           <Text
             bg='#383838'
-            color='cYellow.300'
+            color='#FFEB80'
             borderRadius='0 7px 7px 7px'
             fontSize='14px'
             ml='1rem'
@@ -91,7 +91,7 @@ export default function Messages(){
             Lorem ipsum dolor sit amet, consectetur adipiscing elit
           </Text>
         </Flex>
-        <Flex align='center' bg='cGray.900' p='0.5rem' mt='auto'>
+        <Flex align='center' bg='#323232' p='0.5rem' mt='auto'>
           <Input border='none' fontSize='16px' ml='1rem' bg='#0B0B0B' />
           <Icon m='auto 1rem' color='#969696' fontSize='30px' as={MdSend} />
         </Flex>

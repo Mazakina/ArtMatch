@@ -10,7 +10,6 @@ export const theme = extendTheme({
       900:'#323232'
     }
   },
-
   styles:{
     global:{
       zIndex:1,

@@ -295,7 +295,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   width='35%'
                   m='1rem 1rem 1rem auto'
                   color='#000'
-                  bg='cYellow.500'
+                  bg='#FFE767'
                   aria-label='próxima página do formulário'
                   onClick={(e)=>{handleUploadClick(e)}}>
                     Continuar
@@ -356,7 +356,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                     h='38px'
                     overflow='hidden'
                     aria-label='midia na qual foi feita'
-                    focusBorderColor="cYellow.300"
+                    focusBorderColor="#FFEB80"
                     bg='#151515'
                     borderRadius='2px'
                     color='#BEBEBE'
@@ -423,7 +423,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
                   width='35%'
                   color='#000'
                   aria-label='Publicar'
-                  bg='cYellow.500'
+                  bg='#FFE767'
                   >Publicar</Button>
               </Flex>
             </VStack>}

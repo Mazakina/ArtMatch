@@ -82,7 +82,7 @@ export default function Profile({profile,social,createdAt}){
               left:0,
               width:'100%',
               height:'1px',
-              background:' cYellow.500'
+              background:' #FFE767'
             }:{
               transition:'all ease-in-out .3s',
               content:'""',
@@ -91,7 +91,7 @@ export default function Profile({profile,social,createdAt}){
               left:0,
               width:'0%',
               height:'1px',
-              background:' cYellow.500'
+              background:' #FFE767'
             }
           } fontSize='18px' margin='0 1rem'>Portfolio</Link>
           <Link _hover={{}} position="relative" onClick={()=>{setCurrentActive('perfil')}} fontSize='18px' margin='0 1rem'  _after={(currentActive=='perfil')?
@@ -103,7 +103,7 @@ export default function Profile({profile,social,createdAt}){
               left:0,
               width:'100%',
               height:'1px',
-              background:' cYellow.500'
+              background:' #FFE767'
             }:{
               transition:'all ease-in-out .3s',
               content:'""',
@@ -112,7 +112,7 @@ export default function Profile({profile,social,createdAt}){
               left:0,
               width:'0%',
               height:'1px',
-              background:' cYellow.500'
+              background:' #FFE767'
             }
           }
             >Perfil</Link>

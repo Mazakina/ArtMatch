@@ -115,7 +115,7 @@ const Home  = ({data}) => {
       <HStack
         borderTop='10px
         solid
-        cGray.900'
+        #323232'
         margin='50px 0 16px'
         padding='0 25px'>
         <ActiveLink
@@ -147,7 +147,7 @@ const Home  = ({data}) => {
           lg:`repeat(7,1fr)`,
           xl:`repeat(9,1fr)`}}
           pb='1rem'
-          borderBottom='5px solid cGray.900'
+          borderBottom='5px solid #323232'
           width='100%'>
           {postsOnDisplay.map((post)=>{
             return(
@@ -157,7 +157,7 @@ const Home  = ({data}) => {
         </Grid>
       </Box>
       <Box ref={ref}/>
-      <Division width='100%' bg='cGray.900'/>
+      <Division width='100%' bg='#323232'/>
     </Box>
   )
 }
