@@ -76,7 +76,7 @@ export default function User({userSettings,user}:UserSettingsProps){
         <Division
           display={{base:'none',lg:'initial'}}
           width='95%'
-          bg='cGray.900' />
+          bg='#323232' />
         <SettingsNavOptions
           onClick={()=>setSettingOpt('perfil')}
           icon={AiOutlineHome}
@@ -94,7 +94,7 @@ export default function User({userSettings,user}:UserSettingsProps){
         <Division
           display={{base:'none',lg:'initial'}}
           width='95%'
-          bg='cGray.900' />
+          bg='#323232' />
         <SettingsNavOptions
           onClick={()=>setSettingOpt('seguranca')}
           icon={MdOutlineSecurity}

@@ -19,7 +19,7 @@ export default function Perfil({habilidades,endereco,createdAt}){
 
       <Box p='1rem' m='40px 0' pb='40px' bg='#121212'>
         <Text mb='8px' ml='2rem' fontSize='24px' >Habilidades</Text>
-        <Box w='100%' margin='0 auto 12px' borderBottom='1px solid cGray.900' />
+        <Box w='100%' margin='0 auto 12px' borderBottom='1px solid #323232' />
         <Flex justify={'center'}>
           <SkillsTagSection habilidades={habilidades} skillList={skillList}/>
         </Flex>
@@ -27,7 +27,7 @@ export default function Perfil({habilidades,endereco,createdAt}){
       
       <Flex p='1rem' m='1rem 0' pb='40px' bg='#121212' flexDir={'column'}>
         <Text  ml='3rem' fontSize='24px'>Endereço</Text>
-        <Division width={'100%'} bg='cGray.900' />
+        <Division width={'100%'} bg='#323232' />
         <Flex align='center' mb='.5rem' justify='center'  >
           <Text m='0 1rem 0 auto'>{endereco || 'Não registrado'}</Text>  <Icon fontSize={'1.5rem'} mr='auto' color='#FFF' as={TiLocationOutline} />
         </Flex>

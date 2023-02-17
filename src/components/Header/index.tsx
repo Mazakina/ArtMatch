@@ -67,9 +67,9 @@ function Header(){
           ref={btnRef}
           justifyContent='center !important'
           alignItems='center !important'
-          _hover={{bg:'none',border:'1px solid cYellow.300'}}
+          _hover={{bg:'none',border:'1px solid #FFEB80'}}
           display={{base:'flex',md:'none'}}
-          border = '1px solid cGray.900'
+          border = '1px solid #323232'
           borderRadius={'5px'}
           onClick={onOpen}
           aria-label='menu'
@@ -77,7 +77,7 @@ function Header(){
 
         <NextLink id='logo' passHref href='/'>
          <Link >
-            <Flex fontFamily={"Plaster"} fontSize='1rem' align={'center'} color='cYellow.300'>
+            <Flex fontFamily={"Plaster"} fontSize='1rem' align={'center'} color='#FFEB80'>
               <Image aria-label='icone da Logo' w='2.3rem' h='2.3rem'  mr='.5rem' src='/images/pixil-gif-drawing.gif'/>Ink Trail
             </Flex>
           </Link>
@@ -88,7 +88,7 @@ function Header(){
             m=' 0 12px'
             overflow='hidden'
             border='none'
-            focusBorderColor="cYellow.300"
+            focusBorderColor="#FFEB80"
             padding='2px'
             bg='#0B0B0B'
             borderRadius='5px'
@@ -138,7 +138,7 @@ function Header(){
             ml='12px'
             overflow='hidden'
             border='none'
-            focusBorderColor="cYellow.300"
+            focusBorderColor="#FFEB80"
             padding='2px'
             bg='#0B0B0B'
             borderRadius='5px'
@@ -161,7 +161,7 @@ function Header(){
             bg='transparent'
             _hover={{
               bg:'transparent',
-              color:'cYellow.300'
+              color:'#FFEB80'
             }}
             pl='1rem'>
             <Icon   as={BsQuestionOctagon}/>
@@ -190,7 +190,7 @@ function Header(){
                   m=' 0 0 12px 0'
                   overflow='hidden'
                   border='none'
-                  focusBorderColor="cYellow.300"
+                  focusBorderColor="#FFEB80"
                   padding='2px'
                   bg='#0B0B0B'
                   borderRadius='5px'
@@ -209,7 +209,7 @@ function Header(){
                   ml='12px'
                   overflow='hidden'
                   border='none'
-                  focusBorderColor="cYellow.300"
+                  focusBorderColor="#FFEB80"
                   padding='2px'
                   bg='#0B0B0B'
                   borderRadius='5px'

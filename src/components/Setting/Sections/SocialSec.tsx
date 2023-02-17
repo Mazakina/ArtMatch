@@ -84,8 +84,8 @@ export default function SocialSec({ isLoading, settingOpt, userSettings,user,set
       mt='2rem'
       bg='none'
       w='140px'
-      border='1px solid cYellow.300'
-      color='cYellow.300'
+      border='1px solid #FFEB80'
+      color='#FFEB80'
       borderRadius='2px'
       _hover={{
         bg:'none',

@@ -30,8 +30,8 @@ export function ActiveLink({children,id,currentActive,setCurrentActive,...rest}:
         marginTop='15px'
         paddingBottom='11px'
         marginRight='24px' 
-        color={isActive? '#fff' : 'cGray.900'}
-        borderBottom= {isActive? '2px solid cYellow.500' : '2px solid transparent' }
+        color={isActive? '#fff' : '#323232'}
+        borderBottom= {isActive? '2px solid #FFE767' : '2px solid transparent' }
         >
         {children}
       </Text>  

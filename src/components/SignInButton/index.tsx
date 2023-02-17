@@ -16,7 +16,7 @@ export function SignInButton() {
         zIndex={30}
         alignItems='center'
         padding='5px'
-        border={data? '':('1px solid cYellow.300')}
+        border={data? '':('1px solid #FFEB80')}
         borderRadius='3px'
         direction='row'>
         {data? (
@@ -25,7 +25,7 @@ export function SignInButton() {
             onClick={()=>{setModal(!modal)}}
             _hover={{
               bg:'transparent',
-              color:'cYellow.300',
+              color:'#FFEB80',
             }} 
             align="center" flexDir='row'
             as={Flex}
@@ -43,25 +43,25 @@ export function SignInButton() {
             {modal?(
               <Flex box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
                 <NextLink href={'/favorites'} passHref>
-                  <Link _hover={{ color:'cYellow.300'}} onClick={()=>{setModal(false)}} fontSize='16px' >Meus favoritos</Link>
+                  <Link _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}} fontSize='16px' >Meus favoritos</Link>
                 </NextLink>
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
                 
                 <NextLink href='/portfolio' passHref>
-                 <Link  _hover={{ color:'cYellow.300'}} onClick={()=>{setModal(false)}} fontSize='16px'>Minhas coleções</Link>
+                 <Link  _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}} fontSize='16px'>Minhas coleções</Link>
                 </NextLink>
 
                 <NextLink href='/userSettings' passHref>
-                  <Link  _hover={{ color:'cYellow.300'}} onClick={()=>{setModal(false)}}  fontSize='16px'>Editar perfil</Link>
+                  <Link  _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}}  fontSize='16px'>Editar perfil</Link>
                 </NextLink>
                 
                 {/* <NextLink href='/userSettings' passHref>
-                  <Link  _hover={{ color:'cYellow.300'}}  fontSize='16px'>Bloqueados</Link>
+                  <Link  _hover={{ color:'#FFEB80'}}  fontSize='16px'>Bloqueados</Link>
                 </NextLink> */}
                 
                 <Box margin='.5rem auto' width={'100%'} height='1px' bg={'#BEBEBE'}/>
                 
-                <Link onClick={()=>signOut()} _hover={{ color:'cYellow.300'}}  fontSize='16px'>Sair</Link>
+                <Link onClick={()=>signOut()} _hover={{ color:'#FFEB80'}}  fontSize='16px'>Sair</Link>
 
               </Flex>
             ):''}
@@ -80,7 +80,7 @@ export function SignInButton() {
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
               bg:'transparent',
-              color:'cYellow.300',
+              color:'#FFEB80',
             }}
             borderRightColor='#BEBEBE'>
             Entrar  
@@ -93,7 +93,7 @@ export function SignInButton() {
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
               bg:'transparent',
-              color:'cYellow.300'
+              color:'#FFEB80'
             }}
             >
             Cadastrar-se
