@@ -30,6 +30,7 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
       )
     )
   }catch(e){
+    console.log('user fetch error')
     res.status(404).json({ok:false})  
   }
   
@@ -44,10 +45,8 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
   )
   const ts = userSettings.ts
   const {data} = userSettings
-  res.status(200).end('fetched')
-  res.json({
-    data,ts
-  })
+
+  return res.status(200).json({data,ts})
  }catch(e){
   res.status(404).end('User not found')
  }

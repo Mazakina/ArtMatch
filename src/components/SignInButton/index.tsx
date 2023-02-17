@@ -37,11 +37,11 @@ export function SignInButton() {
               > 
                 {data?.user?.name}
               </Text>
-              <Icon margin={'auto 0 '} paddingTop='4px' as={IoMdArrowDropdown} fontSize='20px' />
+              <Icon role='button' aria-controls="sect1" aria-expanded='false' id='sectBtbn' margin={'auto 0 '} paddingTop='4px' as={IoMdArrowDropdown} fontSize='20px' />
             </Link>
 
             {modal?(
-              <Flex box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
+              <Flex role='navigation' id='sect1' aria-labelledby="sectBtbn" box-shadow={'10px 10px 5px lightblue'} width='170px' borderRadius='5px' p='16px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' position="absolute">
                 <NextLink href={'/favorites'} passHref>
                   <Link _hover={{ color:'#FFEB80'}} onClick={()=>{setModal(false)}} fontSize='16px' >Meus favoritos</Link>
                 </NextLink>
@@ -76,7 +76,9 @@ export function SignInButton() {
             pr='22px'
             borderRightWidth='1px'
             borderRadius='0'
-            aria-label='fazer log-in'
+            aria-expanded='false'
+            aria-controls='login'
+            id="loginbtn"
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
               bg:'transparent',
@@ -88,8 +90,10 @@ export function SignInButton() {
           <Button
             bg='tranparent'
             h='21px'
-            aria-label='cadastrar-se'
+            aria-expanded='false'
+            aria-controls='login'
             fontSize='14px'
+            id="loginbtn"
             onClick={()=>setLoginModal(!loginModal)}
             _hover={{
               bg:'transparent',
@@ -100,7 +104,7 @@ export function SignInButton() {
           </Button>
 
           {loginModal?
-            <Flex border='1px solid #7e7e7e' position='absolute' left='-70px' w='250px' width='320px'  borderRadius='5px' p='24px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' align='space-around' justify='space-around' >
+            <Flex id='login' role='login-area' aria-labelledby="loginbtn" border='1px solid #7e7e7e' position='absolute' left='-70px' w='250px' width='320px'  borderRadius='5px' p='24px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' align='space-around' justify='space-around' >
              <Button
                 onClick={()=>signIn('facebook')}
                 _hover={{bg:'#334b81'}}
@@ -109,7 +113,6 @@ export function SignInButton() {
                 bg={'#3b5998'}><Icon
                 fontSize='25px'
                 ml='10px'
-                aria-label='Fazer login com Facebook'
                 mr='20px'
                 as={BsFacebook}/>Fazer login com Facebook</Button>
               <Button
@@ -119,7 +122,6 @@ export function SignInButton() {
                 w='50px'
                 mr='10px'
                 h='50px'
-                aria-label='Fazer login com o Google'
                 src={'images/google.svg'}
                 />Fazer login com o Google</Button>
             </Flex>

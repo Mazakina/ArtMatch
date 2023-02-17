@@ -132,27 +132,26 @@ export default function Profile({profile,social,createdAt}){
 
 export async function getServerSideProps(context) {
   var id = context.query
-  let response =  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/userSettings/getUserProfile`,{
-      method:'post',
-      headers: {
-        cookie: context.req.headers.cookie || "",
-      },
-      body:JSON.stringify({
-        user:id
-      })
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/userSettings/getUserProfile`,{
+    method:'post',
+    headers: {
+      cookie: context.req.headers.cookie || "",
+      Accept: 'application/json, text/plain, */*',
+    },
+    body:JSON.stringify({
+      user:id
     })
-    if(response.status === 404){
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false,
-        },
-      }
+  })
+  if(response.status === 404){
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
     }
-  let userProfile= await response.json()
-  // if (userProfile.data===undefined){
-    
-  // }
+  }
+  const userProfile = await response.json()
+
   if(userProfile.data.seguranca.allowToBeFound==false){
     return {
       redirect: {
