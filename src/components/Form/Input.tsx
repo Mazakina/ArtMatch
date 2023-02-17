@@ -13,7 +13,7 @@ export function Input({name, label, ...rest}:InputProps){
       <ChakraInput {...rest}
         name={name}
         type ={name}
-        focusBorderColor="#FFEB80"
+        focusBorderColor="cYellow.300"
         border='1px solid #cccccc'
         borderRadius='5px'
         variant ='filled'

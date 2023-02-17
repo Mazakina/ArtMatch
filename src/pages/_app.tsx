@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app'
-import { ChakraProvider, Progress} from '@chakra-ui/react'
+import { ChakraProvider, extendTheme, Progress} from '@chakra-ui/react'
 import { theme } from '../styles/theme'
 import '../components/Slider/Slider.css'
 import { SessionProvider } from "next-auth/react"

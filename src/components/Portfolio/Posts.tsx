@@ -1,3 +1,4 @@
+
 import { AspectRatio, Box, Button, Flex, HStack, Text, Image  } from "@chakra-ui/react"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import {motion, useDragControls } from "framer-motion"
@@ -134,7 +135,7 @@ export function Posts({
       #4d4d4d'
       borderRadius='2px'
       _hover={{
-        border:'1px solid #FFEB80'
+        border:'1px solid cYellow.300'
       }}>
         <AspectRatio  w='100%' maxWidth={'200px'} ratio={1}>
           <Box position='relative'>
@@ -163,10 +164,10 @@ export function Posts({
               >
               <Button
                 onClick={()=>setModalProperties(post)}
-                _hover={{bg:'#FFE767', color:'black'}}
+                _hover={{bg:'cYellow.500', color:'black'}}
                 color='#ffffff'
                 w='70px'
-                border='1px solid #FFE767'
+                border='1px solid cYellow.500'
                 borderRadius={'2px'}
                 aria-label='editar'
                 transform={'scale(0.9)'}
@@ -174,12 +175,12 @@ export function Posts({
               </Button>
               <Button
                 onClick={(e)=>{dragStarted(e)}}
-                _hover={{bg:'#FFE767', color:'black'}}
+                _hover={{bg:'cYellow.500', color:'black'}}
                 color='#ffffff'
                 w='70px'
                 aria-label='Gerir albums ou Deletar'
                 borderRadius={'2px'}
-                border='1px solid #FFE767'
+                border='1px solid cYellow.500'
                 transform={'scale(0.9)'}
                 bg='#00000081'>Gerir
               </Button>
@@ -197,7 +198,7 @@ export function Posts({
                 h='12px'
                 w='12px'
                 borderRadius='50%'
-                bg={posted?'#FFEB80':'#727272'} />
+                bg={posted?'cYellow.300':'#727272'} />
             </Box>
           </HStack>
         </Flex>

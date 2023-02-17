@@ -112,7 +112,12 @@ const Home  = ({data}) => {
   return (
     <Box margin='50px 0'id='heroBox'>
       <HeroSlider slides={slides}/>
-      <HStack borderTop='10px solid #323232' margin='50px 0 16px' padding='0 25px'>
+      <HStack
+        borderTop='10px
+        solid
+        cGray.900'
+        margin='50px 0 16px'
+        padding='0 25px'>
         <ActiveLink
           setCurrentActive={setCurrentActive}
           currentActive={currentActive}
@@ -142,7 +147,7 @@ const Home  = ({data}) => {
           lg:`repeat(7,1fr)`,
           xl:`repeat(9,1fr)`}}
           pb='1rem'
-          borderBottom='5px solid #323232'
+          borderBottom='5px solid cGray.900'
           width='100%'>
           {postsOnDisplay.map((post)=>{
             return(
@@ -152,7 +157,7 @@ const Home  = ({data}) => {
         </Grid>
       </Box>
       <Box ref={ref}/>
-      <Division width='100%' bg='#323232'/>
+      <Division width='100%' bg='cGray.900'/>
     </Box>
   )
 }

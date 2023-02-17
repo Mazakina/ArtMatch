@@ -16,11 +16,11 @@
 }
 
 .swiper-pagination-bullet-active{
-  background-color:#FFEB80 !important;
+  background-color:cYellow.300 !important;
 }
 
 .swiper-button-next,.swiper-button-prev{
-  color:#FFEB80 !important;
+  color:cYellow.300 !important;
   margin: auto 20px;
   transition: all .3s ease-in-out;
 }

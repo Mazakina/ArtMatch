@@ -29,7 +29,7 @@ const SkillsTagSection = React.memo<SkillTagSectionProps>(function SkillsTagSect
 
 export function SkillTag({name}){
   return(
-    <Tag maxHeight={'1rem'}  color='#FFEB80' ml='.5rem' bg='#151515' border='1px solid #FFEB80' borderRadius={'.2rem'}>
+    <Tag maxHeight={'1rem'}  color='cYellow.300' ml='.5rem' bg='#151515' border='1px solid cYellow.300' borderRadius={'.2rem'}>
       <TagLabel m='.25rem'>{name}</TagLabel>
     </Tag>
   )

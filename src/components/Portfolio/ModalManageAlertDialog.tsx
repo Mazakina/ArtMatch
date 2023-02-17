@@ -46,12 +46,12 @@ export default function ModalManageAlertDialog({onDeleteHandle,isOpenAlert,onClo
 
             <AlertDialogFooter>
               <Button 
-              _hover={{bg:'#FFE767', color:'black'}}
+              _hover={{bg:'cYellow.500', color:'black'}}
               color='#ffffff'
               bg='#00000081'
               aria-label='cancelar'
               _focus={{ boxShadow:'0px 0px 10px 2px rgba(255,232,103,    1)'}}
-              border='1px solid #FFE767'
+              border='1px solid cYellow.500'
               ref={cancelRef} onClick={onCloseAlert}>
                 Cancel
               </Button>

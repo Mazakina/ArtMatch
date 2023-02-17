@@ -220,7 +220,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
               onClick={onOpen}
               aria-label='editar secçao de habilidades'
               cursor={'pointer'}
-              _hover={{color:'#FFEB80',border:'1px solid #FFEB80'}}
+              _hover={{color:'cYellow.300',border:'1px solid cYellow.300'}}
               fontSize={'1.9rem'}
               p='.2rem'
               borderRadius={'5px'}
@@ -276,8 +276,8 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
         mt='2rem'
         bg='none'
         w='140px'
-        border='1px solid #ffeb80'
-        color='#ffeb80'
+        border='1px solid cYellow.300'
+        color='cYellow.300'
         borderRadius='2px'
         aria-label='salvar'
         _hover={{

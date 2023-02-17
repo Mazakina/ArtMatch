@@ -211,7 +211,7 @@ export default function Portfolio({posts,albums}){
             onAlbumDrop={onAlbumDrop} />
           <Flex justify="center" align="center" flexDir={'column'}>
             <Box  height='40%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
-            <Button onClick={onOpenDrawer} m='auto .4rem' p={'.2rem'}  _hover={{bg:'none',border:'1px solid #FFEB80'}} bg='none'><Icon fontSize={'1.5rem'} as={HiOutlineChevronDoubleRight} /></Button>
+            <Button onClick={onOpenDrawer} m='auto .4rem' p={'.2rem'}  _hover={{bg:'none',border:'1px solid cYellow.300'}} bg='none'><Icon fontSize={'1.5rem'} as={HiOutlineChevronDoubleRight} /></Button>
             <Box  height='40%' m='auto 1rem auto 1rem' w={'1px'} bg='#fff' />
           </Flex>
           </>

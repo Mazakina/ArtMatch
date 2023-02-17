@@ -30,7 +30,7 @@ export default function userPrev ({user}:UserProps){
           margin='0
           !important'
           display='flex'
-          bg='#969696'
+          bg='cGray.900'
           ratio={1}>
             <Image aria-label={`banner de ${user.user}` } transform='scale(1.01)' position='absolute' objectFit='cover' src={user.banner? user.banner:'images/banner.jpg'}/>
           </AspectRatio>

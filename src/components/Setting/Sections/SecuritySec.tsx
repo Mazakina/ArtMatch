@@ -84,7 +84,7 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
             maxWidth='490px' />
         </Flex>
 
-        <Division width='100%' bg='#323232'/>
+        <Division width='100%' bg='cGray.900'/>
         <Checkbox
           fontSize='14px'
           onChange={(e)=>{setNsfwAllow(e.target.checked)}}
@@ -101,12 +101,12 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
           Permitir ser visto na secção de busca
         </Checkbox>
 
-        <Division width='100%' bg='#323232'/>
+        <Division width='100%' bg='cGray.900'/>
         <Button 
           bg='none'
           w='140px'
-          border='1px solid #ffeb80'
-          color='#ffeb80'
+          border='1px solid cYellow.300'
+          color='cYellow.300'
           borderRadius='2px'
           _hover={{
             bg:'none',
@@ -145,8 +145,8 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
           bg='none'
           w='140px'
           mt='1rem'
-          border='1px solid #ffeb80'
-          color='#ffeb80'
+          border='1px solid cYellow.300'
+          color='cYellow.300'
           borderRadius='2px'
           _hover={{
             bg:'none',
