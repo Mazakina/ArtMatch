@@ -1,4 +1,4 @@
-import {Image, Box, Text ,Flex, Avatar, Link, Icon } from "@chakra-ui/react";
+import {Image, Box, Text ,Flex, Avatar, Link, Icon, Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {useSession} from 'next-auth/react'
 import { Api } from "../../services/api";
@@ -89,7 +89,9 @@ export default function Profile({profile,social,createdAt}){
                     </Link>
                     <Flex>
                     <Tooltip placement='top' label={social.number||'não adicionado'}>
-                      <Icon cursor={'pointer'}  fontSize='1.5rem' as={FiPhone}/>
+                      <Button bg='none' w='1rem' _hover={{bg:'none'}}>
+                        <Icon  fontSize='1.5rem' as={FiPhone}/>
+                      </Button>
                     </Tooltip >
                     </Flex>
                   </Flex>
