@@ -81,10 +81,20 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           )
         )
         const responseToArray = Object.values(responseData)
-        res.json({posts:responseToArray,albums:allAlbums})
+        const postsArray  = responseToArray.map(post =>{
+          return{
+            ...post,...user.data
+          }
+        })
+        return res.status(200).json({posts:postsArray,albums:allAlbums})
       }else{
         const responseToArray = Object.values(responseData)
-        res.json({posts:responseToArray})
+        const postsArray  = responseToArray.map(post =>{
+          return{
+            ...post,...user.data
+          }
+        })
+        return res.status(200).json({posts:postsArray})
       }
     }catch(e){
       res.status(401).end('')

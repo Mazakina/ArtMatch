@@ -120,7 +120,7 @@ const SidebarComponent= React.memo( function Sidebar({onMouseEnter,onMouseLeave,
         </AnimatePresence>
       </Flex>
 
-        <Tooltip placement='auto' bg='#4e4e4e' label='Arraste aqui para deletar'>
+        <Tooltip placement='top' bg='#4e4e4e' label='Arraste aqui para deletar'>
           <Flex
             H='40px'
             id='lixeira'
