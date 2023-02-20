@@ -36,10 +36,10 @@ export default async(req:NextApiRequest,res:NextApiResponse)=>{
     )
   )
   const {data} = userSettings
-  res.status(200)
-  res.json({
-    data
-  })
+    res.status(200)
+    res.json({
+      data
+    })
  }catch(e){
   res.status(404)
  }

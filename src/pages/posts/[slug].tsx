@@ -1,4 +1,4 @@
-import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Tooltip, Button } from '@chakra-ui/react'
+import {Image, Avatar, Box, Flex, Text, Icon, Grid, GridItem, AspectRatio, Tooltip, Button,Link as ChakraLink } from '@chakra-ui/react'
 import {AiFillHeart, AiOutlineHeart} from 'react-icons/ai'
 import {BsBookmarkHeartFill, BsBookmarkPlus} from 'react-icons/bs'
 import Header from "../../components/Header"
@@ -126,12 +126,18 @@ export default function Posts({postData,slug}:PostsProps){
         </Flex>
 
         <Flex pl='18px' pr='18px' paddingTop={'1rem '} id='details-section' flexDir='column' bg='#272727' width={{base:'100vw',lg:'450px'}}>
-          <Flex  as={Link} href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}  mt='18px' height='50px' w='100%' justify='space-between' align='center'>
-            <Flex  align='center'>
+          <ChakraLink
+            as={Link}
+            href={process.env.NEXT_PUBLIC_BASE_URL+'/profile/'+currentPost.user.name}
+            mt='18px'
+            height='50px'
+            w='100%'
+            justifyContent='space-between'
+            alignItems='center'>
+            <Flex mr='1rem' cursor={'pointer'}  align='center'>
               <Avatar mr='12px' width='44px' height='44px' src={currentPost.user.avatar}/>
               <Box>
                 <Text fontSize='20px' color='#fff'> {capitalizeFirstLetter(currentPost.user.name)} </Text>
-                <Text fontSize='16px' color='#fff'>  3D Artist </Text>
               </Box>
               <Button 
                 onClick={(e)=>{handleFavoriteUserButton(e)}}
@@ -159,7 +165,7 @@ export default function Posts({postData,slug}:PostsProps){
               </Button>
             </Flex>
             {/* <Icon mr='18px'fontSize='28px' color='white' as={HiDotsVertical}/> */}
-          </Flex>
+          </ChakraLink>
 
           <Box margin='1rem auto' width='100%' height='1px' bg='#646464'/>
 
