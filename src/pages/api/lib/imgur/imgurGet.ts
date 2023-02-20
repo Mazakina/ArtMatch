@@ -47,18 +47,9 @@ interface ResponseDataProps{
 }
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method ==='POST'){
-    const prepareJSONData = async (data) =>{
-      if(typeof data==='string'){
-        return JSON.parse(data)
-      }else{
-        return data
-      }
-    }
-
-    let otherPosts 
-    let reqData = await prepareJSONData(req.body)
-    let id;
+  if(req.method ==='GET'){
+    let otherPosts ;
+    let userId;
     let post;
     let responseData:ResponseDataProps={
       id:'',
@@ -76,8 +67,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       user:'',
       likes:[]
     }
-
-    const hash = reqData.id
+    const hash = req.headers.id as string
 
     try{
       const allPost:faunaPost = await fauna.query(
@@ -89,7 +79,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
 
       allPost.data.map((posts:mapPostProps)=>{
         if(posts.data.posts[hash]?.posted===true){
-          id = (posts.data.userId)
+          userId = (posts.data.userId)
           otherPosts = Object.values(posts.data.posts).filter(post=>post!= posts.data.posts[hash])
           post = posts.data.posts[hash]
         }
@@ -101,10 +91,10 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       }
 
       await fauna.query(
-        q.Get(id)
+        q.Get(userId)
       ).then((response:userProps)=>{
         responseData.user = {
-          userId:id,
+          userId:userId,
           avatar:response.data.avatar,
           banner:response.data.banner,
           name:response.data.user,
@@ -147,7 +137,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       return res.status(404).end('Not Found')
     }
   }else{
-    res.setHeader('allow','GET')
+    res.setHeader('allow','POST')
     return res.status(405).end('Method not allowed')
   }
 }
