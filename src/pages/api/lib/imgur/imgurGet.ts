@@ -137,7 +137,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       return res.status(404).end('Not Found')
     }
   }else{
-    res.setHeader('allow','POST')
+    res.setHeader('allow','GET')
     return res.status(405).end('Method not allowed')
   }
 }
