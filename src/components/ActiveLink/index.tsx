@@ -20,7 +20,7 @@ export function ActiveLink({children,id,currentActive,setCurrentActive,...rest}:
 
 
   return(
-    <Box onClick={()=>{setCurrentActive(id)}} {...rest}>
+    <Box role='button' onClick={()=>{setCurrentActive(id)}} {...rest}>
       <Text
         _hover={{ 
           color: '#fff'
@@ -30,7 +30,7 @@ export function ActiveLink({children,id,currentActive,setCurrentActive,...rest}:
         marginTop='15px'
         paddingBottom='11px'
         marginRight='24px' 
-        color={isActive? '#fff' : '#323232'}
+        color={isActive? '#fff' : '#888888'}
         borderBottom= {isActive? '2px solid #FFE767' : '2px solid transparent' }
         >
         {children}
