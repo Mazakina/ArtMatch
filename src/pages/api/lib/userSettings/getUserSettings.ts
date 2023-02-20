@@ -17,30 +17,29 @@ interface userSettingsProps{
 }
 export default async(req:NextApiRequest,res:NextApiResponse)=>{
   const token = await getSession({req})
- try{
-  const user:userProps = await fauna.query(
-    q.Get(
-      q.Match(
-        q.Index('user_by_email'),
-        token.user?.email
+  try{
+    const user:userProps = await fauna.query(
+      q.Get(
+        q.Match(
+          q.Index('user_by_email'),
+          token.user?.email
+        )
       )
     )
-  )
-  const userSettings:userSettingsProps = 
-  await fauna.query(
-    q.Get(
-      q.Match(
-        q.Index('settings_by_user_id'),
-        user.ref
+    const userSettings:userSettingsProps = 
+    await fauna.query(
+      q.Get(
+        q.Match(
+          q.Index('settings_by_user_id'),
+          user.ref
+        )
       )
     )
-  )
-  const {data} = userSettings
-    res.status(200)
-    res.json({
+    const {data} = userSettings
+    res.status(200).json({
       data
     })
- }catch(e){
-  res.status(404)
- }
+  }catch(e){
+    res.status(404)
+  }
 }

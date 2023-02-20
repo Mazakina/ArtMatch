@@ -238,9 +238,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
   let postData;
   let {slug} = params
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGet`,{
-    method:'POST',
-    body:JSON.stringify(
-      {id:slug})
+    method:'GET',
+    headers:{
+      id:slug.toString().replace(',','')
+    }
   })
 
   if(![200,201,202].includes(response.status)){

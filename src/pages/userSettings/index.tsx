@@ -142,9 +142,6 @@ export async function getServerSideProps(context) {
     headers: {
       cookie: context.req.headers.cookie || "",
     },
-    body:JSON.stringify({
-      secret:process.env.NEXT_AUTH_JWT_KEY
-    })
   })
   const userSettings = await response.json()
 
