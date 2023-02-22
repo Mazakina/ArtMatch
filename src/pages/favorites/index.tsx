@@ -53,7 +53,7 @@ export default function Favorites({}){
   const [isCurrentActive,setIsCurrentActive] = useState('Posts')
   return(
     <Flex mb='2rem' position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
-      <Image  zIndex='1'
+      <Image alt="banner do usuário" zIndex='1'
         objectFit='cover'
         src={user.data.banner? user.data.banner :'images/banner.jpg' }
         width='100%' height={{base:'300px', md:'360px'}}

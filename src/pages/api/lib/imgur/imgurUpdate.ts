@@ -18,7 +18,7 @@ interface ResponseProps{
   data:any
 }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
+export default async function imgurUpdate(req:NextApiRequest, res:NextApiResponse) {
   if(req.method==='PUT'){
     const formData = new FormData()
     const reqData = req.body

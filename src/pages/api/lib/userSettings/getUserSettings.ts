@@ -15,7 +15,7 @@ interface userSettingsProps{
   ref:object,
   ts:number
 }
-export default async(req:NextApiRequest,res:NextApiResponse)=>{
+export default async function getUserSettings(req:NextApiRequest,res:NextApiResponse) {
   const token = await getSession({req})
   try{
     const user:userProps = await fauna.query(

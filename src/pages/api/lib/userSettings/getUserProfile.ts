@@ -15,7 +15,7 @@ interface userSettingsProps{
   ref:object,
   ts:number
 }
-export default async(req:NextApiRequest,res:NextApiResponse)=>{
+export default async function getUserProfile(req:NextApiRequest, res:NextApiResponse) {
   const reqData = JSON.parse(req.body)
   const userName = reqData.user.slug.replace(/_/g,' ')
  try{

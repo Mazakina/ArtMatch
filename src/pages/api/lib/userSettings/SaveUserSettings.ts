@@ -15,7 +15,7 @@ interface allUsersProps{
   data:Array<any>
 }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
+export default async function saveUserSettings (req:NextApiRequest, res:NextApiResponse) {
   if(req.method!=='POST'){return res.status(405) }
   const reqData = req.body 
   const section = req.body.section
