@@ -3,20 +3,17 @@ import { unstable_getServerSession } from "next-auth/next"
 import {BiChevronLeft, BiChevronRight} from 'react-icons/bi'
 import {BsPlusSquare} from 'react-icons/bs'
 import {HiOutlineChevronDoubleRight} from 'react-icons/hi'
-import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem, useMediaQuery, Portal } from "@chakra-ui/react";
+import {Flex, Box, Text, Icon, Button, useDisclosure, Grid, GridItem, useMediaQuery } from "@chakra-ui/react";
 import { AnimatePresence, LayoutGroup, motion} from "framer-motion"
-import { useCallback, useContext, useEffect, useRef, useState  } from "react";
+import { useCallback, useEffect, useRef, useState  } from "react";
 import 'react-image-crop/dist/ReactCrop.css'
 
-
-import Header from "../../components/Header";
 import { Api } from '../../services/api';
 import {useSession} from 'next-auth/react'
 import { authOptions } from "../api/auth/[...nextauth]"
 import { GetServerSideProps } from "next"
 import ModalForm from "../../components/Portfolio/ModalForm";
 import {Posts} from "../../components/Portfolio/Posts";
-import { UserContext } from "../../services/hooks/UserContext";
 import SideBarComponentDrawer from "../../components/Portfolio/SideBarComponentDrawer";
 import SidebarComponent from "../../components/Portfolio/SidebarComponent"
 import ModalManage from "../../components/Portfolio/ModalManage";
@@ -37,6 +34,7 @@ export default function Portfolio({posts,albums}){
     "(max-width: 991px)",
     "(min-width: 992px)",
   ]);
+
   //Framer Motion Variants
   const container = {
     hidden: { opacity: 0, scale:0 },
@@ -62,6 +60,7 @@ export default function Portfolio({posts,albums}){
   useEffect(()=>{
     setPostsCollection(posts.filter(post => post.id))
   },[posts])
+  
   //image refs and states
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen:isOpenManage, onOpen:onOpenManage, onClose:onCloseManage } = useDisclosure();
@@ -113,20 +112,30 @@ export default function Portfolio({posts,albums}){
       setTimeout(()=>{setDeltaCount(0)},500)
     }
   },[])
-  let postsOnDisplay = postsCollection.filter((post)=>{
+  const postsOnDisplay = postsCollection.filter((post)=>{
     return (post.albumRef===activeAlbum|| activeAlbum==='any')
   })
   // adding eventListeners after window mount
+
+  const [isMobile,setIsMobile] = useState(false)
+  const detectIsMobile = ()=>{
+    const userAgent = window.navigator.userAgent;
+    const isMobileRegex = /Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone/i.test(userAgent);
+    setIsMobile(isMobileRegex)
+    console.log(isMobileRegex)
+  }
+
   useEffect(()=>{updateGridChildrenLength()},[gridCount])
   useEffect(()=>{
+    detectIsMobile()
     window.addEventListener('resize',()=>{
       setGridCount(new Date)
       setInitialSlice(0)
-    })
+    });
     setGridCount(new Date)
     gridContainerRef.current.addEventListener("wheel",(event)=>{
       deltaCountCallback(event.deltaY)
-    })
+    });
   },[])
   //change displayed posts
   useEffect(()=>{
@@ -144,10 +153,10 @@ export default function Portfolio({posts,albums}){
 
   const onMouseEnter = (event) =>{
     setOnDragSnap(ids?.id)
-  }
+  };
   const onMouseLeave = (event) =>{
     setOnDragSnap('')
-  }
+  };
 
   const onAlbumDrop = async(event,album)=>{
     if(!!ids?.id){
@@ -156,7 +165,7 @@ export default function Portfolio({posts,albums}){
           return({...post,albumRef:album.albumRef})
         }else{
           return post
-        }
+        };
       })
       setPostsCollection([...newPostsArray])
       await Api.patch('/lib/imgur/imageSetAlbum',{
@@ -164,8 +173,8 @@ export default function Portfolio({posts,albums}){
         id:ids.id,
         user:data.user
       })
-    }
-  }
+    };
+  };
 
   const onDragDrop = async ()=>{
     if(!!ids){
@@ -179,17 +188,16 @@ export default function Portfolio({posts,albums}){
         ...ids,
         user:data.user
         }
-      }).then(response=>setOnDragSnap(''))
-    }
-  }
-
-
+      }).then(response=>setOnDragSnap(''));
+    };
+  };
   
+
 
   return(
     <>
       <Flex position='relative' overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
-        {isLg?        
+        {(isLg && !isMobile)?        
           <>
           <SidebarComponent
             setActAlbum={{activeAlbum,setActiveAlbum}}
@@ -220,7 +228,7 @@ export default function Portfolio({posts,albums}){
           <Box   w='100%' height='99%'>
             <AnimatePresence >   
               <Grid    autoFlow={'unset'} ref={gridRef} as={motion.div} height='95%' listStyleType={'none'} variants={container} templateColumns={`repeat(${'auto-fit'},190px)`}  autoRows={'230px'} justifyContent={'flex-start'} gap={'1rem'} initial="hidden" animate="show" w='100%'  m='1rem auto auto'>
-                  {isLg &&
+                  {(isLg && !isMobile) &&
                     <GridItem
                       transition={'all .3s ease-in-out'}
                       gridArea={'1fr,1fr'}
@@ -253,7 +261,7 @@ export default function Portfolio({posts,albums}){
                     postsOnDisplay.map((post,index)=>{
                       return(
                         <Posts
-                          isLg={isLg}
+                          isLg={(isLg && !isMobile)}
                           onOpenManage={onOpenManage}
                           setCurrentPostId={setCurrentPostId}
                           setCurrentAlbum={setCurrentAlbum}
@@ -351,18 +359,14 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
       },
     }
   }
-  const reqData={
-    user:session.user.email,
-    getAlbums:true,
-    byEmail:true
-  }
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
-    method:'post',                
+    method:'GET',                
     headers: {
       cookie: context.req.headers.cookie || "",
+      user:session.user.email,
+      get_albums:'true',
+      by_email:'true'
     },
-    body:JSON.stringify(
-    reqData)
   })
   let posts;
   let albums;

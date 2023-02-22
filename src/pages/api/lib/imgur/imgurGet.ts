@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Api } from "../../../../services/api";  
 import {fauna} from "../../../../services/fauna"
 import {query as q} from 'faunadb'
-import { userAgent } from "next/server";
 
 interface userProps extends NextApiResponse{
   ref:string,
@@ -46,7 +45,7 @@ interface ResponseDataProps{
   }|string
 }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
+export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
   if(req.method ==='GET'){
     let otherPosts ;
     let userId;
@@ -87,7 +86,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       })
 
       if(!post){
-        return res.status(404).end('Not Found')
+        return res.status(400).end('Post not Found')
       }
 
       await fauna.query(
@@ -102,7 +101,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         }
       }).catch(
         (error)=> {
-          return res.status(404).end('Not Found')}
+          return res.status(400).end('User not Found')}
       )
 
       responseData.id= post.id
@@ -134,7 +133,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         return res.status(500).end('Server error')
       });
     }catch(e){
-      return res.status(404).end('Not Found')
+      return res.status(400).end('User not Found')
     }
   }else{
     res.setHeader('allow','GET')

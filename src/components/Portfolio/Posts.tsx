@@ -74,10 +74,6 @@ export function Posts({
       id:post.id,
       deleteHash:post.deleteHash
     })
-    if(!isLg){
-      setCurrentAlbum({albumRef:post.albumRef,albumName:post.albumName})
-      onOpenManage()
-    }
   }
   function dragEnded(){
     setTimeout(()=>{setIds('')},300)
@@ -117,7 +113,7 @@ export function Posts({
       pointerEvents:'none',filter:'brightness(.7)'
     }}
     dragControls={controls}
-    drag={true}
+    drag={isLg}
     onDragStart={(e)=>{dragStarted(e)}}
     onDragEnd={()=>{dragEnded()}}
     dragSnapToOrigin={dragSnap==post.id? false : true}
@@ -174,6 +170,7 @@ export function Posts({
                 bg='#00000081'>Editar
               </Button>
               <Button
+                display={isLg?'none':'flex'}
                 onClick={(e)=>{dragStarted(e)}}
                 _hover={{bg:'#FFE767', color:'black'}}
                 color='#ffffff'

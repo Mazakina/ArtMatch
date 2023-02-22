@@ -72,8 +72,6 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
       }
     }
   
-
-  
  // ---------------------------
   const userEmail = reqData.user.email
   const user:UserProps = 
