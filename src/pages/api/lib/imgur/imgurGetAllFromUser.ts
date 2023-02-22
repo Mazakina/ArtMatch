@@ -29,32 +29,32 @@ interface ResponseData{
 }
 
 export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method ==='POST'){
-    let reqData;
-    if(typeof req.body==='string'){
-      reqData =  JSON.parse(req.body)}else{
-    reqData= req.body}
-
-    let user:userProps
-    
-    if(reqData.byEmail == true){
-      user = await fauna.query(
-        q.Get(
-          q.Match(
-            q.Index('user_by_email'),
-            q.LowerCase(reqData.user)
+  if(req.method ==='GET'){
+    const reqData = req.headers;
+   
+    let user;
+    try{
+      if(reqData.by_email == 'true'){
+        user = await fauna.query(
+          q.Get(
+            q.Match(
+              q.Index('user_by_email'),
+              q.LowerCase(reqData.user)
+            )
           )
         )
-      )
-    }else{
-      user = await fauna.query(
-        q.Get(
-          q.Match(
-            q.Index('user_by_usuario'),
-            q.LowerCase(reqData.user)
+      }else{
+        user = await fauna.query(
+          q.Get(
+            q.Match(
+              q.Index('user_by_usuario'),
+              q.LowerCase(reqData.user)
+            )
           )
         )
-      )
+      }
+    }catch{
+      res.status(400).json({error:'User not found!'})
     }
     try{
       const responseData = await fauna.query(
@@ -68,7 +68,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
           )
         )
       )
-      if(reqData.getAlbums){
+      if(reqData.get_albums){
         const allAlbums = await fauna.query(
           q.Select(
             ['data','albums'],
@@ -97,10 +97,10 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
         return res.status(200).json({posts:postsArray})
       }
     }catch(e){
-      res.status(401).end('')
+      res.status(400).end('')
     }
   }else{
-    res.setHeader('allow','POST')
+    res.setHeader('allow','GET')
     res.status(405).end('Method not allowed')
   }
 }

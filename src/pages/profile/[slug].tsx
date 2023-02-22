@@ -22,11 +22,12 @@ export default function Profile({profile,social,createdAt}){
 
   useEffect(()=>{
       if(data){
-        const reqData ={
+        Api.get('/lib/imgur/imgurGetAllFromUser',
+        {headers:{
           user:slug,
-          getAlbums:true
-        }
-        Api.post('/lib/imgur/imgurGetAllFromUser',reqData).then(response => {setPosts(response.data.posts);setAlbums(response.data.albums)})
+          get_albums:true,
+        }}
+        ).then(response => {setPosts(response.data.posts);setAlbums(response.data.albums)})
       }
   },[data])
   return(

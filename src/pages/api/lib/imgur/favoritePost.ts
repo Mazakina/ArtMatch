@@ -37,7 +37,7 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
         )
       ).then(response=>res.status(200).json(favoritePosts))
     }catch(e){
-      res.status(401)
+      res.status(400).json({error:'Posts not found'})
     }
   }
 
