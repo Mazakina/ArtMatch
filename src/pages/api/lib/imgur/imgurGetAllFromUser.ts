@@ -28,8 +28,8 @@ interface ResponseData{
 
 }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
-  if(req.method ==='GET'){
+export default async function imgurGetAllFromUser( req:NextApiRequest, res:NextApiResponse) {
+  if(req.method === 'GET'){
     const reqData = req.headers;
    
     let user;
@@ -86,7 +86,7 @@ export default async (req:NextApiRequest,res:NextApiResponse)=>{
             ...post,...user.data
           }
         })
-        return res.status(200).json({posts:postsArray,albums:allAlbums})
+        return res.status(200).json( {posts:postsArray , albums:allAlbums })
       }else{
         const responseToArray = Object.values(responseData)
         const postsArray  = responseToArray.map(post =>{

@@ -22,20 +22,20 @@ interface mapPostProps{
 interface faunaPost{
   data: []
 }
-interface ResponseDataProps{
-  id:string,
-  title:string,
-  description:string,
-  timeStamp:number,
-  vote:number|null,
-  nsfw:boolean,
-  URL:string,
-  deleteHash:string,
-  posted: boolean,
-  album: string,
-  tags:Array<string>,
-  midia: string,
-  likes:string[],
+class ResponseDataProps{
+  id:string;
+  title:string;
+  description:string;
+  timeStamp:number;
+  vote:number|null;
+  nsfw:boolean;
+  URL:string;
+  deleteHash:string;
+  posted: boolean;
+  album: string;
+  tags:Array<string>;
+  midia: string;
+  likes:string[];
   user:{
     name:string,
     avatar:string,
@@ -50,7 +50,8 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
     let otherPosts ;
     let userId;
     let post;
-    let responseData:ResponseDataProps={
+    let responseData = new ResponseDataProps();
+    Object.assign(responseData,{
       id:'',
       title:'',
       description:'',
@@ -65,7 +66,8 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
       midia: '',
       user:'',
       likes:[]
-    }
+    })
+
     const hash = req.headers.id as string
 
     try{
@@ -104,15 +106,17 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
           return res.status(400).end('User not Found')}
       )
 
-      responseData.id= post.id
-      responseData.title= post.title
-      responseData.description= post.id
-      responseData.nsfw=post.nsfw
-      responseData.URL= post.url
-      responseData.deleteHash = post.deleteHash
-      responseData.posted = post.posted
-      responseData.album = post.album
-      responseData.likes = post.likes
+      Object.assign(responseData,{
+        id : post.id,
+        title : post.title,
+        description : post.id,
+        nsfw : post.nsfw,
+        URL : post.url,
+        deleteHash : post.deleteHash,
+        posted : post.posted,
+        album : post.album,
+        likes : post.likes,
+      })
 
       var config = {
         method: 'get',

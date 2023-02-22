@@ -8,7 +8,7 @@ interface userProps{
     email:string
   }
 }
-export default async function(req:NextApiRequest,res:NextApiResponse){
+export default async function imgurSetAlbum(req:NextApiRequest,res:NextApiResponse){
   if(req.method==='PATCH'){
     const reqData = req.body
     const user:userProps = 

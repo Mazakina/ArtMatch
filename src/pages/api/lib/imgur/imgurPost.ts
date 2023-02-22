@@ -12,20 +12,20 @@ interface UserProps {
   }
 }
 
-interface NewDataProps{
- id:string,
- title:string,
- description:string,
- deleteHash:string,
- url:string,
- posted:boolean,
- tags:string[],
- midia:string,
- cropped:string,
- likes:string[]
-}
+// interface NewDataProps{
+//  id:string,
+//  title:string,
+//  description:string,
+//  deleteHash:string,
+//  url:string,
+//  posted:boolean,
+//  tags:string[],
+//  midia:string,
+//  cropped:string,
+//  likes:string[]
+// }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
+export default async function imgurPost (req:NextApiRequest, res:NextApiResponse){
   const reqData = req.body
   const image = reqData.image
  

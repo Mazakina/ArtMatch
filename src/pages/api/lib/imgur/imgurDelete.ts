@@ -14,7 +14,7 @@ interface userProps {
   }
 }
 
-export default async (req:NextApiRequest,res:NextApiResponse)=>{
+export default async function imgurDelete(req:NextApiRequest,res:NextApiResponse) {
   if(req.method==='DELETE'){
     const formData = new FormData()
     const reqData = req.body
