@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import {Box, Grid,Text, HStack, useMediaQuery  } from '@chakra-ui/react'
 import { HeroSlider } from '../components/Carousel/HeroSlider'
 import Header from "../components/Header"
@@ -111,6 +112,9 @@ const Home  = ({data}) => {
 
   return (
     <Box margin='50px 0'id='heroBox'>
+      <Head>
+        <title>Ink Trail</title>
+      </Head>
       <HeroSlider slides={slides}/>
       <HStack
         borderTop='10px

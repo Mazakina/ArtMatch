@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { UserContext } from '../../services/hooks/UserContext'
 import { MdOutlineAddBox } from 'react-icons/md'
+import Head from 'next/head'
 
 interface PostDataProps{
 URL: string,
@@ -120,6 +121,9 @@ export default function Posts({postData,slug}:PostsProps){
 
   return(
     <Box>
+      <Head>
+        <title>Ink Trail | {currentPost?.title}</title>
+      </Head>
       <Flex w='100vw' flexDir={{base:'column',lg:'row'}} p='50px 0 0' margin='-50px 0 0' h='100vh'>
         <Flex align='center' justify='center' p='1rem' id='post-image' h='calc(100vh-50px)' bg='#0a0a0a' width='100%' >
           <Image alt=''  maxH='94%' src={currentPost?.URL} />
@@ -237,7 +241,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
   }  
   let postData;
   let {slug} = params
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGet`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/imgur/imgurGet`,{
     method:'GET',
     headers:{
       id:slug.toString().replace(',','')
@@ -269,21 +273,21 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
 export const favPostFunctions = {
   delete: (session,slug)=>{
     if(session){
-      Api.delete('/lib/imgur/favoritePost',{data:{
+      Api.delete('/_lib/imgur/favoritePost',{data:{
         id:slug,...session
       }})
     }
   },
   push: (session,slug)=>{
     if(session){
-      Api.patch('/lib/imgur/favoritePost',{
+      Api.patch('/_lib/imgur/favoritePost',{
         id:slug,...session
       }).then(res=>console.log(res))
     }
   },
   post:(session,slug)=>{
     if(session){
-      Api.post('/lib/imgur/favoritePost',{
+      Api.post('/_lib/imgur/favoritePost',{
         id:slug,...session
       }).then(res=>console.log(res))
     }
@@ -292,14 +296,14 @@ export const favPostFunctions = {
 export const likeFunctions = {
   like: (user,slug,postOwner)=>{
     if(user){
-      Api.patch('/lib/imgur/likePost',{
+      Api.patch('/_lib/imgur/likePost',{
         ...user,id:slug,postOwnerName:postOwner
       })
     }
   },
   dislike: (user,slug,postOwner)=>{
     if(user){
-      Api.delete('/lib/imgur/likePost',{
+      Api.delete('/_lib/imgur/likePost',{
         data:{
           ...user,id:slug,postOwnerName:postOwner
         }
@@ -310,14 +314,14 @@ export const likeFunctions = {
 export const favUserFunctions = {
   post:(user,postOwner)=>{
     if(user){
-      Api.post('/lib/imgur/favoriteUser',{
+      Api.post('/_lib/imgur/favoriteUser',{
         ...user,postOwnerName:postOwner
       })
     }
   },
   push:(user,postOwner)=>{
     if(user){
-      Api.patch('/lib/imgur/favoriteUser',{
+      Api.patch('/_lib/imgur/favoriteUser',{
         ...user,postOwnerName:postOwner
       })
     }
@@ -325,7 +329,7 @@ export const favUserFunctions = {
   delete:(user,postOwner)=>{
     if(user){
       console.log(user)
-      Api.delete('/lib/imgur/favoriteUser',{data:{
+      Api.delete('/_lib/imgur/favoriteUser',{data:{
         ...user,postOwnerName:postOwner
       }
       })

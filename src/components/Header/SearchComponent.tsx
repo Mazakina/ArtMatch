@@ -2,6 +2,7 @@ import { ListIcon, ListItem, UnorderedList, Text, Image, Flex } from "@chakra-ui
 import Link from "next/link";
 import React from "react";
 import { BiSearchAlt } from "react-icons/bi";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetterUtil";
 
 interface ItemProps{
   avatar?:string,
@@ -18,12 +19,6 @@ interface SearchComp{
 
 const  SearchComponent = React.memo<any>( function SearchComp({searchItems=[],isActive=''}) {
   const display = isActive.length>2
-  function capitalizeFirstLetter(str) {
-   if(str){
-    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-   }
-   return
-  }
   console.log(searchItems)
   return(
     <UnorderedList  display={isActive?'initial':'none'} w={'100%'} m='0' boxShadow= '5px 5px 28px 0px rgba(0,0,0,0.75);' bg='#292929' color='white' p='.3rem' borderRadius={'5px'} top='35px' position='absolute'>

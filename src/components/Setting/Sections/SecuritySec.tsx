@@ -38,7 +38,7 @@ export default function SecuritySec({settingOpt,userSettings,user,isLoading,setI
       allowToBeFound:allowToBeFound,
       user:user
     }
-    Api.post('/lib/userSettings/saveUserSettings',requestData).then(()=>
+    Api.post('/_lib/userSettings/saveUserSettings',requestData).then(()=>
     setIsLoading(false)
     ).catch((err)=>{
       setIsLoading(false)

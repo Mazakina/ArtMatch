@@ -48,7 +48,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
   const regex = /^[a-zA-Z0-9\s]*$/;
   
   const {isLoading: queryIsLoading, data} = useQuery('skills', async ()=>{
-    const response = await Api.get('/lib/userSettings/getSkillsOptions');return response},{enabled: !!user}
+    const response = await Api.get('/_lib/userSettings/getSkillsOptions');return response},{enabled: !!user}
   )
 
   let skillList = data?.data
@@ -104,7 +104,7 @@ export default function PerfilSec({settingOpt,userSettings,user}:PerfilSec){
       avatarDeleteHash:avatarDeleteHash,
       user:user
     }
-    Api.post('/lib/userSettings/saveUserSettings',requestData).then(()=>
+    Api.post('/_lib/userSettings/saveUserSettings',requestData).then(()=>
     setIsLoading(false)
     ).catch((err)=>{if(err.response.data.message==='usuario já existente'){alert(err.response.data.message)};
       setIsLoading(false)

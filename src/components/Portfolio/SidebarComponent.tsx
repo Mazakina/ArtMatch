@@ -1,20 +1,16 @@
-import {Spinner, Flex ,Text, Icon, VStack, Tooltip, Button, Input ,
-Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, 
-DrawerContent, DrawerCloseButton, FlexProps, Box,} from "@chakra-ui/react";
-import { useMediaQuery } from '@chakra-ui/react'
+import {Flex ,Text, Icon, VStack, Tooltip, Button,} from "@chakra-ui/react";
 import { AvatarName } from "../AvatarName";
 import Division from "../Division";
-import {AiFillFolderAdd, AiOutlineFolderOpen, AiOutlineReload} from 'react-icons/ai'
+import {AiFillFolderAdd, AiOutlineReload} from 'react-icons/ai'
 import {BiTrash} from 'react-icons/bi'
-import React, { Dispatch, SetStateAction, useContext, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { Api } from "../../services/api";
 import {useSession} from 'next-auth/react'
-import { BsCheckLg } from "react-icons/bs";
-import { IoClose } from "react-icons/io5";
 import { AnimatePresence, LayoutGroup } from "framer-motion";
 import { UserContext } from "../../services/hooks/UserContext";
 import { Album } from "./Album";
 import { NewAlbum } from "./NewAlbum";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetterUtil";
 
 
 interface AlbumProps{
@@ -60,20 +56,32 @@ const SidebarComponent= React.memo( function Sidebar({onMouseEnter,onMouseLeave,
     }
   }
 
-  function capitalizeFirstLetter(str) {
-    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  }
   return(
     
     <Flex  minWidth='240px' height='98%' id='left-nav' flexDir='column'  >
-      <AvatarName  minH='50px' name={capitalizeFirstLetter(user.data.user)||data?.user.name} email={data?.user.email} avatar={user.data.avatar||data?.user.image} />
+      <AvatarName
+        minH='50px'
+        name={capitalizeFirstLetter(user.data.user)||data?.user.name}
+        email={data?.user.email}
+        avatar={user.data.avatar||data?.user.image} />
       <Division width={'100%'}  bg={'#323232'}/>
       <Flex minH='30%' maxH='70%' mb='.5rem' ml='20px' flexDir='column'>
         <Flex  width='100%' justify='space-between' align='center' >
           <Text>Albums</Text>
           <Flex align='center'>
-            <Icon cursor={'pointer'} _hover={{ color:'#FCD635'}} margin='0 .5rem' onClick={()=>setIsCreatingNewAlbum(!isCreatingNewAlbum)} color='#D9D9D9' as={AiFillFolderAdd} />
-            <Icon cursor={'pointer'} transition='all 1s ease-in-out' _hover={{transform:'rotate(360deg)'}} color='#D9D9D9' as={AiOutlineReload} />
+            <Icon
+              cursor={'pointer'}
+              _hover={{color:'#FCD635'}}
+              margin='0 .5rem'
+              onClick={()=>setIsCreatingNewAlbum(!isCreatingNewAlbum)}
+              color='#D9D9D9'
+              as={AiFillFolderAdd} />
+            <Icon
+              cursor={'pointer'}
+              transition='all 1s ease-in-out'
+              _hover={{transform:'rotate(360deg)'}}
+              color='#D9D9D9'
+              as={AiOutlineReload} />
           </Flex>
         </Flex>
 
@@ -99,10 +107,18 @@ const SidebarComponent= React.memo( function Sidebar({onMouseEnter,onMouseLeave,
           } 
           fontSize='16px' mt='1rem' justify={'flex-start'} alignItems='flex-start' spacing='6px'>
            <LayoutGroup>
-              <Album deleteAlbum={deleteAlbum} onAlbumDrop={onAlbumDrop} setActiveAlbum={setActiveAlbum} activeAlbum={activeAlbum}album={{albumName:'Todos',albumRef:'any'}}/>
+              <Album
+                deleteAlbum={deleteAlbum}
+                onAlbumDrop={onAlbumDrop}
+                setActiveAlbum={setActiveAlbum}
+                activeAlbum={activeAlbum}album={{albumName:'Todos',albumRef:'any'}} />
               
-              {isCreatingNewAlbum? 
-              <NewAlbum albumsCollection={albumsCollection} setAlbumsCollection={setAlbumsCollection}  setIsCreatingNewAlbum={setIsCreatingNewAlbum} data={data}/>:''}
+              {isCreatingNewAlbum && 
+              <NewAlbum
+                albumsCollection={albumsCollection}
+                setAlbumsCollection={setAlbumsCollection}
+                setIsCreatingNewAlbum={setIsCreatingNewAlbum}
+                data={data} />}
 
               {albumsCollection.map(album=>{
                 return(

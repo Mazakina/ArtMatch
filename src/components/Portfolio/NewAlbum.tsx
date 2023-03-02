@@ -28,7 +28,7 @@ export function NewAlbum({albumsCollection,setAlbumsCollection,data,setIsCreatin
     const albumName = albumNameRef.current.value
     if(albumName){
       setIsloading(true)
-      await Api.post('/lib/imgur/manageAlbum',{
+      await Api.post('/_lib/imgur/manageAlbum',{
         ...data,
         albumRef:"",
         albumName:albumName,
