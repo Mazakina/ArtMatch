@@ -8,6 +8,7 @@ import {FaBehanceSquare, FaArtstation } from 'react-icons/fa'
 import {FiPhone } from 'react-icons/fi'
 import { Tooltip } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import Head from "next/head";
 
 export default function Profile({profile,social,createdAt}){
   let [currentActive,setCurrentActive] = useState('portfolio')
@@ -22,7 +23,7 @@ export default function Profile({profile,social,createdAt}){
 
   useEffect(()=>{
       if(data){
-        Api.get('/lib/imgur/imgurGetAllFromUser',
+        Api.get('/_lib/imgur/imgurGetAllFromUser',
         {headers:{
           user:slug,
           get_albums:true,
@@ -32,6 +33,9 @@ export default function Profile({profile,social,createdAt}){
   },[data])
   return(
     <>
+      <Head>
+        <title>Ink Trail | Perfil</title>
+      </Head>
       <Flex position='relative' flexDir='column' justifyContent='center'  w='100%'>
         <Image zIndex='1'
           objectFit='cover'
@@ -165,7 +169,7 @@ export default function Profile({profile,social,createdAt}){
 
 export async function getServerSideProps(context) {
   var id = context.query
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/userSettings/getUserProfile`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/userSettings/getUserProfile`,{
     method:'post',
     headers: {
       cookie: context.req.headers.cookie || "",

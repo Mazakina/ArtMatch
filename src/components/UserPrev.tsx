@@ -1,5 +1,6 @@
 import {Image, GridItem, Flex, Text , AspectRatio, Avatar } from "@chakra-ui/react";
 import Link from "next/link";
+import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetterUtil";
 
 interface UserProps{
   user:{
@@ -10,9 +11,6 @@ interface UserProps{
 }
 
 export default function userPrev ({user}:UserProps){
-  function capitalizeFirstLetter(str) {
-    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  }
   return(
     <Flex   as={Link} href={`/profile/${user.user}`} passHref  mt='.5rem' border='1px solid #0000000' > 
      <Flex

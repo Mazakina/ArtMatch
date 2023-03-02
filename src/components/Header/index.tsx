@@ -8,7 +8,7 @@ import {BsQuestionOctagon} from 'react-icons/bs'
 import { Input } from '../Form/Input'
 import { SignInButton } from '../SignInButton'
 import NextLink from 'next/link'
-import { searchEngine } from '../../pages/api/lib/sarchEngine'
+import { searchEngine } from '../../pages/api/_lib/sarchEngine'
 import { Api } from '../../services/api'
 import SearchComponent from './SearchComponent'
 
@@ -32,8 +32,9 @@ function Header(){
 
 
 
+  
   useEffect(()=>{    
-    Api.get('/lib/imgur/imgurGetAllFeed')
+    Api.get('/_lib/imgur/imgurGetAllFeed')
     .then(response=>{
       setInitialData(response.data);
       }

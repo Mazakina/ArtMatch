@@ -8,7 +8,7 @@ import { Api } from "../../services/api";
 export default function Perfil({habilidades,endereco,createdAt}){
 
   const {isLoading: queryIsLoading, data} = useQuery('skills', async ()=>{
-    const response = await Api.get('/lib/userSettings/getSkillsOptions');return response},{enabled: !!habilidades}
+    const response = await Api.get('/_lib/userSettings/getSkillsOptions');return response},{enabled: !!habilidades}
   )
   let skillList = data?.data
   const memberSince = new Date(createdAt/1000).toLocaleDateString()

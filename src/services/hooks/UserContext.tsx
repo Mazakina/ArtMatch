@@ -57,7 +57,7 @@ export const UserProvider = ({children}:ProviderProps)=>{
    })
 
   async function getContextData (){
-    const response = await Api.post('/lib/userSettings/getUser',{data})
+    const response = await Api.post('/_lib/userSettings/getUser',{data})
     return response
   }
 

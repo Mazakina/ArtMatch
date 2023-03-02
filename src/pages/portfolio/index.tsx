@@ -17,6 +17,7 @@ import {Posts} from "../../components/Portfolio/Posts";
 import SideBarComponentDrawer from "../../components/Portfolio/SideBarComponentDrawer";
 import SidebarComponent from "../../components/Portfolio/SidebarComponent"
 import ModalManage from "../../components/Portfolio/ModalManage";
+import Head from "next/head";
 
 interface idsProps{
   id?:string,
@@ -168,7 +169,7 @@ export default function Portfolio({posts,albums}){
         };
       })
       setPostsCollection([...newPostsArray])
-      await Api.patch('/lib/imgur/imageSetAlbum',{
+      await Api.patch('/_lib/imgur/imageSetAlbum',{
         ...album,
         id:ids.id,
         user:data.user
@@ -183,7 +184,7 @@ export default function Portfolio({posts,albums}){
       )
       if(initialSlice !==0){setInitialSlice(initialSlice-1)}
       setPostsCollection([...newPostsArray])
-      await Api.delete('/lib/imgur/imgurDelete',{
+      await Api.delete('/_lib/imgur/imgurDelete',{
         data:{
         ...ids,
         user:data.user
@@ -196,6 +197,9 @@ export default function Portfolio({posts,albums}){
 
   return(
     <>
+      <Head>
+        <title>Ink Trail | Portfólio </title>
+      </Head>
       <Flex position='relative' overflow={'hidden'} h='98vh' mt='-50px' pt='50px' justify="flex-start">
         {(isLg && !isMobile)?        
           <>
@@ -359,7 +363,7 @@ export const getServerSideProps: GetServerSideProps = async (context) =>  {
       },
     }
   }
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/imgur/imgurGetAllFromUser`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/imgur/imgurGetAllFromUser`,{
     method:'GET',                
     headers: {
       cookie: context.req.headers.cookie || "",

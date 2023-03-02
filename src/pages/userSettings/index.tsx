@@ -13,6 +13,7 @@ import {MdOutlineSecurity} from 'react-icons/md'
 import PerfilSec from "../../components/Setting/Sections/PerfilSec";
 import SocialSec from "../../components/Setting/Sections/SocialSec";
 import SecuritySec from "../../components/Setting/Sections/SecuritySec";
+import Head from "next/head";
 
 interface importedDataProps{
   data:{
@@ -61,6 +62,9 @@ export default function User({userSettings,user}:UserSettingsProps){
       flexDir={{base:'column',lg:'row'}}
       mt={{base:'1rem',lg:'60px'}}
       justify="center">
+      <Head>
+        <title>Ink Trail | Configurações</title>
+      </Head>
       <Flex
         h={{base:'fit-content',lg:'500px'}}
         borderRadius='2px'
@@ -137,7 +141,7 @@ export async function getServerSideProps(context) {
     }
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lib/userSettings/getUserSettings`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/userSettings/getUserSettings`,{
     method:'post',
     headers: {
       cookie: context.req.headers.cookie || "",

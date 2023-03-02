@@ -1,8 +1,7 @@
-
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import {useDropzone} from "react-dropzone";
 import { Api } from "../../services/api";
-import { canvasPreview,  useDebounceEffect, toBase64} from '../Crop/reusableUtils';
+import { canvasPreview,  useDebounceEffect, toBase64} from '../../utils/Crop/reusableUtils';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop'
 import { AxiosResponse } from "axios";
 import Compress from 'compress.js'
@@ -145,7 +144,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     if(isNewFile ===true){
       Api({
         method: 'post',
-        url: '/lib/imgur/imgurPost',
+        url: '/_lib/imgur/imgurPost',
         data: postData,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         maxContentLength: 1000000,
@@ -158,7 +157,7 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     }else{
       Api({
         method: 'PUT',
-        url: '/lib/imgur/imgurUpdate',
+        url: '/_lib/imgur/imgurUpdate',
         data: postData,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         maxContentLength: 1000000,

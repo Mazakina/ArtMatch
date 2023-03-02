@@ -1,11 +1,9 @@
 import {Image, GridItem, Flex, AspectRatio } from "@chakra-ui/react";
 import Link from "next/link";
+import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetterUtil";
 import { ProfilePostData } from "./ProfilePostData";
 
 export default function PostPrev ({post,isFlex=false}){
-  function capitalizeFirstLetter(str) {
-    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  }
   return(
     <Flex
       as={Link}

@@ -43,7 +43,7 @@ export default function SocialSec({ isLoading, settingOpt, userSettings,user,set
       telefone:telefone,
       user:user
     }
-    Api.post('/lib/userSettings/saveUserSettings',requestData).then(()=>
+    Api.post('/_lib/userSettings/saveUserSettings',requestData).then(()=>
     setIsLoading(false)
     ).catch((err)=>{
       setIsLoading(false)

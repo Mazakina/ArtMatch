@@ -6,12 +6,13 @@ import {useQuery} from 'react-query'
 import { Api } from "../../services/api";
 import PostPrev from "../../components/PostPrev";
 import UserPrev from "../../components/UserPrev";
+import Head from "next/head";
 
 export default function Favorites({}){
   const useUser = useContext(UserContext)
   const {user,favoritePosts,favoriteUsers} = useUser
   async function getFavoritePosts(){
-    let response = await Api.get('/lib/imgur/imgurGetAllFeed')
+    let response = await Api.get('/_lib/imgur/imgurGetAllFeed')
     let favoritePostsData = [];
     let favoriteUsersData = [];
     function pushFavoritePosts(postArray){ 
@@ -53,6 +54,9 @@ export default function Favorites({}){
   const [isCurrentActive,setIsCurrentActive] = useState('Posts')
   return(
     <Flex mb='2rem' position={"unset"} zIndex='1' flexDir='column' justifyContent='center'  w='100%'>
+      <Head>
+        <title>Ink Trail | Favoritos </title>
+      </Head>
       <Image alt="banner do usuário" zIndex='1'
         objectFit='cover'
         src={user.data.banner? user.data.banner :'images/banner.jpg' }
