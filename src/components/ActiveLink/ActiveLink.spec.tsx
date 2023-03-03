@@ -12,10 +12,11 @@ import React from 'react'
 //     },
 //   }
 // })
-
 test('active link renders correctly', () => {
-  const [state, setState] = React.useState('trend')
-
+  const state = 'trend'
+  const setState = () => {
+    return null
+  }
   const { debug } = render(
     <ActiveLink id="trend" currentActive={state} setCurrentActive={setState}>
       <Text>Trend</Text>
