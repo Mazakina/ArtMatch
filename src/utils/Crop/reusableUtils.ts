@@ -1,19 +1,25 @@
-export function base64StringtoFile (base64String, filename) {
-  var arr = base64String.split(','), mime = arr[0].match(/:(.*?);/)[1],
-    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n)
+import { PixelCrop } from 'react-image-crop'
+
+import { useEffect, DependencyList } from 'react'
+export function base64StringtoFile(base64String, filename) {
+  const arr = base64String.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n)
   }
-  return new File([u8arr], filename, {type: mime})
+  return new File([u8arr], filename, { type: mime })
 }
 
-export const toBase64 = file => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = error => reject(error);
-})
-import { PixelCrop } from 'react-image-crop'
+export const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => reject(error)
+  })
 
 const TO_RADIANS = Math.PI / 180
 
@@ -33,7 +39,6 @@ export async function canvasPreview(
   const scaleX = image.naturalWidth / image.width
   const scaleY = image.naturalHeight / image.height
   const pixelRatio = window.devicePixelRatio
-
 
   canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
   canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
@@ -74,9 +79,6 @@ export async function canvasPreview(
 
   ctx.restore()
 }
-
-
-import { useEffect, DependencyList } from 'react'
 
 export function useDebounceEffect(
   fn: () => void,

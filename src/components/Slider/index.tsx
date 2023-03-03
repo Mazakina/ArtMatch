@@ -1,7 +1,7 @@
-import {Slider} from './Slider'
+import { Slider } from './Slider'
 
-import  { SwiperSlide, SwiperProps as SliderProps} from 'swiper/react'
+import { SwiperSlide, SwiperProps as SliderProps } from 'swiper/react'
 
-export {SwiperSlide as Slide, Slider}
+export { SwiperSlide as Slide, Slider }
 
-export type { SliderProps};
+export type { SliderProps }

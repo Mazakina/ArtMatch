@@ -1,22 +1,33 @@
-import { Spinner, Flex ,Image,   defineStyle, defineStyleConfig } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { Flex, Image } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 
-// interface TransitionProps extends 
+// interface TransitionProps extends
 
-
-export default function TransitionOverlay({controls}){
- 
-  return(
+export default function TransitionOverlay({ controls }) {
+  return (
     <motion.div
-      style={{opacity:'0',zIndex:0,position:'fixed',
-      height:'110vh',width:'0%',background:'#2c2c2c',
-      display:'flex',justifyContent:'center',alignItems:'center'}}
-      animate={controls}>
-        <Flex position='relative'>
-          <Image aria-label="logo para transição" w='100px' h='100px' mr='.5rem' src='/images/pixil-gif-drawing.gif'/>
-        </Flex>
+      style={{
+        opacity: '0',
+        zIndex: 0,
+        position: 'fixed',
+        height: '110vh',
+        width: '0%',
+        background: '#2c2c2c',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      animate={controls}
+    >
+      <Flex position="relative">
+        <Image
+          aria-label="logo para transição"
+          w="100px"
+          h="100px"
+          mr=".5rem"
+          src="/images/pixil-gif-drawing.gif"
+        />
+      </Flex>
     </motion.div>
   )
 }
-
-
