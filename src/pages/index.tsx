@@ -9,7 +9,7 @@ import { UserContext } from '../services/hooks/UserContext'
 import { useInView } from 'framer-motion'
 import Division from '../components/Division'
 
-const Home = ({ data }) => {
+export default function Home({ data = '[]' }) {
   const ref = useRef(null)
   const isInView = useInView(ref)
   const [isBase, isSm, isMd, isLg] = useMediaQuery([
@@ -43,7 +43,7 @@ const Home = ({ data }) => {
   ]
 
   function sortPosts(postsData) {
-    if (currentActive === 'recent') {
+    if (currentActive === 'recent' && postsData.length > 0) {
       // sort by publication date
       return postsData
         .sort((a, b) => {
@@ -144,8 +144,6 @@ const Home = ({ data }) => {
     </Box>
   )
 }
-
-export default Home
 
 export const getStaticProps: GetStaticProps = async (context) => {
   try {
