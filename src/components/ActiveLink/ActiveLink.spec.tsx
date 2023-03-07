@@ -1,27 +1,29 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { ActiveLink } from '.'
-import { Text } from '@chakra-ui/react'
-import React from 'react'
+import { useState } from 'react'
 
-// jest.mock('React', () => {
-//   return {
-//     useRouter() {
-//       return {
-//         state: '/',
-//       }
-//     },
-//   }
-// })
-test('active link renders correctly', () => {
-  const state = 'trend'
-  const setState = () => {
-    return null
-  }
-  const { debug } = render(
-    <ActiveLink id="trend" currentActive={state} setCurrentActive={setState}>
-      <Text>Trend</Text>
-    </ActiveLink>,
-  )
+describe('activeLink', () => {
+  it(' renders correctly', () => {
+    render(<ActiveLinkWrapper />)
 
-  debug()
+    expect(screen.getByText('Trend')).toBeInTheDocument()
+  })
+
+  it(' has active class if it is active', () => {
+    render(<ActiveLinkWrapper />)
+
+    expect(screen.getByText('Trend')).toHaveClass('active')
+  })
 })
+
+function ActiveLinkWrapper() {
+  const [state, setState] = useState('trend')
+
+  return (
+    <ActiveLink id="trend" currentActive={state} setCurrentActive={setState}>
+      Trend
+    </ActiveLink>
+  )
+}
+
+export default ActiveLinkWrapper

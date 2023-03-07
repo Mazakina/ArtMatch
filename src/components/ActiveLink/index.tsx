@@ -17,12 +17,11 @@ export function ActiveLink({
 }: ActiveLinkProps) {
   let isActive = false
 
-  if (id === currentActive) {
+  if (id.toLowerCase() === currentActive.toLowerCase()) {
     isActive = true
   } else {
     isActive = false
   }
-
   return (
     <Box
       role="button"
@@ -35,6 +34,7 @@ export function ActiveLink({
         _hover={{
           color: '#fff',
         }}
+        className={'active'}
         cursor="pointer"
         fontSize="24px"
         marginTop="15px"
