@@ -16,6 +16,7 @@
         "react"
     ],
     "rules": {
-        "no-undef":"off"
+        "no-undef":"off",
+        "array-callback-return":"off",
     }
 }
