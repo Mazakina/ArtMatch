@@ -1,0 +1,2 @@
+# Ignore everything (folders and files) on root only
+*.spec.tsx
