@@ -81,6 +81,7 @@ export const PlacesAutocomplete = ({
       <ComboboxPopover>
         <ComboboxList className="combobox-list">
           {status === 'OK' &&
+            /* eslint-disable camelcase */
             data.map(({ place_id, description }) => (
               <ComboboxOption value={description} key={place_id} />
             ))}

@@ -4,26 +4,10 @@ import { HeroSlider } from '../components/Carousel/HeroSlider'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { ActiveLink } from '../components/ActiveLink'
 import { GetStaticProps } from 'next'
-import { fauna } from '../services/fauna'
-import { query as q } from 'faunadb'
 import PostPrev from '../components/PostPrev'
 import { UserContext } from '../services/hooks/UserContext'
 import { useInView } from 'framer-motion'
 import Division from '../components/Division'
-interface ResponseProps {
-  data: any
-}
-
-interface UserProps {
-  ref: {
-    id: string
-  }
-  data: {
-    user: string
-    banner: string
-    avatar: string
-  }
-}
 
 const Home = ({ data }) => {
   const ref = useRef(null)
@@ -170,7 +154,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
     )
     let allPosts = []
     let data = await response.json()
-    console.log('data:', data[0].posts)
     data.map((users) => {
       if (users?.posts) {
         try {
@@ -192,38 +175,3 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
   }
 }
-
-// await fauna
-//       .query(
-//         q.Map(
-//           q.Paginate(q.Documents(q.Collection('collections'))),
-//           q.Lambda('X', q.Get(q.Var('X'))),
-//         ),
-//       )
-//       .then(async (response: ResponseProps) => {
-//         // filtering data if visible, and expading post with user data
-//         data = await Promise.all(
-//           response.data.map(async (collection) => {
-//             if (collection.data.visible === false) {
-//               return
-//             }
-//             const user: UserProps = await fauna.query(
-//               q.Get(collection.data.userId),
-//             )
-//             return {
-//               posts: [...Object.values(collection.data.posts)].map(
-//                 (value: object) => {
-//                   return {
-//                     ...value,
-//                     reference: user.ref.id,
-//                     user: user.data.user,
-//                     avatar: user.data.avatar,
-//                     banner: user.data.banner,
-//                   }
-//                 },
-//               ),
-//             }
-//           }),
-//         )
-//       })
-//       .catch((e) => console.log(e))

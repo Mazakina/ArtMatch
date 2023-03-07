@@ -1,16 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import Home, { getStaticProps } from './index'
-jest.mock('../services/fauna', () => {
-  return {
-    fauna: {
-      query: jest.fn(),
-    },
-  }
-})
+import { useSession } from 'next-auth/react'
 
 jest.mock('../components/Carousel/HeroSlider', () => {
   return '<p>something</p>'
 })
+jest.mock('next-auth/react')
 
 describe('Home Page', () => {
   it('loads inital data correctly', async () => {
@@ -82,8 +77,26 @@ describe('Home Page', () => {
         json: () => Promise.resolve(mockedResponse),
       }),
     )
-    const response = await getStaticProps({})
-    // const jsonResponse = await response.json()
-    console.log(response)
+    const response: any = await getStaticProps({})
+    response.props.data = JSON.parse(response.props.data)
+    expect(response).toEqual({
+      props: {
+        data: expect.arrayContaining([
+          expect.objectContaining({
+            id: 'fNWskrF',
+            title: 'Rainy Night',
+            reference: '358114421282701903',
+            posted: true,
+          }),
+          expect.objectContaining({
+            id: 'SwleDlc',
+            title: 'Shyv',
+            reference: '352729610782245455',
+            posted: true,
+          }),
+        ]),
+      },
+    })
   })
+  it('renders following button', async () => {})
 })

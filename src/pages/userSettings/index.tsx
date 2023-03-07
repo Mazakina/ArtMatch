@@ -1,10 +1,10 @@
 import { Flex } from '@chakra-ui/react'
 import { useState } from 'react'
 import { authOptions } from '../api/auth/[...nextauth]'
+/* eslint-disable camelcase */
 import { unstable_getServerSession } from 'next-auth/next'
 import { AvatarName } from '../../components/AvatarName'
 import Division from '../../components/Division'
-import Header from '../../components/Header'
 import { SettingsNavOptions } from '../../components/Setting/SettingsNavOption'
 
 import { AiOutlineHome } from 'react-icons/ai'
@@ -92,7 +92,7 @@ export default function User({ userSettings, user }: UserSettingsProps) {
         <SettingsNavOptions
           onClick={() => setSettingOpt('perfil')}
           icon={AiOutlineHome}
-          active={settingOpt == 'perfil'}
+          active={settingOpt === 'perfil'}
           ml={{ base: '0', lg: '2rem' }}
         >
           Perfil
@@ -100,7 +100,7 @@ export default function User({ userSettings, user }: UserSettingsProps) {
         <SettingsNavOptions
           onClick={() => setSettingOpt('social')}
           icon={IoShareSocialOutline}
-          active={settingOpt == 'social'}
+          active={settingOpt === 'social'}
           ml={{ base: '0', lg: '2rem' }}
         >
           Social
@@ -113,7 +113,7 @@ export default function User({ userSettings, user }: UserSettingsProps) {
         <SettingsNavOptions
           onClick={() => setSettingOpt('seguranca')}
           icon={MdOutlineSecurity}
-          active={settingOpt == 'seguranca'}
+          active={settingOpt === 'seguranca'}
           ml={{ base: '0', lg: '2rem' }}
         >
           Segurança
