@@ -27,7 +27,6 @@ export function SignInButton() {
       borderRadius={'3px'}
       direction="row"
     >
-      (
       <Flex flexDir="column" position={'relative'}>
         <Link
           onClick={() => {
@@ -139,7 +138,6 @@ export function SignInButton() {
           ''
         )}
       </Flex>
-      )
     </Flex>
   ) : (
     <Flex

@@ -7,7 +7,7 @@ import {
   Flex,
 } from '@chakra-ui/react'
 import Link from 'next/link'
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { BiSearchAlt } from 'react-icons/bi'
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetterUtil'
 
@@ -22,11 +22,13 @@ interface ItemProps {
 interface SearchCompProps {
   isActive: boolean
   searchItems: Array<ItemProps>
+  setSearchTerm: Dispatch<SetStateAction<string>>
 }
 
 const SearchComponent = React.memo<any>(function SearchComp({
   searchItems = [],
   isActive = false,
+  setSearchTerm,
 }: SearchCompProps) {
   return (
     <UnorderedList
@@ -47,7 +49,7 @@ const SearchComponent = React.memo<any>(function SearchComp({
             <ListItem
               key={item.id || item.user}
               as={Link}
-              href={`./posts/${item.id || item.user}`}
+              href={`/posts/${item.id || item.user}`}
               cursor="pointer "
               mb=".3rem"
               borderBottom="1px solid #c5c5c5"
@@ -56,7 +58,13 @@ const SearchComponent = React.memo<any>(function SearchComp({
               alignItems={'center'}
               fontSize="1rem"
             >
-              <Flex cursor="pointer " alignItems={'center'}>
+              <Flex
+                onClick={() => {
+                  setSearchTerm('')
+                }}
+                cursor="pointer "
+                alignItems={'center'}
+              >
                 <Image
                   aria-label="preview da Publicação"
                   src={item.cropped || item.avatar}

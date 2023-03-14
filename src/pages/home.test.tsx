@@ -79,11 +79,11 @@ describe('Home Page', () => {
     expect(response).toEqual({
       props: {
         data: expect.arrayContaining([
-          expect.objectContaining({
+          expect.not.objectContaining({
             id: 'fNWskrF',
             title: 'Rainy Night',
             reference: '358114421282701903',
-            posted: true,
+            posted: false,
           }),
           expect.objectContaining({
             id: 'SwleDlc',

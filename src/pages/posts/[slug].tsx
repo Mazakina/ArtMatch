@@ -138,14 +138,6 @@ export default function Posts({ postData, slug }: PostsProps) {
     }
   }
 
-  function capitalizeFirstLetter(str) {
-    return str
-      .toLowerCase()
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-  }
-
   return (
     <Box>
       <Head>

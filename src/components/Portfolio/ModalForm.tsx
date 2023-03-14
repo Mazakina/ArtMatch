@@ -30,8 +30,9 @@ import {
   Box,
 } from '@chakra-ui/react'
 import { BiSearchAlt } from 'react-icons/bi'
-import { IoIosArrowBack } from 'react-icons/io'
+import { IoIosAdd, IoIosArrowBack } from 'react-icons/io'
 import ModalTagList from './ModalTagList'
+import { IoAdd } from 'react-icons/io5'
 
 interface ModalFormProps {
   croppedImage: string | any
@@ -108,14 +109,23 @@ export default function ModalForm({
   })
 
   function handleKeyPress(event) {
-    const currentTag = tagsRef.current?.value
-    if (event?.key === 'Enter' && !tags.includes(currentTag)) {
+    if (event?.key === 'Enter') {
       event.preventDefault()
-      setTags([...tags, currentTag])
-      tagsRef.current.value = ''
+      handleAddButton(event)
     }
   }
 
+  function handleAddButton(event) {
+    const currentTag = tagsRef.current?.value.toLowerCase().split(' ')
+    const newTags = [...tags, ...currentTag]
+    const disct = {}
+    for (let i = 0; i < newTags.length; i++) {
+      disct[newTags[i]] = true
+    }
+
+    setTags(Object.keys(disct))
+    tagsRef.current.value = ''
+  }
   const compress = new Compress()
 
   async function handleUploadClick(e) {
@@ -462,15 +472,22 @@ export default function ModalForm({
                         bg="transparent"
                         borderRadius="2px"
                         name={'search'}
-                        aria-lable="digite tags relacionadas"
+                        aria-label="Search"
                         ref={tagsRef}
+                        placeholder="exemplo: cat-Lover"
                         onKeyPress={(e) => handleKeyPress(e)}
                       />
                       <Icon
                         position="absolute"
                         right="2"
                         zIndex="2"
-                        as={BiSearchAlt}
+                        border="1px solid white"
+                        borderRadius={'5px'}
+                        onClick={(e) => {
+                          handleAddButton(e)
+                        }}
+                        color="white"
+                        as={IoIosAdd}
                         _hover={{
                           cursor: 'pointer',
                         }}

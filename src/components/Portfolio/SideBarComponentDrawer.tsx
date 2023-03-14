@@ -70,7 +70,7 @@ const SideBarComponentDrawer = React.memo(function SideBar({
   const [isCreatingNewAlbum, setIsCreatingNewAlbum] = useState(false)
   function deleteAlbum(album) {
     try {
-      Api.post('lib/imgur/manageAlbum', {
+      Api.post('_lib/imgur/manageAlbum', {
         album: album.albumRef,
         ...data,
         action: 'delete',

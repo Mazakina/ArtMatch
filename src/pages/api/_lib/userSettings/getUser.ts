@@ -39,11 +39,13 @@ export default async function getUser(
       const getFavoritedPosts: FavoritedPosts = await fauna.query(
         q.Get(q.Match(q.Index('favorite_posts_by_user_id'), user.ref)),
       )
-      const favoritedPosts = getFavoritedPosts.data.favoritedPosts
 
       const getfavoritedUsers: FavoritedUsers = await fauna.query(
         q.Get(q.Match(q.Index('favorite_users_by_user_id'), user.ref)),
       )
+
+      const favoritedPosts = getFavoritedPosts.data.favoritedPosts
+
       const favoritedUsers = getfavoritedUsers.data.favoritedUsers.map(
         (user) => {
           return user.id

@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { fauna } from '../../../../services/fauna'
 import { query as q } from 'faunadb'
-import { Api } from '../../../../services/api'
-import FormData from 'form-data'
+import { deleteImgur, postImgur } from '../../../../services/api'
 
 interface userProps {
   ref: string
@@ -159,39 +158,4 @@ export const config = {
       sizeLimit: '100mb',
     },
   },
-}
-
-export async function deleteImgur(deleteHash) {
-  if (deleteHash) {
-    const formData = new FormData()
-    const config = {
-      method: 'delete',
-      url: `https://api.imgur.com/3/image/${deleteHash}`,
-      headers: {
-        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
-        Accept: 'application/json',
-      },
-      data: formData,
-    }
-    Api(config)
-  }
-}
-
-export async function postImgur(image) {
-  const formData = new FormData()
-  const imageData = image.substring(image.indexOf(',') + 1)
-  formData.append('image', imageData)
-  const config = {
-    method: 'post',
-    url: 'https://api.imgur.com/3/image',
-    headers: {
-      Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
-      Accept: 'application/json',
-    },
-    data: formData,
-    maxContentLength: 100000000,
-    maxBodyLength: 100000000,
-  }
-  const data = await Api(config)
-  return data
 }

@@ -227,11 +227,11 @@ export function Posts({
             </Box>
           </AspectRatio>
           <Flex m="auto 10px " h="1.5rem" width="100%" justify="space-between">
-            <Text mt="auto" mb="auto" ml="10px" fontSize="10px">
+            <Text mt="auto" mb="auto" ml="8px" fontSize="11px">
               {post.title}
             </Text>
-            <HStack mr="10px">
-              <Text fontSize="10px">Publicado</Text>
+            <HStack mr="8px">
+              <Text fontSize="10px">Publicar</Text>
               <Box
                 onClick={() => setPosted(!posted)}
                 width="30px"

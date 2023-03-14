@@ -48,7 +48,7 @@ const SidebarComponent = React.memo(function Sidebar({
   const [isCreatingNewAlbum, setIsCreatingNewAlbum] = useState(false)
   function deleteAlbum(album) {
     try {
-      Api.post('lib/imgur/manageAlbum', {
+      Api.post('_lib/imgur/manageAlbum', {
         album: album.albumRef,
         ...data,
         action: 'delete',

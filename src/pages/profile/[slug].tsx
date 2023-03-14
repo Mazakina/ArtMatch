@@ -18,6 +18,7 @@ import { FaBehanceSquare, FaArtstation } from 'react-icons/fa'
 import { FiPhone } from 'react-icons/fi'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetterUtil'
 
 export default function Profile({ profile, social, createdAt }) {
   const [currentActive, setCurrentActive] = useState('portfolio')
@@ -26,13 +27,6 @@ export default function Profile({ profile, social, createdAt }) {
   const { slug } = router.query
   const [posts, setPosts] = useState<any>([])
   const [albums, setAlbums] = useState<any>([])
-  function capitalizeFirstLetter(str) {
-    return str
-      .toLowerCase()
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-  }
 
   useEffect(() => {
     if (data) {

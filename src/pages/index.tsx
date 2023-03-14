@@ -43,29 +43,26 @@ export default function Home({ data = '[]' }) {
   ]
 
   function sortPosts(postsData) {
-    if (currentActive === 'recent' && postsData.length > 0) {
-      // sort by publication date
-      return postsData
-        .sort((a, b) => {
-          return b.createdAt - a.createdAt
-        })
-        .slice(0, grid)
-    }
-    if (currentActive === 'trend') {
-      // sort by likes
-      return postsData
-        .sort((a, b) => {
-          return b.likes.length - a.likes.length
-        })
-        .slice(0, grid)
-    }
-    if (currentActive === 'following') {
-      return postsData
-        .filter((post) => favoriteUsers.includes(post.reference))
-        .sort((a, b) => {
-          return b.createdAt - a.createdAt
-        })
-        .slice(0, grid)
+    switch (currentActive.toLowerCase()) {
+      case 'recent':
+        return postsData
+          .sort((a, b) => {
+            return b.createdAt - a.createdAt
+          })
+          .slice(0, grid)
+      case 'trend':
+        return postsData
+          .sort((a, b) => {
+            return b.likes.length - a.likes.length
+          })
+          .slice(0, grid)
+      case 'following':
+        return postsData
+          .filter((post) => favoriteUsers.includes(post.reference))
+          .sort((a, b) => {
+            return b.createdAt - a.createdAt
+          })
+          .slice(0, grid)
     }
   }
   const postsOnDisplay = sortPosts(postsData)
@@ -166,6 +163,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
       props: {
         data,
       },
+      revalidate: 5 * 60,
     }
   } catch {
     return {

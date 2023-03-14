@@ -65,6 +65,7 @@ export default function Portfolio({ posts, albums }) {
     hidden: { opacity: 0, scale: 0 },
     show: { opacity: 1, scale: 1 },
   }
+
   // Posts and Albums from Fauna
   const [postsCollection, setPostsCollection] = useState<Array<any>>(posts)
   const [albumsCollection, setAlbumsCollection] =
@@ -146,17 +147,18 @@ export default function Portfolio({ posts, albums }) {
   // adding eventListeners after window mount
 
   const [isMobile, setIsMobile] = useState(false)
+
   const detectIsMobile = () => {
     const userAgent = window.navigator.userAgent
     const isMobileRegex =
       /Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone/i.test(userAgent)
     setIsMobile(isMobileRegex)
-    console.log(isMobileRegex)
   }
 
   useEffect(() => {
     updateGridChildrenLength()
   }, [gridCount])
+
   useEffect(() => {
     detectIsMobile()
     window.addEventListener('resize', () => {
@@ -168,7 +170,9 @@ export default function Portfolio({ posts, albums }) {
       deltaCountCallback(event.deltaY)
     })
   }, [])
+
   // change displayed posts
+
   useEffect(() => {
     if (deltaCount === 0) {
       return
@@ -181,7 +185,9 @@ export default function Portfolio({ posts, albums }) {
       setInitialSlice(initialSlice + deltaCount)
     }
   }, [deltaCount])
+
   // on album change reset Initial Post
+
   useEffect(() => {
     setInitialSlice(0)
   }, [activeAlbum])

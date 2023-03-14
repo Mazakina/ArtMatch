@@ -149,6 +149,7 @@ function Header() {
                 onChange={(e) => {
                   setSearchTerm(e.target.value)
                 }}
+                placeholder={'Buscar'}
                 value={searchTerm}
                 autoComplete="off"
               />
@@ -164,6 +165,7 @@ function Header() {
             <SearchComponent
               searchItems={searchResults}
               isActive={searchTerm}
+              setSearchTerm={setSearchTerm}
             />
           </Flex>
           <Select

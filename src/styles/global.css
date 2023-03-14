@@ -4,7 +4,9 @@
   --common-gray:323232,
 }
 
-
+*{
+  font-weight: 'Roboto';
+}
 
 .map-container{
   width: 100%;

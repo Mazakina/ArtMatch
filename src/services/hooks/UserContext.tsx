@@ -71,12 +71,17 @@ export const UserProvider = ({ children }: ProviderProps) => {
     data: queryData,
   } = useQuery('clientUser', getContextData, { enabled: !!data })
   useEffect(() => {
+    if (data === null) {
+      setFavoriteUsers(null)
+      setFavoritePosts(null)
+      setUser(null)
+    }
     if (queryData) {
       setFavoriteUsers(queryData.data.favoritedUsers)
       setUser(queryData.data.user)
       setFavoritePosts(queryData.data.favoritedPosts)
     }
-  }, [queryData])
+  }, [queryData, data])
 
   return (
     <UserContext.Provider
