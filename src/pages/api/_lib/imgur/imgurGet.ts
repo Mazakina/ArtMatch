@@ -69,7 +69,6 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
     })
 
     const hash = req.headers.id as string
-
     try{
       const allPost:faunaPost = await fauna.query(
         q.Map(
@@ -109,7 +108,7 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
       Object.assign(responseData,{
         id : post.id,
         title : post.title,
-        description : post.id,
+        description : post.description,
         nsfw : post.nsfw,
         URL : post.url,
         deleteHash : post.deleteHash,
@@ -117,7 +116,6 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
         album : post.album,
         likes : post.likes,
       })
-
       var config = {
         method: 'get',
         url: `https://api.imgur.com/3/image/${hash}`,
@@ -125,15 +123,15 @@ export default async function imgurGet(req:NextApiRequest,res:NextApiResponse){
           'Authorization':`Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
         },
       };
-      
       Api(config)
       .then(function (response) {
         const data = response.data.data;
         responseData.timeStamp = data.datetime;
-        res.status(202).json({...responseData,otherPosts})
+
+        return res.status(202).json({...responseData,otherPosts})
       })
       .catch(function (error) {
-        console.log(error)
+        (error)
         return res.status(500).end('Server error')
       });
     }catch(e){

@@ -12,8 +12,6 @@ export default function Perfil({habilidades,endereco,createdAt}){
   )
   let skillList = data?.data
   const memberSince = new Date(createdAt/1000).toLocaleDateString()
-  console.log('member:',memberSince)
-  console.log(createdAt)
   return(
     <Flex margin='0 auto' maxWidth={'675px'} minWidth={'400px'} w='50vw' flexDir='column' >
 

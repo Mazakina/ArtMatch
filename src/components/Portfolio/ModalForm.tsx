@@ -104,7 +104,6 @@ export default function ModalForm({croppedImage,setCroppedImage,isOpen,onClose,d
     const base64str = img.data
     const imgExt = 'webp'
     const resizedFile = Compress.convertBase64ToFile(base64str, imgExt)
-    console.log(resizedFile)
     const reader = new FileReader()
 
     reader.onload = (onLoadEvent)=>{

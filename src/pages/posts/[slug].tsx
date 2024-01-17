@@ -216,7 +216,7 @@ export default function Posts({postData,slug}:PostsProps){
                 <GridItem key={post.id} cursor='pointer' colSpan={1} display='inline !important' > 
                   <Tooltip label={post.title} aria-label='A tooltip'>
                     <AspectRatio  margin='0 !important' display='flex'   ratio={1} >
-                      <Link aria-label={`visitar postagem ${post.title}`} href={`/posts/${post.id}`}>
+                      <Link aria-label={`visitar postagem ${post.title}`} href={ `${process.env.NEXT_PUBLIC_BASE_URL}/posts/${post.id}`}>
                         <Image  borderRadius='5px' src={post.cropped} />
                       </Link>
                     </AspectRatio>
@@ -247,7 +247,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
       id:slug.toString().replace(',','')
     }
   })
-
   if(![200,201,202].includes(response.status)){
     return redirectHome
   }

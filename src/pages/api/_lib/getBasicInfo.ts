@@ -8,7 +8,7 @@ interface responseProps{
 export default async function getBasicInfo(req:NextApiRequest,res:NextApiResponse){
   const userName = req.body.user
 
-  const data = await fauna.query(
+  await fauna.query(
     q.Get(
       q.Match(
         q.Index('user_by_usuario'),

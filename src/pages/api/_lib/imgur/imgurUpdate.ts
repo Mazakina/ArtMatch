@@ -110,7 +110,6 @@ export default async function imgurUpdate(req:NextApiRequest, res:NextApiRespons
     })
     .catch((error)=>{
       res.status(404)
-      console.log(error);
     })
   }
   else{

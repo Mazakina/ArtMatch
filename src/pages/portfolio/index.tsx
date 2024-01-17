@@ -123,7 +123,6 @@ export default function Portfolio({posts,albums}){
     const userAgent = window.navigator.userAgent;
     const isMobileRegex = /Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone/i.test(userAgent);
     setIsMobile(isMobileRegex)
-    console.log(isMobileRegex)
   }
 
   useEffect(()=>{updateGridChildrenLength()},[gridCount])

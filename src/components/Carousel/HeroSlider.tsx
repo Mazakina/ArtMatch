@@ -21,8 +21,6 @@ export function HeroSlider({slides}:Slides){
     pagination:{
       clickable:true,
     },
-    // onSlideChange:() => console.log('slide change'),
-    // onSwiper:(swiper) => console.log(swiper),
 
   }
   return(
