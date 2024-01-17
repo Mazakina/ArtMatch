@@ -113,7 +113,6 @@ export default async function favoritePost(req:NextApiRequest,res:NextApiRespons
 
   if(req.method=='DELETE'){
     const user:userProps = await getUser()
-    console.log(req.body.id)
     try{
       await fauna.query(
           q.Update(

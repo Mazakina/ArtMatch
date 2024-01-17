@@ -8,7 +8,7 @@ export default function PostPrev ({post,isFlex=false}){
     <Flex
       as={Link}
       border='1px solid #0000000'
-      href={`/posts/${post.id}`}
+      href={`${process.env.NEXT_PUBLIC_BASE_URL}/posts/${post.id}`}
       w={'100%'}
       justify='center'
       position='relative'>

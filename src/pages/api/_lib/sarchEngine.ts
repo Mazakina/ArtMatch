@@ -31,7 +31,6 @@ export const searchEngine = async (data, searchTerm,searchType='') => {
         )
         return aScore - bScore;
       });
-      console.log(filteredData)
       return filteredData;
     }
     if(searchType=='byPosts'){

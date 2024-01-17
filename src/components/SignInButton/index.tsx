@@ -80,6 +80,7 @@ export function SignInButton() {
             aria-controls='login'
             id="loginbtn"
             onClick={()=>setLoginModal(!loginModal)}
+            color={'white'}
             _hover={{
               bg:'transparent',
               color:'#FFEB80',
@@ -95,6 +96,7 @@ export function SignInButton() {
             fontSize='14px'
             id="loginbtn"
             onClick={()=>setLoginModal(!loginModal)}
+            color={'white'}
             _hover={{
               bg:'transparent',
               color:'#FFEB80'
@@ -105,7 +107,7 @@ export function SignInButton() {
 
           {loginModal?
             <Flex id='login' role='login-area' aria-labelledby="loginbtn" border='1px solid #7e7e7e' position='absolute' left='-70px' w='250px' width='320px'  borderRadius='5px' p='24px' bg='#1d1d1d' zIndex='10' flexDir='column' mt='40px' align='space-around' justify='space-around' >
-             <Button
+             {/* <Button
                 onClick={()=>signIn('facebook')}
                 _hover={{bg:'#334b81'}}
                 color='white'
@@ -114,7 +116,7 @@ export function SignInButton() {
                 fontSize='25px'
                 ml='10px'
                 mr='20px'
-                as={BsFacebook}/>Fazer login com Facebook</Button>
+                as={BsFacebook}/>Fazer login com Facebook</Button> */}
               <Button
                 onClick={()=>signIn('google')}
                 color='black'
@@ -122,6 +124,7 @@ export function SignInButton() {
                 w='50px'
                 mr='10px'
                 h='50px'
+                alt='google logo'
                 src={'images/google.svg'}
                 />Fazer login com o Google</Button>
             </Flex>

@@ -45,7 +45,6 @@ export const PlacesAutocomplete = ({setEndereco,address}:GoogleAutocompleteProps
   },[])
   async function handleSelect(address){
     setValue(address, false);
-    console.log(address)
     setEndereco(address)
     clearSuggestions();
   }

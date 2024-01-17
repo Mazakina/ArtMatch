@@ -30,7 +30,7 @@ export default async function getUserProfile(req:NextApiRequest, res:NextApiResp
       )
     )
   }catch(e){
-    console.log('user fetch error')
+    // console.log('user fetch error')
     res.status(404).json({ok:false})  
   }
   

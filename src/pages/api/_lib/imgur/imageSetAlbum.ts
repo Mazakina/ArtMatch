@@ -45,7 +45,6 @@ export default async function imgurSetAlbum(req:NextApiRequest,res:NextApiRespon
       )
       res.status(200).json({ok:true})
     }catch(e){
-      console.log(e)
       res.status(401).end('unauthorized')
     }
   }else{
