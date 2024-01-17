@@ -213,11 +213,13 @@ export const getStaticProps:GetStaticProps= async (context)=>{
       props:{
         data
       },
+      revalidate: 60,
     }
   }catch{
     return{
       props:{
-      }
+      },
+      revalidate: 60,
     }
   }
 }

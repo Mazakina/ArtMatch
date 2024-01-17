@@ -232,43 +232,6 @@ export default function Posts({postData,slug}:PostsProps){
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
-  const redirectHome = {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-  }  
-  let postData;
-  let {slug} = params
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/imgur/imgurGet`,{
-    method:'GET',
-    headers:{
-      id:slug.toString().replace(',','')
-    }
-  })
-  if(![200,201,202].includes(response.status)){
-    return redirectHome
-  }
-  try{
-    postData= await response.json();
-  }catch(e){
-    return redirectHome
-  }
-
-  if (postData.posted==false) {
-    return redirectHome
-  }
-
-  postData.otherPosts= postData.otherPosts.filter(post=>{return(post.posted==true)})
-  return {
-    props: {
-      postData,
-      slug:slug
-    },
-  }
-}
-
 export const favPostFunctions = {
   delete: (session,slug)=>{
     if(session){
@@ -333,5 +296,43 @@ export const favUserFunctions = {
       }
       })
     }
+  }
+}
+
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) =>  {
+  const redirectHome = {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+  }  
+  let postData;
+  let {slug} = params
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/_lib/imgur/imgurGet`,{
+    method:'GET',
+    headers:{
+      id:slug.toString().replace(',','')
+    }
+  })
+  if(![200,201,202].includes(response.status)){
+    return redirectHome
+  }
+  try{
+    postData= await response.json();
+  }catch(e){
+    return redirectHome
+  }
+
+  if (postData.posted==false) {
+    return redirectHome
+  }
+
+  postData.otherPosts= postData.otherPosts.filter(post=>{return(post.posted===true)})
+  return {
+    props: {
+      postData,
+      slug:slug
+    },
   }
 }
