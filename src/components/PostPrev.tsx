@@ -1,7 +1,7 @@
-import { Image, Flex, AspectRatio } from '@chakra-ui/react'
-import Link from 'next/link'
-import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetterUtil'
-import { ProfilePostData } from './ProfilePostData'
+import { Image, Flex, AspectRatio } from "@chakra-ui/react";
+import Link from "next/link";
+import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetterUtil";
+import { ProfilePostData } from "./ProfilePostData";
 
 export default function PostPrev({ post, isFlex = false }) {
   return (
@@ -9,15 +9,15 @@ export default function PostPrev({ post, isFlex = false }) {
       as={Link}
       border="1px solid #0000000"
       href={`/posts/${post.id}`}
-      w={'100%'}
+      w={"100%"}
       justify="center"
       position="relative"
     >
       <AspectRatio
         w={
           isFlex
-            ? { base: '33.33%', md: '25%', lg: '20%', xl: '12.5%' }
-            : '100%'
+            ? { base: "33.33%", md: "25%", lg: "20%", xl: "12.5%" }
+            : "100%"
         }
         borderRadius="3px"
         margin="0
@@ -30,19 +30,19 @@ export default function PostPrev({ post, isFlex = false }) {
           <Image
             aria-label={`preview: ${post.title}`}
             w="100%"
-            h={'100%'}
+            h={"100%"}
             position="absolute"
             objectFit="cover"
             src={post.cropped}
           />
           <Flex
             _hover={{
-              opacity: '1',
+              opacity: "1",
             }}
             w="100%"
             h="100%"
             cursor="pointer"
-            transition={'all 0.3s ease-in-out'}
+            transition={"all 0.3s ease-in-out"}
             opacity="0"
             align="flex-end"
             bottom="0"
@@ -59,5 +59,5 @@ export default function PostPrev({ post, isFlex = false }) {
         </Flex>
       </AspectRatio>
     </Flex>
-  )
+  );
 }

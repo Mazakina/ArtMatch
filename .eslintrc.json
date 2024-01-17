@@ -17,6 +17,7 @@
     ],
     "rules": {
         "no-undef":"off",
-        "array-callback-return":"off"
+        "array-callback-return":"off",
+        "prettier/prettier": ["error", {"endOfLine": "auto"}]
     }
 }
