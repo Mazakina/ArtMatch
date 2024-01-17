@@ -1,0 +1,21 @@
+:root{
+  --highlight-yellow:#FFEB80,
+  --darker-yellow:#FFE767,
+  --common-gray:323232,
+}
+
+
+
+.map-container{
+  width: 100%;
+  height: 100vh;
+}
+.combobox{
+  width: 100%;
+}
+
+.combobox-list{
+  background: black;
+  color: white;
+  border-radius: 3px;
+}
