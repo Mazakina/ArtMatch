@@ -1,34 +1,89 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎨 ArtMatch
 
-## Getting Started
+**ArtMatch** é uma aplicação JAMStack desenvolvida com foco na comunidade artística, permitindo que artistas criem perfis personalizados e compartilhem seus trabalhos de maneira fluida, visualmente atrativa e integrada a recursos modernos da web.
 
-First, run the development server:
+---
+
+## ✨ Funcionalidades
+
+- 🖼 **Upload de artes** com corte de imagem antes da publicação (preview e crop).
+- 👤 **Perfil de artista** com nome, telefone e endereço (CEP com integração automática à API dos Correios).
+- 🔐 **Autenticação OAuth** (login seguro via provedores externos).
+- 🗑 **Drag & Drop com exclusão** intuitiva via área de descarte.
+- 💬 **Animações fluidas** com Framer Motion para uma UX agradável.
+- ☁️ **Armazenamento de imagens** via **Imgur API**.
+- 🔄 **Back-end serverless** com **FaunaDB** como banco de dados.
+
+---
+
+## 🛠 Tecnologias Utilizadas
+
+| Tecnologia        | Descrição                              |
+|-------------------|------------------------------------------|
+| [Next.js](https://nextjs.org/)     | Framework React para renderização SSR/SSG. |
+| [Tailwind CSS](https://tailwindcss.com/) | Utilitário CSS para design moderno e responsivo. |
+| [Framer Motion](https://www.framer.com/motion/) | Biblioteca de animações fluidas. |
+| [FaunaDB](https://fauna.com/)      | Banco de dados serverless NoSQL. |
+| [Imgur API](https://apidocs.imgur.com/) | Armazenamento de imagens na nuvem. |
+| [Correios API](https://www.correios.com.br/) | Busca automática de endereço via CEP. |
+| [OAuth](https://oauth.net/)        | Autenticação segura de usuários. |
+
+---
+
+## 📸 Demonstração
+
+[Link do Projeto](https://inktrail.vercel.app/)
+
+---
+
+## 🚀 Como Rodar Localmente
 
 ```bash
+# Clone o repositório
+git clone https://github.com/Mazakina/ArtMatch.git
+cd ArtMatch
+
+# Instale as dependências
+npm install
+
+# Crie um arquivo .env.local com suas variáveis:
+# NEXT_PUBLIC_IMGUR_CLIENT_ID=
+# NEXT_PUBLIC_FAUNADB_SECRET=
+# NEXT_PUBLIC_OAUTH_PROVIDER=
+# etc.
+
+# Rode o projeto
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 📁 Estrutura do Projeto
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+```
+📦ArtMatch
+ ┣ 📂components      # Componentes reutilizáveis
+ ┣ 📂pages           # Rotas do Next.js
+ ┣ 📂lib             # Integrações com APIs externas
+ ┣ 📂styles          # Estilos globais
+ ┣ 📂public          # Assets estáticos
+ ┣ 📄tailwind.config.js
+ ┣ 📄next.config.js
+ ┗ 📄README.md
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+---
 
-## Learn More
+## 🤝 Contribuição
 
-To learn more about Next.js, take a look at the following resources:
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 📫 Contato
 
-## Deploy on Vercel
+Criado por **Paulo Mazakina Bueno**  
+📧 8.mazakina@gmail.com  
+🔗 [github.com/Mazakina](https://github.com/Mazakina)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
