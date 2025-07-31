@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  email          String           @unique
+  name           String           
+  avatarUrl      String?
+  image          String?
+  createdAt      DateTime         @default(dbgenerated("now()"))
+  updatedAt      DateTime         @default(dbgenerated("now()")) 
+  status         Status           @default(active)
+  username String?   @unique 
+
+
+  emailVerified  DateTime?         @map("email_verified")
+
+  profile        UserProfile?
+  socialLinks    UserSocialLinks?
+  settings       UserSettings?
+  likedPosts     posts[]          @relation("LikedPosts")
+  collections    Collection[]     @relation("UserCollections")
+  albums         Album[]          @relation("UserAlbums")
+
+  accounts       Account[]        @relation("AccountToUser")
+  sessions       Session[]        @relation("SessionToUser")
+  posts posts[]
+
+  favoritedUsers UserFavorite[] @relation("UserFavorites")
+  favoritedBy    UserFavorite[] @relation("UserFavoritedBy")
+
+  @@map("users")
+}
+
+model UserFavorite {
+  userId        String @db.Uuid
+  favoritedId   String @db.Uuid
+
+  user        User @relation("UserFavorites", fields: [userId], references: [id])
+  favorited   User @relation("UserFavoritedBy", fields: [favoritedId], references: [id])
+
+  @@id([userId, favoritedId])
+  @@map("user_favorites")
+}
+
+model UserProfile {
+  userId           String  @id @db.Uuid @map("user_id")
+  bio              String?
+  city             String?
+  address          String?
+  streetNumber     String? @map("street_number")
+  bannerUrl        String?
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model UserSocialLinks {
+  userId       String     @id @db.Uuid @map("user_id")
+  instagram    String?
+  artstation   String?
+  behance      String?
+  phoneNumber  String?
+
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_social_links")
+}
+
+model UserSettings {
+  userId           String     @id @db.Uuid @map("user_id")
+  contactEmail     String?
+  nsfwAllowed      Boolean @default(false)
+  allowToBeFound   Boolean @default(true)
+
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+model posts{
+  id           String    @id @db.Uuid  @default(dbgenerated("gen_random_uuid()"))
+  userId       String    @db.Uuid @map("user_id")
+  url          String
+  deleteHash   String
+  description  String?
+  midia        String
+  posted       Boolean   @default(false)
+  tags         String[]  @default([])
+  timeStamp    BigInt
+  title        String
+  likes        String[]  @default([])
+  vote         Int?
+  LikedBy      User[]      @relation(name: "LikedPosts")
+  createdAt    DateTime @default(dbgenerated("now()"))
+
+
+  relatedPosts posts[] @relation("RelatedPosts")
+  relatedTo    posts[] @relation("RelatedPosts")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  Album Album[] @relation("AlbumPosts")
+}
+
+model Collection {
+  id         String      @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId     String    @db.Uuid @map("user_id")
+  title      String   @default("Minha Coleção")
+  visible    Boolean  @default(true)
+  createdAt  DateTime @default(dbgenerated("now()"))
+
+  user       User     @relation("UserCollections", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("collections")
+}
+
+model Album {
+  id         String      @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId     String      @db.Uuid @map("user_id")
+  title      String      @default("Meu Álbum")
+  createdAt  DateTime    @default(dbgenerated("now()"))
+  posts      posts[]     @relation("AlbumPosts")
+
+  user       User        @relation("UserAlbums", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("albums")
+}
+
+
+enum Status {
+  active
+  inactive
+}
+
+model Account {
+  id                 String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  userId             String   @db.Uuid
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  user               User     @relation("AccountToUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  sessionToken String   @unique
+  userId       String   @db.Uuid
+  expires      DateTime
+  user         User     @relation("SessionToUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

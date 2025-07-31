@@ -1,0 +1,25 @@
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=inktrail
+      - POSTGRES_DB=ink
+      - PGDATA=/data/postgres
+    volumes:
+      - ./data/pg:/data/postgres
+    ports:
+      - 5432:5432
+
+  cache:
+    container_name: cache_container
+    image: bitnami/redis
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./data/redis:/data

@@ -1,167 +1,85 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { fauna } from "../../../../services/fauna";
-import {query as q } from  'faunadb'
+import prisma from "../../../../services/db/prisma";
 
 interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
-  }
+  ref: string;
+  ts: number | string;
+  data: {
+    user: string;
+    banner: string;
+    avatar: string;
+  };
 }
 
-export default async function favoriteUser(req:NextApiRequest, res:NextApiResponse){
+export default async function favoriteUser(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  async function getUser() {
+    const user = prisma.user.findUnique({
+      where: {
+        email: req.body.data.email,
+      },
+      include: {
+        favoritedUsers: true,
+      },
+    });
 
-  async function getUser(){
-    const user:userProps = await fauna.query(
-      q.Get(
-        q.Match(
-          q.Index('user_by_email'),
-          req.body.data.email
-        )
-      )
-    )
     return user;
   }
-  async function getPostOwner(){
-    const postOwner:userProps = await fauna.query(
-      q.Get(
-        q.Match(
-          q.Index('user_by_usuario'),
-          req.body.postOwnerName
-        )
-      )
-    )
-    return postOwner
+  async function getPostOwner() {
+    const postOwner = prisma.user.findUnique({
+      where: {
+        username: req.body.postOwnerName.replace(/_/g, " "),
+      },
+    });
+
+    return postOwner;
   }
 
-  if(req.method==='POST'){
-    return
+  if (req.method === "POST") {
+    const user = await getUser();
+    const postOwner = await getPostOwner();
+    const response = await prisma.userFavorite.upsert({
+      where: {
+        userId_favoritedId: {
+          userId: user.id,
+          favoritedId: postOwner.id,
+        },
+      },
+      create: {
+        userId: user.id,
+        favoritedId: postOwner.id,
+      },
+      update: {},
+    });
+    return res.status(200).json(response);
   }
 
-  if(req.method==='PATCH'){
-    const user = await getUser()
-    const postOwner = await getPostOwner()
+  if (req.method === "PATCH") {
+    return res.status(405).end("Method Not Allowed");
+  }
 
-    try{
-      await fauna.query(
-        q.If(
-          q.Not(
-              q.Exists(
-                  q.Match(
-                      q.Index('favorite_users_by_user_id'),
-                      user.ref
-                  )
-              )
-          ),
-          q.Create(
-            q.Collection('favorite_users'),
-            {
-              data: {
-                userId:user.ref,
-                favoritedUsers:[postOwner.ref],
-                }
-            }
-          ),
-          q.Update(
-            q.Select(
-              'ref',
-              q.Get(
-                q.Match(
-                  q.Index('favorite_users_by_user_id'),
-                  user.ref
-                )
-              )
-            ),
-            {
-              data:{
-                favoritedUsers:
-                q.Append(
-                  [postOwner.ref],
-                  q.Filter(
-                    q.Select(
-                      ["data",'favoritedUsers'],
-                      q.Get(
-                        q.Match(
-                          q.Index('favorite_users_by_user_id'),
-                          user.ref
-                        )
-                      )
-                  ),
-                    q.Lambda(
-                      'i',
-                      q.Not(
-                        q.Equals(
-                          q.Var('i'),
-                          postOwner.ref
-                        )
-                      )
-                    )
-                  )
-                )
-              }
-            }
-          )
-          ,
-        )
-      ).then(resonse => res.status(201).end('updated'))
-      .catch(err =>res.status(400))
-    }catch(e){
-      res.status(404)
+  if (req.method === "DELETE") {
+    const user = await getUser();
+    const postOwner = await getPostOwner();
+    if (!user || !postOwner) {
+      return res.status(404).end("User or Post Owner not found");
     }
-    return
+
+    try {
+      const deletedFavorite = await prisma.userFavorite.delete({
+        where: {
+          userId_favoritedId: {
+            userId: user.id,
+            favoritedId: postOwner.id,
+          },
+        },
+      });
+
+      return res.status(200).json(deletedFavorite);
+    } catch (error) {
+      return res.status(404).end("Favorite not found");
+    }
   }
-  if(req.method==='DELETE'){
-    const user = await getUser()
-    const postOwner = await getPostOwner()
-
-
-
-    await fauna.query(
-      q.Update(
-        q.Select(
-          'ref',
-          q.Get(
-            q.Match(
-              q.Index('favorite_users_by_user_id'),
-              user.ref
-            )
-          )
-        ),
-        {
-          data:{
-            favoritedUsers:
-              q.Filter(
-                q.Select(
-                  ["data",'favoritedUsers'],
-                  q.Get(
-                    q.Match(
-                      q.Index('favorite_users_by_user_id'),
-                      user.ref
-                    )
-                  )
-                )
-              ,
-                q.Lambda(
-                  'i',
-                  q.Not(
-                    q.Equals(
-                      q.Var('i'),
-                      postOwner.ref
-                    )
-                  )
-                )
-              )
-          }
-        }
-      )
-  ).then(resonse => res.status(202).end('deleted'))
-    .catch(err=>res.status(404).end('collection not found'))
-    return
-  }
-
-  return res.status(405).end('Invalid Method')
-
 }

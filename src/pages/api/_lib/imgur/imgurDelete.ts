@@ -1,103 +1,60 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Api } from "../../../../services/api";  
-import FormData from  'form-data'
-import {fauna} from "../../../../services/fauna"
-import {IsNull, query as q} from 'faunadb'
+import { Api } from "../../../../services/api";
+import FormData from "form-data";
+import prisma from "../../../../services/db/prisma";
 
-interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
-  }
-}
+export default async function imgurDelete(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "DELETE") {
+    const formData = new FormData();
+    const reqData = req.body;
+    const deleteHash = reqData.deleteHash;
+    const userEmail = reqData.user.email;
 
-export default async function imgurDelete(req:NextApiRequest,res:NextApiResponse) {
-  if(req.method==='DELETE'){
-    const formData = new FormData()
-    const reqData = req.body
-    const deleteHash = reqData.deleteHash
-    const userEmail = reqData.user.email
-    
     // ---------------------------
     var config = {
-      method: 'delete',
+      method: "delete",
       url: `https://api.imgur.com/3/image/${deleteHash}`,
-      headers: { 
-        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
-        Accept: 'application/json'
+      headers: {
+        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+        Accept: "application/json",
       },
-      data : formData,
+      data: formData,
     };
-    Api(config).
-    then(async (response)=>{
-      res.status(200)
-      const newData = {
-        [reqData.id]:null
-      }
-      const user:userProps = 
-        await fauna.query(
-          q.Get(
-            q.Match(
-                q.Index('user_by_email'),
-                userEmail
-            )
-          )
-        )  
-        try{
-          await fauna.query(
-            q.Replace(
-              q.Select(
-                'ref',
-                q.Get(
-                  q.Match(
-                    q.Index('collections_by_user_id'),
-                    user.ref
-                  )
-                )
-              ),
-              {
-                data:{
-                  userId:
-                    q.Select(
-                      ["data",'userId'],
-                      q.Get(
-                        q.Match(
-                          q.Index('collections_by_user_id'),
-                          user.ref
-                        )
-                      )
-                    ),
-                  posts:
-                  q.Merge(
-                    q.Select(
-                      ["data",'posts'],
-                      q.Get(
-                        q.Match(
-                          q.Index('collections_by_user_id'),
-                          user.ref
-                        )
-                      )
-                    ),
-                    newData
-                  )
-                }
-              }
-            )
-          )
-          res.status(200).json({ok:true})
-        }catch(e){
-        res.status(401).end('unauthorized')
-      }
-    })
-    .catch(function (error) {
-      res.status(401).end('upload unauthorized')
-    })
-  }
-  else{
-    res.setHeader('allow','POST')
-    res.status(405).end('Method not allowed')
+    Api(config)
+      .then(async (response) => {
+        res.status(200);
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
+              email: userEmail,
+            },
+          });
+
+          if (!user) {
+            return res.status(401).end("unauthorized");
+          }
+          if (user.email !== reqData.user.email) {
+            return res.status(401).end("unauthorized");
+          }
+          await prisma.posts.deleteMany({
+            where: {
+              deleteHash: deleteHash,
+            },
+          });
+
+          res.status(200).json({ ok: true });
+        } catch (e) {
+          res.status(401).end("unauthorized");
+        }
+      })
+      .catch(function (error) {
+        res.status(401).end("upload unauthorized");
+      });
+  } else {
+    res.setHeader("allow", "POST");
+    res.status(405).end("Method not allowed");
   }
 }
