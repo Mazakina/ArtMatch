@@ -1,155 +1,126 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Api } from "../../../../services/api";  
-import {fauna} from "../../../../services/fauna"
-import {query as q} from 'faunadb'
-interface UserProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
+import { Api } from "../../../../services/api";
+import prisma from "../../../../services/db/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../../pages/api/auth/[...nextauth]";
+import { create } from "domain";
+// import { getSession } from "next-auth/react";
+export default async function imgurPost(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-}
+  const session = await getServerSession(req, res, authOptions);
+  // const session = await getSession({ req });
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
-// interface NewDataProps{
-//  id:string,
-//  title:string,
-//  description:string,
-//  deleteHash:string,
-//  url:string,
-//  posted:boolean,
-//  tags:string[],
-//  midia:string,
-//  cropped:string,
-//  likes:string[]
-// }
-
-export default async function imgurPost (req:NextApiRequest, res:NextApiResponse){
-  const reqData = req.body
-  const image = reqData.image
- 
-  let newData;
-  var config = {
-    method: 'post',
-    url: 'https://api.imgur.com/3/image',
-    headers: { 
-      Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
-      Accept: 'application/json'
+  const reqData = req.body;
+  const image = reqData.image;
+  // Get user from database
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: {
+      posts: true,
     },
-    data : {
-      image: image.split(',')[1],
-      type: 'base64'
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  // Upload main image to Imgur
+  const mainImageConfig = {
+    method: "post",
+    url: "https://api.imgur.com/3/image",
+    headers: {
+      Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+      Accept: "application/json",
+    },
+    data: {
+      image: image.split(",")[1],
+      type: "base64",
     },
     maxContentLength: 100000000,
-    maxBodyLength: 100000000
+    maxBodyLength: 100000000,
   };
-  Api(config).then( async (response)=> {
-    config={
-      ...config,
+
+  try {
+    const response = await Api(mainImageConfig);
+
+    // Upload cropped image to Imgur
+    const croppedImageConfig = {
+      ...mainImageConfig,
       data: {
-        image:reqData.croppedImage.split(',')[1],
-        type: 'base64'
-      }
-    }
-    Api(config).then(async (cropResponse)=> {
-      res.status(200)
-      const resData = response.data.data
-      const resDataId = response.data.data.id
-      newData ={
-        [resDataId]:{
-        id:resData.id,
+        image: reqData.croppedImage.split(",")[1],
+        type: "base64",
+      },
+    };
+
+    const cropResponse = await Api(croppedImageConfig);
+    const resData = response.data.data;
+    console.log("cropped", cropResponse.data.data);
+    // Create post in database
+    
+    const newPost = await prisma.posts.create({
+      data: {
+        croppedDeleteHash: cropResponse.data.data.deletehash,
+        cropped: cropResponse.data.data.link,
+        id: resData.id,
+        authorId: user.id,
         title: reqData.title,
         description: reqData.description,
-        deleteHash:resData.deletehash,
-        url:resData.link,
+        deleteHash: resData.deletehash,
+        url: resData.link,
         posted: reqData.posted,
-        tags:[...reqData.tags],
+        tags: reqData.tags || [],
         midia: reqData.midia,
-        cropped:cropResponse.data.data.link,
-        likes:[],
-        createdAt:resData.datetime
-      }
+        timeStamp: resData.datetime.toString(),
+        likes: 0,
+      },
+    });
+
+    // Ensure user has a collection, create if not exists
+    let collection = await prisma.collection.findFirst({
+      where: { userId: user.id },
+    });
+
+    if (!collection) {
+      collection = await prisma.collection.create({
+        data: {
+          userId: user.id,
+          title: "Minha Coleção",
+          visible: true,
+        },
+      });
     }
-  
- // ---------------------------
-  const userEmail = reqData.user.email
-  const user:UserProps = 
-  await fauna.query(
-    q.Get(
-        q.Match(
-            q.Index('user_by_email'),
-            userEmail
-        )
-      )
-    )
 
-  try{
-    await fauna.query(
-      q.If(
-        q.Not(
-            q.Exists(
-                q.Match(
-                    q.Index('collections_by_user_id'),
-                    user.ref
-                )
-            )
-        ),
-        q.Create(
-          q.Collection('collections'),
-          {
-            data: {
-              userId:user.ref,
-              posts:newData,
-              visible:'true'
-              }
-          }
-        ),
-        q.Update(
-          q.Select(
-            'ref',
-            q.Get(
-              q.Match(
-                q.Index('collections_by_user_id'),
-                user.ref
-              )
-            )
-          ),
-          {
-            data:{
-              posts:
-              q.Merge(
-                newData,
-                  q.Select(
-                    ["data",'posts'],
-                    q.Get(
-                      q.Match(
-                        q.Index('collections_by_user_id'),
-                        user.ref
-                      )
-                    )
-                )
-              )
-            }
-          }
-        ),
-      )
-    )
-    res.status(201).json({...newData[resDataId]})
-  }catch(e){
-    res.status(401).end('unauthorized')
+    return res.status(201).json({
+      id: newPost.id,
+      title: newPost.title,
+      description: newPost.description,
+      deleteHash: newPost.deleteHash,
+      url: newPost.url,
+      posted: newPost.posted,
+      tags: newPost.tags,
+      midia: newPost.midia,
+      cropped: cropResponse.data.data.link,
+      croppedDeleteHash: cropResponse.data.data.deletehash,
+      likes: newPost.likes,
+      createdAt: resData.datetime,
+    });
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return res.status(500).json({ error: "Failed to create post" });
   }
-})})
-.catch(function (error) {
-  res.status(404)
-})
 }
-
 
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '100mb',
+      sizeLimit: "100mb",
     },
   },
-}
+};

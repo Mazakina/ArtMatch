@@ -70,7 +70,6 @@ export function Posts({
   last,
 }: PostsProps) {
   const [posted, setPosted] = useState(post.posted);
-
   const setModalProperties = (post) => {
     setImage(post.url);
     setTitle(post.title);

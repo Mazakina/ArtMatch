@@ -1,149 +1,107 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {fauna} from '../../../../services/fauna'
-import {query as q} from 'faunadb'
+import prisma from "../../../../services/db/prisma";
+import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]";
 
-interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
+export default async function manageAlbum(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-}
 
-export default async function manageAlbum (req:NextApiRequest,res:NextApiResponse){
-  if(req.method='POST'){
-    const albumName = req.body.albumName
-    const user:userProps= await fauna.query(
-      q.Get(
-        q.Match(
-          q.Index('user_by_email'),
-          req.body.user.email
-        )
-      )
-    )
-    switch(req.body.action){
-      case'delete':
-      const albumRef = req.body.album
-        await fauna.query(
-          q.Update(
-            q.Select(
-              'ref',
-              q.Get(
-                q.Match(
-                  q.Index('albums_by_userId'),
-                  user.ref
-                )
-              )
-            ),
-            {
-              data:{
-                albums:
-                q.Filter(
-                  q.Select(
-                    ["data",'albums'],
-                    q.Get(
-                      q.Match(
-                        q.Index('albums_by_userId'),
-                        user.ref
-                      )
-                    )
-                  ),
-                  q.Lambda(
-                    'i',
-                    q.Not(
-                      q.Equals((albumRef),q.Select('albumRef',q.Var('i')))
-                    ),
-                  )
-                )
-              }
-            }
-          )
-          )
-      break;
-      case 'create':
-        try{
-          const newAlbum = {albumName:albumName,
-            albumRef:new Date+' '+albumName
-            }
-          await fauna.query(
-            q.Update(
-              q.Select(
-                'ref',
-                q.Get(
-                  q.Match(
-                    q.Index('albums_by_userId'),
-                    user.ref
-                  )
-                )
-              ),{
-              data:{
-                albums:
-                  q.Append(
-                    q.Select(
-                      ['data','albums'],
-                      q.Get(
-                        q.Match(
-                          q.Index('albums_by_userId'),
-                          user.ref
-                        )
-                      )
-                    ),
-                    [newAlbum]
-                  )
-                }
-              }
-            )        
-          ).then(
-           (response)=>{
-            res.status(200).json(newAlbum)
-           }
-          )
-        }catch(e){res.status(404)}
-      break;
-      case'update':
-        await fauna.query(
-          q.Update(
-            q.Get(
-              q.Match(
-                q.Index('albums_by_userId'),
-                user.ref
-              )
-            ),{
-            data:
-              {album:[q.Map(
-                q.Select(
-                  ['data','albums'],
-                  q.Get(
-                    q.Match(
-                      q.Index('albums_by_userId'),
-                      user.ref
-                    )
-                  )
-                ),q.Lambda('i',
-                q.If(
-                  q.Select('albumRef',q.Var('i'))=== req.body.albumRef,
-                  {albumName:albumName,albumRef:req.body.albumRef},
-                  'not this one'
-                )
-                )
-              )]}
-            }
-          )
-        )
-      break;
-      case'get':
-        q.Select(
-          ['data','albums'],
-          q.Get(
-            q.Match(
-              q.Index('albums_by_userId'),
-              user.ref
-            )
-          )
-        )
-      break;
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const albumName = req.body.albumName;
+  const action = req.body.action;
+
+  // Get user from database
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { albums: true },
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  try {
+    switch (action) {
+      case "delete":
+        const albumId = req.body.albumId;
+
+        await prisma.album.delete({
+          where: {
+            id: albumId,
+            userId: user.id,
+          },
+        });
+
+        return res.status(200).json({ message: "Album deleted successfully" });
+
+      case "create":
+        const newAlbum = await prisma.album.create({
+          data: {
+            userId: user.id,
+            title: albumName || "Meu Álbum",
+          },
+        });
+
+        return res.status(200).json({
+          id: newAlbum.id,
+          title: newAlbum.title,
+          createdAt: newAlbum.createdAt,
+        });
+
+      case "update":
+        const albumIdToUpdate = req.body.albumId;
+
+        const updatedAlbum = await prisma.album.update({
+          where: {
+            id: albumIdToUpdate,
+            userId: user.id,
+          },
+          data: {
+            title: albumName,
+          },
+        });
+
+        return res.status(200).json({
+          id: updatedAlbum.id,
+          title: updatedAlbum.title,
+          createdAt: updatedAlbum.createdAt,
+        });
+
+      case "get":
+        const albums = await prisma.album.findMany({
+          where: { userId: user.id },
+          include: {
+            posts: {
+              select: {
+                id: true,
+                title: true,
+                url: true,
+                description: true,
+                createdAt: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        });
+
+        return res.status(200).json({ albums });
+
+      default:
+        return res.status(400).json({ error: "Invalid action" });
     }
+  } catch (error) {
+    console.error("Error managing album:", error);
+    return res.status(500).json({ error: "Failed to manage album" });
   }
 }

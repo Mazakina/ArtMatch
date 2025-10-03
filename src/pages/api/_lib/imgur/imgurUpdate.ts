@@ -1,119 +1,87 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Api } from "../../../../services/api";  
-import FormData from  'form-data'
-import {fauna} from "../../../../services/fauna"
-import {query as q} from 'faunadb'
+import FormData from 'form-data';
+import prisma from "../../../../services/db/prisma";
+import { getSession } from "next-auth/react";
 
-interface UserProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
+export default async function imgurUpdate(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'PUT') {
+    res.setHeader('allow', 'PUT');
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-}
 
-interface ResponseProps{
-  data:any
-}
+  const session = await getSession({ req });
+  
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
-export default async function imgurUpdate(req:NextApiRequest, res:NextApiResponse) {
-  if(req.method==='PUT'){
-    const formData = new FormData()
-    const reqData = req.body
-    const userEmail = reqData.user.email
-    const deleteHash = reqData.deleteHash
-    const newAppendFunction = (value)=>{
-      if(reqData[value]){ 
-        // newData[value]= reqData[value]
-      formData.append(value, reqData[value])}
+  const reqData = req.body;
+  const deleteHash = reqData.deleteHash;
+  const postId = reqData.id;
+
+  // Get user from database
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Verify the post belongs to the user
+  const existingPost = await prisma.posts.findFirst({
+    where: {
+      id: postId,
+      authorId: user.id
     }
-    const newUpdateFaunaValue = (value)=>{
-      reqData[value]? newData[value]= reqData[value] : ''
-    }
-    const newData ={
-      [reqData.id]:{
-      id:reqData.id,
-      title: reqData.title,
-      description: reqData.description,
-      deleteHash:reqData.deleteHash,
-      url:reqData.image,
-      posted: reqData.posted,
-      tags:[...reqData.tags],
-      midia: reqData.midia,
-      }
-    };
-    newAppendFunction('title')
-    newAppendFunction('description')
+  });
 
-    // ---------------------------
-    var config = {
+  if (!existingPost) {
+    return res.status(404).json({ error: 'Post not found or unauthorized' });
+  }
+
+  try {
+    // Prepare form data for Imgur API
+    const formData = new FormData();
+    
+    if (reqData.title) {
+      formData.append('title', reqData.title);
+    }
+    if (reqData.description) {
+      formData.append('description', reqData.description);
+    }
+
+    // Update image on Imgur
+    const config = {
       method: 'post',
       url: `https://api.imgur.com/3/image/${deleteHash}`,
       headers: { 
         Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`, 
         'content-type': 'multipart/form-data'
       },
-      data : formData,
+      data: formData,
     };
-    Api(config).
-    then(async (firstResponse)=>{
-      res.status(200)
-      const user:UserProps = 
-        await fauna.query(
-          q.Get(
-            q.Match(
-                q.Index('user_by_email'),
-                userEmail
-            )
-          )
-        )  
 
-        try{
-          await fauna.query(
-            q.Update(
-              q.Select(
-                'ref',
-                q.Get(
-                  q.Match(
-                    q.Index('collections_by_user_id'),
-                    user.ref
-                  )
-                )
-              ),
-              {
-                data:{
-                  posts:
-                  q.Merge(
-                      q.Select(
-                        ["data",'posts'],
-                        q.Get(
-                          q.Match(
-                            q.Index('collections_by_user_id'),
-                            user.ref
-                          )
-                        )
-                    )
-                    ,newData
-                  )
-                }
-              }
-            ),
-          ).then((response:ResponseProps)=>{
-            res.status(200).json(response.data.posts[reqData.id])})
-          
-        }
-      catch(e){
-        res.status(401).end('unauthorized')
+    const imgurResponse = await Api(config);
+
+    // Update post in database
+    const updatedPost = await prisma.posts.update({
+      where: { id: postId },
+      data: {
+        title: reqData.title || existingPost.title,
+        description: reqData.description || existingPost.description,
+        url: reqData.image || existingPost.url,
+        posted: reqData.posted !== undefined ? reqData.posted : existingPost.posted,
+        tags: reqData.tags ? reqData.tags : existingPost.tags,
+        midia: reqData.midia || existingPost.midia,
       }
-    })
-    .catch((error)=>{
-      res.status(404)
-    })
-  }
-  else{
-    res.setHeader('allow','POST')
-    res.status(405).end('Method not allowed')
+    });
+
+    return res.status(200).json(updatedPost);
+
+  } catch (error) {
+    console.error('Error updating post:', error);
+    return res.status(500).json({ error: 'Failed to update post' });
   }
 }

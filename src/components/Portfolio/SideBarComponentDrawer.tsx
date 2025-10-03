@@ -32,8 +32,8 @@ import { NewAlbum } from "./NewAlbum";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetterUtil";
 
 interface AlbumProps {
-  albumName: string;
-  albumRef: string;
+  title: string;
+  id: string;
 }
 
 interface SideBarProps {
@@ -71,12 +71,12 @@ const SideBarComponentDrawer = React.memo(function SideBar({
   function deleteAlbum(album) {
     try {
       Api.post("lib/imgur/manageAlbum", {
-        album: album.albumRef,
+        album: album.id,
         ...data,
         action: "delete",
       });
       let newAlbumArray = albumsCollection.filter(
-        (albumFilter) => albumFilter.albumRef != album.albumRef
+        (albumFilter) => albumFilter.id != album.id
       );
       setAlbumsCollection(newAlbumArray);
     } catch (e) {}
@@ -92,9 +92,9 @@ const SideBarComponentDrawer = React.memo(function SideBar({
         <DrawerHeader>
           <AvatarName
             display={{ base: "none", md: "flex" }}
-            name={capitalizeFirstLetter(user.data.user) || data?.user.name}
+            name={capitalizeFirstLetter(user.data?.user) || data?.user.name}
             email={data?.user.email}
-            avatar={user.data.avatar || data?.user.image}
+            avatar={user.data?.avatar || data?.user.image}
           />
         </DrawerHeader>
         <DrawerBody zIndex={10}>
@@ -164,7 +164,7 @@ const SideBarComponentDrawer = React.memo(function SideBar({
                       onAlbumDrop={onAlbumDrop}
                       setActiveAlbum={setActiveAlbum}
                       activeAlbum={activeAlbum}
-                      album={{ albumName: "Todos", albumRef: "any" }}
+                      album={{ title: "Todos", id: "any" }}
                     />
 
                     {isCreatingNewAlbum && (
@@ -178,7 +178,7 @@ const SideBarComponentDrawer = React.memo(function SideBar({
                     {albumsCollection.map((album) => {
                       return (
                         <Album
-                          key={album.albumRef}
+                          key={album.id}
                           deleteAlbum={deleteAlbum}
                           onAlbumDrop={onAlbumDrop}
                           setActiveAlbum={setActiveAlbum}

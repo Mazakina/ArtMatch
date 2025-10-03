@@ -4,7 +4,7 @@ import prisma from "../../../../services/db/prisma";
 
 interface mapPostProps {
   data: {
-    userId: string;
+    authorId: string;
     posts: any;
   };
 }
@@ -13,7 +13,7 @@ class ResponseDataProps {
   id: string;
   title: string;
   description: string;
-  timeStamp: number;
+  timeStamp: string;
   vote: number | null;
   nsfw: boolean;
   URL: string;
@@ -22,13 +22,13 @@ class ResponseDataProps {
   album: string;
   tags: Array<string>;
   midia: string;
-  likes: string[];
+  likes: number;
   user:
     | {
         name: string;
         avatar: string;
         banner: string;
-        userId?: string;
+        authorId?: string;
         ref: string;
       }
     | string;
@@ -40,55 +40,23 @@ export default async function imgurGet(
 ) {
   if (req.method === "GET") {
     let otherPosts;
-    let userId;
+    let authorId;
     let post;
     let responseData = new ResponseDataProps();
-    // Object.assign(responseData, {
-    //   id: "",
-    //   title: "",
-    //   description: "",
-    //   nsfw: false,
-    //   URL: "",
-    //   deleteHash: "",
-    //   posted: true,
-    //   album: "",
-    //   timeStamp: 0,
-    //   tags: [],
-    //   vote: null,
-    //   midia: "",
-    //   user: "",
-    //   likes: [],
-    // });
 
-    const hash = req.headers.id as string;
+    const postId = req.headers.id as string;
     try {
-      otherPosts = await prisma.posts.findMany({
-        where: {
-          userId: userId,
-          posted: true,
-          NOT: {
-            hash: hash,
-          },
-        },
-        select: {
-          title: true,
-          url: true,
-          hash: true,
-        },
-        pagination: {
-          take: 6,
-        },
-      });
+      // First get the post to find the author
       post = await prisma.posts.findUnique({
         where: {
-          hash: hash,
+          id: postId,
         },
         include: {
-          user: {
+          author: {
             select: {
               id: true,
+              name: true,
               avatarUrl: true,
-              bannerUrl: true,
               username: true,
             },
           },
@@ -99,37 +67,62 @@ export default async function imgurGet(
         return res.status(400).end("Post not Found");
       }
 
+      // Get other posts from the same author
+      otherPosts = await prisma.posts.findMany({
+        where: {
+          authorId: post.authorId,
+          posted: true,
+          NOT: {
+            id: postId,
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          url: true,
+        },
+        take: 6,
+      });
+
       Object.assign(responseData, {
         id: post.id,
         title: post.title,
         description: post.description,
-        nsfw: post.nsfw,
         URL: post.url,
         deleteHash: post.deleteHash,
         posted: post.posted,
-        album: post.album,
         likes: post.likes,
+        tags: post.tags,
+        midia: post.midia,
+        user: {
+          name: post.author.name,
+          username: post.author.username,
+          avatarUrl: post.author.avatarUrl,
+        }
       });
+
       var config = {
         method: "get",
-        url: `https://api.imgur.com/3/image/${hash}`,
+        url: `https://api.imgur.com/3/image/${postId}`,
         headers: {
           Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
         },
       };
+      
       Api(config)
         .then(function (response) {
           const data = response.data.data;
-          responseData.timeStamp = data.datetime;
+          responseData.timeStamp = data.datetime.toString();
 
-          return res.status(202).json({ ...responseData, otherPosts });
+          return res.status(200).json({ ...responseData, otherPosts });
         })
         .catch(function (error) {
-          error;
+          console.error('Imgur API error:', error);
           return res.status(500).end("Server error");
         });
     } catch (e) {
-      return res.status(400).end("User not Found");
+      console.error('Database error:', e);
+      return res.status(400).end("Post not Found");
     }
   } else {
     res.setHeader("allow", "GET");

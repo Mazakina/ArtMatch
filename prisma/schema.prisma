@@ -60,7 +60,12 @@ model UserProfile {
   bio              String?
   city             String?
   address          String?
-  streetNumber     String? @map("street_number")
+  addressNumber    String? @map("address_number")
+  skills           String?
+  avatar           String?
+  banner           String?
+  avatarDeleteHash String? @map("avatar_delete_hash")
+  bannerDeleteHash String? @map("banner_delete_hash")
   bannerUrl        String?
 
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -73,7 +78,7 @@ model UserSocialLinks {
   instagram    String?
   artstation   String?
   behance      String?
-  phoneNumber  String?
+  phone        String?
 
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -83,7 +88,7 @@ model UserSocialLinks {
 model UserSettings {
   userId           String     @id @db.Uuid @map("user_id")
   contactEmail     String?
-  nsfwAllowed      Boolean @default(false)
+  nsfwAllow        Boolean @default(false)
   allowToBeFound   Boolean @default(true)
 
   user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -91,25 +96,25 @@ model UserSettings {
   @@map("user_settings")
 }
 model posts{
-  id           String    @id @db.Uuid  @default(dbgenerated("gen_random_uuid()"))
-  userId       String    @db.Uuid @map("user_id")
+  id           String    @id
+  authorId     String    @db.Uuid @map("author_id")
   url          String
   deleteHash   String
   description  String?
   midia        String
   posted       Boolean   @default(false)
   tags         String[]  @default([])
-  timeStamp    BigInt
+  timeStamp    String
   title        String
-  likes        String[]  @default([])
+  likes        Int       @default(0)
   vote         Int?
-  LikedBy      User[]      @relation(name: "LikedPosts")
-  createdAt    DateTime @default(dbgenerated("now()"))
-
-
-  relatedPosts posts[] @relation("RelatedPosts")
-  relatedTo    posts[] @relation("RelatedPosts")
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likedBy      User[]    @relation("LikedPosts")
+  createdAt    DateTime  @default(dbgenerated("now()"))
+  cropped      String?
+  croppedDeleteHash  String?
+  relatedPosts posts[]   @relation("RelatedPosts")
+  relatedTo    posts[]   @relation("RelatedPosts")
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   
   Album Album[] @relation("AlbumPosts")
 }

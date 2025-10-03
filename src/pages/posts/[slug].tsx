@@ -394,7 +394,6 @@ export const favUserFunctions = {
   },
   delete: (user, postOwner) => {
     if (user) {
-      console.log(user);
       Api.delete("/_lib/imgur/favoriteUser", {
         data: {
           ...user,

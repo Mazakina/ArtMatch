@@ -14,7 +14,7 @@ interface ResponseData {
   id: string;
   title: string;
   description: string;
-  timeStamp: number;
+  timeStamp: string;
   vote: number | null;
   nsfw: boolean;
   url: string;
@@ -53,7 +53,7 @@ export default async function imgurGetAllFromUser(
     try {
       const responseData = await prisma.posts.findMany({
         where: {
-          userId: user.id,
+          authorId: user.id,
         },
         orderBy: {
           timeStamp: "desc",

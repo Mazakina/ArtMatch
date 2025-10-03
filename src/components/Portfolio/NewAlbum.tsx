@@ -5,8 +5,8 @@ import { BsCheckLg } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 
 interface AlbumsProps {
-  albumRef: string;
-  albumName: string;
+  id: string;
+  title: string;
 }
 
 interface NewAlbumProps {

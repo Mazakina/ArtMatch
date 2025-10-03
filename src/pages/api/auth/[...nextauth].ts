@@ -32,15 +32,10 @@ export const authOptions = {
     refetchInterval: 60 * 60,
     maxAge: 60 * 60 * 24,
   },
-
-  // adapter: SupabaseAdapter({
-  //   url: process.env.SUPABASE_URL,
-  //   secret: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  // }),
   adapter: PrismaAdapter(prisma),
   events: {
     async createUser({ user }) {
-      // Generate a unique username (e.g., based on name or email)
+      // Generate a unique username (based on name or email)
       let base = user.name?.replace(/\s+/g, "").toLowerCase() || "user";
       let username = base;
       let exists = await prisma.user.findUnique({ where: { username } });
@@ -50,10 +45,32 @@ export const authOptions = {
         exists = await prisma.user.findUnique({ where: { username } });
         suffix++;
       }
+
+      // Update user with username and create default user settings
       await prisma.user.update({
         where: { id: user.id },
         data: { username },
       });
+
+      await prisma.userSettings.create({
+        data: {
+          userId: user.id,
+          contactEmail: user.email,
+          nsfwAllow: false,
+          allowToBeFound: true,
+        },
+      });
+
+      // await prisma.userSocialLinks.create({
+      //   data: {
+      //     userId: user.id,
+      //   },
+      // });
+      // await prisma.userProfile.create({
+      //   data: {
+      //     userId: user.id,
+      //   },
+      // });
     },
   },
   callbacks: {

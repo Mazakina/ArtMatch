@@ -31,7 +31,6 @@ export default async function getUserProfile(
       },
     });
   } catch (e) {
-    console.log("user fetch error");
     return res.status(404).json({ ok: false });
   }
 

@@ -2,19 +2,22 @@ import { Flex, Text, Icon, Button, Input } from "@chakra-ui/react";
 import { AiOutlineFolderOpen } from "react-icons/ai";
 import { BiTrash } from "react-icons/bi";
 import React, { Dispatch, SetStateAction, useState } from "react";
+import { Prisma } from "@prisma/client";
 
-interface AlbumProps {
-  albumName: string;
-  albumRef: string;
-}
+type AlbumProps = Prisma.AlbumGetPayload<{
+  select: {
+    id: true;
+    title: true;
+  };
+}>;
+
 interface AlbumMapProps {
   album: AlbumProps;
   activeAlbum: string;
   setActiveAlbum: Dispatch<SetStateAction<string>>;
   onAlbumDrop: (event: any, album: any) => void;
-  deleteAlbum: (album: AlbumProps) => void;
+  deleteAlbum: (album: any) => void;
 }
-
 export function Album({
   album,
   activeAlbum,
@@ -22,7 +25,8 @@ export function Album({
   onAlbumDrop,
   deleteAlbum,
 }: AlbumMapProps) {
-  const active = activeAlbum === album.albumRef;
+  console.log(album);
+  const active = activeAlbum === album.id;
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   function loadingIcon() {
@@ -65,7 +69,7 @@ export function Album({
       <Flex flexDir="row" alignItems="center" w="100%">
         <Flex
           onClick={() => {
-            active ? setActiveAlbum("any") : setActiveAlbum(album.albumRef);
+            active ? setActiveAlbum("any") : setActiveAlbum(album.id);
           }}
           w="100%"
           p=".2rem
@@ -87,8 +91,8 @@ export function Album({
             p={"0 !important"}
             isLoading={isLoading}
           />
-          {!isEditing || album.albumRef === "any" ? (
-            <Text>{album.albumName}</Text>
+          {!isEditing || album.id === "any" ? (
+            <Text>{album.title}</Text>
           ) : (
             <Input
               padding={0}
@@ -101,7 +105,7 @@ export function Album({
             />
           )}
         </Flex>
-        {album.albumRef === "any" ? (
+        {album.id === "any" ? (
           ""
         ) : (
           <Icon

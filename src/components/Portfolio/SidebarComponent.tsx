@@ -13,8 +13,8 @@ import { NewAlbum } from "./NewAlbum";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetterUtil";
 
 interface AlbumProps {
-  albumName: string;
-  albumRef: string;
+  title: string;
+  id: string;
 }
 
 interface SideBarProps {
@@ -46,16 +46,15 @@ const SidebarComponent = React.memo(function Sidebar({
   const { activeAlbum, setActiveAlbum } = setActAlbum;
   const { albumsCollection, setAlbumsCollection } = albums;
   const [isCreatingNewAlbum, setIsCreatingNewAlbum] = useState(false);
-  console.log("user", useUser);
   function deleteAlbum(album) {
     try {
       Api.post("lib/imgur/manageAlbum", {
-        album: album.albumRef,
+        album: album.id,
         ...data,
         action: "delete",
       });
       let newAlbumArray = albumsCollection.filter(
-        (albumFilter) => albumFilter.albumRef != album.albumRef
+        (albumFilter) => albumFilter.id != album.id
       );
       setAlbumsCollection(newAlbumArray);
     } catch (e) {}
@@ -122,7 +121,7 @@ const SidebarComponent = React.memo(function Sidebar({
                 onAlbumDrop={onAlbumDrop}
                 setActiveAlbum={setActiveAlbum}
                 activeAlbum={activeAlbum}
-                album={{ albumName: "Todos", albumRef: "any" }}
+                album={{ title: "Todos", id: "any" }}
               />
 
               {isCreatingNewAlbum && (
@@ -137,7 +136,7 @@ const SidebarComponent = React.memo(function Sidebar({
               {albumsCollection.map((album) => {
                 return (
                   <Album
-                    key={album.albumRef}
+                    key={album.id}
                     deleteAlbum={deleteAlbum}
                     onAlbumDrop={onAlbumDrop}
                     setActiveAlbum={setActiveAlbum}

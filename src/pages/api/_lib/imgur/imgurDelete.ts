@@ -45,16 +45,16 @@ export default async function imgurDelete(
             },
           });
 
-          res.status(200).json({ ok: true });
+          return res.status(200).json({ ok: true });
         } catch (e) {
-          res.status(401).end("unauthorized");
+          return res.status(401).end("unauthorized");
         }
       })
       .catch(function (error) {
-        res.status(401).end("upload unauthorized");
+        return res.status(401).end("upload unauthorized");
       });
   } else {
     res.setHeader("allow", "POST");
-    res.status(405).end("Method not allowed");
+    return res.status(405).end("Method not allowed");
   }
 }

@@ -1,130 +1,129 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {fauna} from "../../../../services/fauna";
-import {query as q} from 'faunadb'
+import prisma from "../../../../services/db/prisma";
+import { getSession } from "next-auth/react";
 
-interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
-  }
-}
-
-export default async function likePost (req:NextApiRequest,res:NextApiResponse){
-  const postId = req.body.id
-  async function getUser(){
-    const user:userProps = await fauna.query(
-      q.Get(
-        q.Match(
-          q.Index('user_by_email'),
-          req.body.data.email
-        )
-      )
-    )
-    return user;
+export default async function likePost(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession({ req });
+  
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const postOwner:userProps = await fauna.query(
-    q.Get(
-      q.Match(
-        q.Index('user_by_usuario'),
-        req.body.postOwnerName
-      )
-    )
-  )
-  if(req.method=="PATCH"){
-    const user = await getUser()
+  const postId = req.body.id;
 
-    await fauna.query(
-      q.Update(
-        q.Select(
-          'ref',
-          q.Get(
-            q.Match(
-              q.Index('collections_by_user_id'),
-              postOwner.ref
-            ) 
-          )
-        ),
-        {
-          data:{
-            posts:{
-              [postId]:{
-                likes:
-                q.Append(
-                  [user.ref],
-                  q.Filter(
-                    q.Select(
-                      ["data",'posts',postId,'likes'],
-                      q.Get(
-                        q.Match(
-                          q.Index('collections_by_user_id'),
-                          postOwner.ref
-                        )
-                      )
-                  ),
-                    q.Lambda(
-                      'i',
-                      q.Equals(
-                        q.Var('i'),
-                        [user.ref]
-                      )
-                    )
-                  )
-                )
-              }
+  if (req.method === 'GET') {
+    // Get user information
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        include: {
+          likedPosts: true,
+          posts: true
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      return res.status(200).json({ user });
+    } catch (error) {
+      return res.status(400).json({ error: 'Failed to get user data' });
+    }
+  }
+
+  if (req.method === 'POST') {
+    // Get post owner information
+    try {
+      const post = await prisma.posts.findUnique({
+        where: { id: postId },
+        include: {
+          author: {
+            include: {
+              profile: true
             }
-        }}
-      )
-    ).then(response=>res.status(202)).catch(err=>res.status(404).end('collection not found'))
-    return
+          }
+        }
+      });
+
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+
+      return res.status(200).json({ postOwner: post.author });
+    } catch (error) {
+      return res.status(400).json({ error: 'Failed to get post owner' });
+    }
   }
 
-  if(req.method=="DELETE"){
-    const user = await getUser()
+  if (req.method === 'PATCH') {
+    // Add like to post
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      });
 
-    await fauna.query(
-      q.Update(
-        q.Select(
-          'ref',
-          q.Get(
-            q.Match(
-              q.Index('collections_by_user_id'),
-              postOwner.ref
-            ) 
-          )
-        ),
-        {
-          data:{
-            posts:{
-              [postId]:{
-                likes:
-                  q.Filter(
-                    q.Select(
-                      ["data",'posts',postId,'likes'],
-                      q.Get(
-                        q.Match(
-                          q.Index('collections_by_user_id'),
-                          postOwner.ref
-                        )
-                      )
-                  ),
-                    q.Lambda(
-                      'i',
-                      q.Equals(
-                        q.Var('i'),
-                        [user.ref]
-                      )
-                    )
-                  )
-              }
-            }
-        }}
-      )
-    ).then(response=>res.status(202)).catch(err=>res.status(404).end('collection not found'))
-    return
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if post exists
+      const post = await prisma.posts.findUnique({
+        where: { id: postId }
+      });
+
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+
+      // Add like (connect user to post's likedBy relationship)
+      await prisma.posts.update({
+        where: { id: postId },
+        data: {
+          likedBy: {
+            connect: { id: user.id }
+          },
+          likes: {
+            increment: 1
+          }
+        }
+      });
+
+      return res.status(201).json({ message: 'Post liked successfully' });
+    } catch (error) {
+      return res.status(400).json({ error: 'Failed to like post' });
+    }
   }
-  res.status(405).end('Method not Allowed')
+
+  if (req.method === 'DELETE') {
+    // Remove like from post
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Remove like (disconnect user from post's likedBy relationship)
+      await prisma.posts.update({
+        where: { id: postId },
+        data: {
+          likedBy: {
+            disconnect: { id: user.id }
+          },
+          likes: {
+            decrement: 1
+          }
+        }
+      });
+
+      return res.status(202).json({ message: 'Like removed successfully' });
+    } catch (error) {
+      return res.status(404).json({ error: 'Failed to remove like' });
+    }
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
 }

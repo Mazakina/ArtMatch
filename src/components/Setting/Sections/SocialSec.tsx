@@ -1,5 +1,5 @@
 import { FormControl, Text, Button, Flex } from "@chakra-ui/react";
-import { FormEvent, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { AiOutlineInstagram } from "react-icons/ai";
 import { FaArtstation, FaBehanceSquare } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
@@ -8,6 +8,7 @@ import SocialOptions from "../SocialOptions";
 
 interface SocialSec {
   isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
   settingOpt: string;
   userSettings: {
     data: {
@@ -22,19 +23,17 @@ interface SocialSec {
   user: {
     name: string;
     image: string;
-    email: {
-      email: string;
-    };
+    email: string;
   };
 }
 
 export default function SocialSec({
   isLoading,
+  setIsLoading,
   settingOpt,
   userSettings,
   user,
-  setIsLoading,
-}) {
+}: SocialSec) {
   const [artstation, setArtstation] = useState(
     userSettings.data.social?.artstation
   );
@@ -51,7 +50,12 @@ export default function SocialSec({
       artstation: artstation,
       behance: behance,
       telefone: telefone,
-      user: user,
+      user: {
+        ...user,
+        email: {
+          email: user.email
+        }
+      },
     };
     Api.post("/_lib/userSettings/saveUserSettings", requestData)
       .then(() => setIsLoading(false))

@@ -196,7 +196,6 @@ export default function Portfolio({ posts, albums }) {
     if (!!ids?.id) {
       const newPostsArray = postsCollection.map((post) => {
         if (post.id === ids.id) {
-          console.log(post);
           return { ...post, albumRef: album.albumRef };
         } else {
           return post;
@@ -478,16 +477,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   let posts;
   let albums;
-  try {
-    await response.json().then((response) => {
-      posts = response.posts;
-      albums = [...response.albums];
-    });
-  } catch (e) {
-    return {
-      notFound: true,
-    };
-  }
+  const data = await response.json();
+  posts = data.posts;
+  albums = [...data.albums];
+
   return {
     props: {
       posts,

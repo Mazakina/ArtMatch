@@ -1,168 +1,98 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "../../../../services/db/prisma"
+import { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../../services/db/prisma";
+import { getSession } from "next-auth/react";
 
-
-interface userProps {
-  ref:string,
-  ts:number|string,
-  data:{
-    user:string,
-    banner:string,
-    avatar:string,
-  }
-}
-
-export default async function favoritePost(req:NextApiRequest,res:NextApiResponse){
-  async function getUser(){
-    const user = await prisma.user.findUnique({
-      where: {
-        email: req.body.data.email,
-      },
-      include: {
-        favo: true,
-      },
-    // const user:userProps = await fauna.query(
-    //   q.Get(
-    //     q.Match(
-    //       q.Index('user_by_email'),
-    //       req.body.data.email
-    //     )
-    //   )
-    // )
-    // return user;
+export default async function favoritePost(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession({ req });
+  
+  if (!session?.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if(req.method=='POST'){
-    // const user:userProps = await getUser()
-    // try{
-    //   const favoritePosts= await fauna.query( 
-    //     q.Get(
-    //       q.Match(
-    //         q.Index('favorite_posts_by_user_id'),
-    //         user.ref
-    //       )
-    //     )
-    //   ).then(response=>res.status(200).json(favoritePosts))
-    // }catch(e){
-    //   res.status(400).json({error:'Posts not found'})
-    // }
+  const postId = req.body.id;
+
+  if (req.method === 'POST') {
+    // Get user's favorite posts
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        include: {
+          likedPosts: true
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      return res.status(200).json({ favoritePosts: user.likedPosts });
+    } catch (error) {
+      return res.status(400).json({ error: 'Posts not found' });
+    }
   }
 
-  if(req.method=='PATCH'){
-    // const user:userProps = await getUser()
-    // try{
-    //   await fauna.query(
-    //     q.If(
-    //       q.Not(
-    //           q.Exists(
-    //               q.Match(
-    //                   q.Index('favorite_posts_by_user_id'),
-    //                   user.ref
-    //               )
-    //           )
-    //       ),
-    //       q.Create(
-    //         q.Collection('favorite_posts'),
-    //         {
-    //           data: {
-    //             userId:user.ref,
-    //             favoritedPosts:[req.body.id],
-    //             }
-    //         }
-    //       ),
-    //       q.Update(
-    //         q.Select(
-    //           'ref',
-    //           q.Get(
-    //             q.Match(
-    //               q.Index('favorite_posts_by_user_id'),
-    //               user.ref
-    //             )
-    //           )
-    //         ),
-    //         {
-    //           data:{
-    //             favoritedPosts:
-    //             q.Append(
-    //               [req.body.id],
-    //               q.Filter(
-    //                 q.Select(
-    //                   ["data",'favoritedPosts'],
-    //                   q.Get(
-    //                     q.Match(
-    //                       q.Index('favorite_posts_by_user_id'),
-    //                       user.ref
-    //                     )
-    //                   )
-    //               ),
-    //                 q.Lambda(
-    //                   'i',
-    //                   q.Not(
-    //                     q.Equals(
-    //                       q.Var('i'),
-    //                       req.body.id
-    //                     )
-    //                   )
-    //                 )
-    //               )
-    //             )
-    //           }
-    //         }
-    //       )
-    //       ,
-    //     )
-    //   ).then(resonse => res.status(201).end('updated')).
-    //   catch(err =>res.status(400))
-    // }catch(e){
-    //   res.status(404)
-    // }
+  if (req.method === 'PATCH') {
+    // Add post to favorites
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if post exists
+      const post = await prisma.posts.findUnique({
+        where: { id: postId }
+      });
+
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+
+      // Add post to user's liked posts (many-to-many relationship)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          likedPosts: {
+            connect: { id: postId }
+          }
+        }
+      });
+
+      return res.status(201).json({ message: 'Post added to favorites' });
+    } catch (error) {
+      return res.status(400).json({ error: 'Failed to add to favorites' });
+    }
   }
 
-  if(req.method=='DELETE'){
-    // const user:userProps = await getUser()
-    // try{
-    //   await fauna.query(
-    //       q.Update(
-    //         q.Select(
-    //           'ref',
-    //           q.Get(
-    //             q.Match(
-    //               q.Index('favorite_posts_by_user_id'),
-    //               user.ref
-    //             )
-    //           )
-    //         ),
-    //         {
-    //           data:{
-    //             favoritedPosts:
-    //             q.Filter(
-    //               q.Select(
-    //                 ["data",'favoritedPosts'],
-    //                 q.Get(
-    //                   q.Match(
-    //                     q.Index('favorite_posts_by_user_id'),
-    //                     user.ref
-    //                   )
-    //                 )
-    //             ),
-    //               q.Lambda(
-    //                 'i',
-    //                 q.Not(
-    //                   q.Equals(
-    //                     q.Var('i'),
-    //                     req.body.id
-    //                   )
-    //                 )
-    //               )
-    //             )
-    //           }
-    //         }
-    //       )
-    //   )
-    //   .then(resonse => res.status(202).end('deleted'))
-    // }catch(e){
-    //   res.status(404)
-    // }
+  if (req.method === 'DELETE') {
+    // Remove post from favorites
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Remove post from user's liked posts
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          likedPosts: {
+            disconnect: { id: postId }
+          }
+        }
+      });
+
+      return res.status(202).json({ message: 'Post removed from favorites' });
+    } catch (error) {
+      return res.status(404).json({ error: 'Failed to remove from favorites' });
+    }
   }
 
+  return res.status(405).json({ error: 'Method not allowed' });
 }
