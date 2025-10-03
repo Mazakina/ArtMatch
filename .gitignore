@@ -4,7 +4,9 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/data
+/prisma/migrations
+/.slicemachine
 # testing
 /coverage
 /to-do.md
