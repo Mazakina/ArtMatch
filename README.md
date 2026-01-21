@@ -1,5 +1,7 @@
 # 🎨 ArtMatch
-*Foi meu Primeiro Projeto de estudo, completo e independente, feito antes de ter conhecimentos de arquitetura e SOLID*
+
+## Foi meu Primeiro Projeto de estudo, completo e independente, feito antes de ter conhecimentos de arquitetura e SOLID
+
 **ArtMatch** é uma aplicação JAMStack desenvolvida com foco na comunidade artística, permitindo que artistas criem perfis personalizados e compartilhem seus trabalhos de maneira fluida, visualmente atrativa e integrada a recursos modernos da web.
 
 ---
